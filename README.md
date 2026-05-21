@@ -1,17 +1,59 @@
-# startinvest
+# StartInvest
 
-A new Flutter project.
+Plataforma gamificada de educação financeira para jovens investidores.
 
-## Getting Started
+## Documentação
 
-This project is a starting point for a Flutter application.
+### Visão Geral
+| Documento | Descrição |
+|---|---|
+| [Project Brief](docs/overview/project-brief.md) | Problema, proposta de valor, público-alvo e funcionalidades |
+| [Personas](docs/overview/personas.md) | Perfis de usuário e análise de tarefas |
+| [Análise de Concorrentes](docs/overview/competitive-analysis.md) | Fly Invest, O Jogo do Investidor e diferencial do StartInvest |
+| [Decisões (ADR)](docs/overview/decisions.md) | Decisões arquiteturais: Flutter, Clean Arch, Firebase, BLoC, branches |
 
-A few resources to get you started if this is your first Flutter project:
+### Técnico
+| Documento | Descrição |
+|---|---|
+| [Tech Stack](docs/technical/tech-stack.md) | Tecnologias utilizadas e justificativas |
+| [Arquitetura](docs/technical/architecture.md) | Clean Architecture, fluxo de dados, estrutura de pastas |
+| [Qualidade](docs/technical/quality.md) | Análise SonarQube, plano de mudanças e critérios de aceite |
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Features
+| Documento | Descrição |
+|---|---|
+| [Requisitos Funcionais](docs/features/requirements.md) | RF01-RF22: login, home, jogos, vídeo-aulas, ranking, gamificação |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Stack
+
+- **Frontend:** Flutter (Dart)
+- **Backend:** Firebase (Auth, Firestore, Storage, Messaging)
+- **State:** BLoC (flutter_bloc)
+- **Navegação:** GoRouter
+- **DI:** GetIt + injectable
+
+## Como Rodar
+
+```bash
+# Instalar dependências
+flutter pub get
+
+# Gerar código (DI, rotas)
+dart run build_runner build --delete-conflicting-outputs
+
+# Rodar
+flutter run
+```
+
+## Qualidade
+
+```bash
+# Lint
+flutter analyze
+
+# Testes
+flutter test
+
+# Formatar
+dart format .
+```
