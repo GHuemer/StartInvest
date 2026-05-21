@@ -38,6 +38,12 @@ jobs:
         working-directory: startinvest
         run: flutter test --coverage
 
+      - name: Verify coverage report
+        run: |
+          echo "Checking coverage file..."
+          ls -la startinvest/coverage/
+          wc -l startinvest/coverage/lcov.info
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
