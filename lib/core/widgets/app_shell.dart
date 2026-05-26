@@ -12,7 +12,7 @@ class AppShell extends StatelessWidget {
     AppRoutes.home,
     AppRoutes.games,
     AppRoutes.content,
-    AppRoutes.ranking,
+    AppRoutes.missions,
   ];
 
   @override
@@ -24,21 +24,45 @@ class AppShell extends StatelessWidget {
       body: child,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
+          color: AppColors.navBarBackground,
           border: Border(
-            top: BorderSide(color: AppColors.divider, width: 1),
+            top: BorderSide(color: AppColors.cardBorder, width: 0.5),
           ),
         ),
         child: BottomNavigationBar(
           currentIndex: currentIndex < 0 ? 0 : currentIndex,
           onTap: (i) => context.go(_tabs[i]),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.sports_esports), label: 'Jogos'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Conteúdo'),
-            BottomNavigationBarItem(icon: Icon(Icons.emoji_events), label: 'Ranking'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: AppColors.textSecondary,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            _buildNavItem(Icons.grid_view_rounded, 'Home'),
+            _buildNavItem(Icons.rocket_launch_outlined, 'Praticar'),
+            _buildNavItem(Icons.school_outlined, 'Aprender'),
+            _buildNavItem(Icons.emoji_events_outlined, 'Metas'),
           ],
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(IconData icon, String label) {
+    return BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Icon(icon),
+      ),
+      activeIcon: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: AppColors.primary),
+      ),
+      label: label,
     );
   }
 }

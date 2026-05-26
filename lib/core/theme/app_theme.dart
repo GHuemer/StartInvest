@@ -39,6 +39,7 @@ class AppTheme {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: AppColors.cardBorder, width: 1),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -83,11 +84,15 @@ class AppTheme {
           ),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.backgroundCardAlt,
+          backgroundColor: AppColors.navBarBackground,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textMuted,
+          unselectedItemColor: AppColors.textSecondary,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         ),
         dividerTheme: const DividerThemeData(
           color: AppColors.divider,
