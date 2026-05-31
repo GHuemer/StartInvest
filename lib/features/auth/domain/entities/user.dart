@@ -9,6 +9,7 @@ class AppUser extends Equatable {
     this.xp = 0,
     this.level = 1,
     this.league = 'bronze',
+    this.subtitle = 'Investidor Iniciante',
   });
 
   final String id;
@@ -18,7 +19,8 @@ class AppUser extends Equatable {
   final int xp;
   final int level;
   final String league;
+  final String subtitle;
 
   @override
-  List<Object?> get props => [id, name, email, photoUrl, xp, level, league];
+  List<Object?> get props => [id, name, email, photoUrl, xp, level, league, subtitle];
 }
