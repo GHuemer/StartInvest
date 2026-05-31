@@ -64,14 +64,13 @@ class HomePage extends StatelessWidget {
                   PilarCard(
                     icon: Icons.rocket_launch,
                     title: 'Praticar',
-                    description: 'Simulador de mercado em tempo real',
+                    description: 'Simulador de mercado',
                     onTap: () => context.go(AppRoutes.games),
                   ),
                   PilarCard(
                     icon: Icons.school,
                     title: 'Aprender',
-                    description: 'Cursos e trilhas de investimento',
-                    iconColor: const Color(0xFFF1C40F),
+                    description: 'Trilha de aprendizado',
                     onTap: () => context.go(AppRoutes.content),
                   ),
                   PilarCard(
@@ -83,7 +82,7 @@ class HomePage extends StatelessWidget {
                   PilarCard(
                     icon: Icons.newspaper,
                     title: 'Notícias',
-                    description: 'Últimas do mercado financeiro',
+                    description: 'Últimas do mercado',
                     onTap: () => context.go(AppRoutes.news),
                   ),
                 ],
