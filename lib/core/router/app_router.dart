@@ -5,6 +5,9 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/content/presentation/pages/content_page.dart';
+import '../../features/content/presentation/pages/course_player_page.dart';
+import '../../features/content/presentation/pages/article_detail_page.dart';
+import '../../features/content/domain/entities/article.dart';
 import '../../features/games/presentation/pages/games_page.dart';
 import '../../features/ranking/presentation/pages/ranking_page.dart';
 import '../../features/news/presentation/pages/news_page.dart';
@@ -45,6 +48,18 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.content,
           builder: (context, state) => const ContentPage(),
+          routes: [
+            GoRoute(
+              path: 'course', // resultará em /content/course
+              builder: (context, state) {
+                final extra = state.extra as Map<String, dynamic>?;
+                return CoursePlayerPage(
+                  title: extra?['title'] ?? 'Curso',
+                  videoUrl: extra?['videoUrl'],
+                );
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: AppRoutes.ranking,
