@@ -1,138 +1,170 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../bloc/missions_cubit.dart';
+import '../bloc/missions_state.dart';
+import '../widgets/mission_card.dart';
+import '../../domain/entities/mission_entity.dart';
+import '../../../../core/di/injection.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/router/app_routes.dart';
 
 class MissionsPage extends StatelessWidget {
   const MissionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final badges = [
-      _Badge('Primeiro Passo', 'Complete sua primeira missão', Icons.emoji_events, AppColors.accent, true),
-      _Badge('Estudioso', 'Complete 5 módulos', Icons.star, AppColors.accent, true),
-      _Badge('Investidor Iniciante', 'Crie seu primeiro portfólio', Icons.trending_up, AppColors.accent, true),
-      _Badge('Investidor Experiente', 'Complete 20 módulos\n+ 300 pontos', Icons.lock, AppColors.textMuted, false),
-    ];
+    return BlocProvider(
+      create: (context) => getIt<MissionsCubit>()..init(),
+      child: const MissionsView(),
+    );
+  }
+}
 
+class MissionsView extends StatelessWidget {
+  const MissionsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                child: Row(children: [const BackButton(), const Text('Metas', style: AppTextStyles.headlineLarge)]),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Progresso: 3/100', style: AppTextStyles.titleMedium),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(value: 3 / 100, minHeight: 8, backgroundColor: AppColors.divider),
+        child: BlocBuilder<MissionsCubit, MissionsState>(
+          builder: (context, state) {
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                    child: Row(
+                      children: [
+                        BackButton(
+                          onPressed: () => context.go(AppRoutes.home),
+                        ),
+                        const Text(
+                          'Metas',
+                          style: AppTextStyles.headlineLarge,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
-                child: Row(
-                  children: [
-                    _FilterChip(label: 'Tudo', selected: true),
-                    const SizedBox(width: 8),
-                    _FilterChip(label: 'Aprendizado', selected: false),
-                    const SizedBox(width: 8),
-                    _FilterChip(label: 'Prática', selected: false),
-                  ],
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Progresso: ${state.completedCount}/${state.allMissions.length}',
+                          style: AppTextStyles.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: state.totalProgress,
+                            minHeight: 8,
+                            backgroundColor: AppColors.divider,
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.0,
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _FilterChip(
+                            label: 'Tudo',
+                            isSelected: state.activeFilter == MissionCategory.all,
+                            onTap: () => context.read<MissionsCubit>().filterMissions(MissionCategory.all),
+                          ),
+                          const SizedBox(width: 8),
+                          _FilterChip(
+                            label: 'Aprendizado',
+                            isSelected: state.activeFilter == MissionCategory.learning,
+                            onTap: () => context.read<MissionsCubit>().filterMissions(MissionCategory.learning),
+                          ),
+                          const SizedBox(width: 8),
+                          _FilterChip(
+                            label: 'Prática',
+                            isSelected: state.activeFilter == MissionCategory.practice,
+                            onTap: () => context.read<MissionsCubit>().filterMissions(MissionCategory.practice),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, i) => _BadgeCard(badge: badges[i]),
-                  childCount: badges.length,
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  sliver: state.filteredMissions.isEmpty
+                      ? const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(child: Text('Nenhuma missão encontrada.')),
+                        )
+                      : SliverGrid(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.9, // Ajustado para suportar a barra de progresso sem quebrar o layout
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, i) => MissionCard(mission: state.filteredMissions[i]),
+                            childCount: state.filteredMissions.length,
+                          ),
+                        ),
                 ),
-              ),
-            ),
-          ],
+                const SliverToBoxAdapter(child: SizedBox(height: 40)),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class _Badge {
-  const _Badge(this.title, this.subtitle, this.icon, this.color, this.unlocked);
-  final String title, subtitle;
-  final IconData icon;
-  final Color color;
-  final bool unlocked;
-}
-
-class _BadgeCard extends StatelessWidget {
-  const _BadgeCard({required this.badge});
-  final _Badge badge;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(badge.icon, color: badge.color, size: 40),
-          const SizedBox(height: 8),
-          Text(badge.title, style: AppTextStyles.titleMedium, textAlign: TextAlign.center),
-          const SizedBox(height: 4),
-          Text(badge.subtitle, style: AppTextStyles.bodySmall, textAlign: TextAlign.center, maxLines: 2),
-          if (badge.unlocked) ...[
-            const SizedBox(height: 6),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle, color: AppColors.primary, size: 14),
-                SizedBox(width: 4),
-                Text('Completado', style: TextStyle(color: AppColors.primary, fontSize: 11)),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.selected});
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
   final String label;
-  final bool selected;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: selected ? AppColors.primary : AppColors.backgroundCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: selected ? AppColors.primary : AppColors.divider),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Restaurado padding original
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : AppColors.backgroundCard,
+          borderRadius: BorderRadius.circular(20), // Restaurado radius original
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.divider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? AppColors.white : AppColors.textMuted,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
-      child: Text(label, style: TextStyle(color: selected ? AppColors.white : AppColors.textMuted, fontSize: 13, fontWeight: FontWeight.w600)),
     );
   }
 }
