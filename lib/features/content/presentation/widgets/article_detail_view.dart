@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/app_back_button.dart';
 import '../../domain/entities/article.dart';
 
 class ArticleDetailView extends StatelessWidget {
@@ -22,7 +23,7 @@ class ArticleDetailView extends StatelessWidget {
             expandedHeight: article.imageUrl != null ? 240 : 100,
             pinned: true,
             backgroundColor: AppColors.backgroundDark,
-            leading: const BackButton(color: AppColors.white),
+            leading: const AppBackButton(color: AppColors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: article.imageUrl != null
                   ? Image.network(

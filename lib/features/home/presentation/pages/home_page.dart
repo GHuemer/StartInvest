@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
                     onTap: () => context.go(AppRoutes.content),
                   ),
                   PilarCard(
-                    icon: Icons.emoji_events,
+                    icon: Icons.track_changes,
                     title: 'Metas',
                     description: 'Acompanhe seus objetivos',
                     onTap: () => context.go(AppRoutes.missions),

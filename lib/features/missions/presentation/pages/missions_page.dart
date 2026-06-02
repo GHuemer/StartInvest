@@ -7,8 +7,7 @@ import '../bloc/missions_state.dart';
 import '../widgets/mission_card.dart';
 import '../../domain/entities/mission_entity.dart';
 import '../../../../core/di/injection.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/router/app_routes.dart';
+import '../../../../core/widgets/app_back_button.dart';
 
 class MissionsPage extends StatelessWidget {
   const MissionsPage({super.key});
@@ -38,9 +37,7 @@ class MissionsView extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
                     child: Row(
                       children: [
-                        BackButton(
-                          onPressed: () => context.go(AppRoutes.home),
-                        ),
+                        const AppBackButton(),
                         const Text(
                           'Metas',
                           style: AppTextStyles.headlineLarge,

@@ -7,9 +7,12 @@ import '../../domain/usecases/sign_in_email.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/repositories/auth_repository.dart';
 
+import 'package:injectable/injectable.dart';
+
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+@injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     required SignInWithGoogle signInWithGoogle,

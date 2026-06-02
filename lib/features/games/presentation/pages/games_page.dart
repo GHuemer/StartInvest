@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/app_back_button.dart';
 
 class GamesPage extends StatelessWidget {
   const GamesPage({super.key});
@@ -16,7 +17,7 @@ class GamesPage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
                 child: Row(
                   children: [
-                    const BackButton(),
+                    const AppBackButton(),
                     const Text('Jogos', style: AppTextStyles.headlineLarge),
                     const Spacer(),
                     CircleAvatar(radius: 18, backgroundColor: AppColors.backgroundCard, child: const Icon(Icons.person, size: 18, color: AppColors.textSecondary)),

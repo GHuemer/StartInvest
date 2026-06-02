@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/app_back_button.dart';
 
 class CoursePlayerView extends StatelessWidget {
   final String title;
@@ -22,7 +23,7 @@ class CoursePlayerView extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(title, style: AppTextStyles.titleLarge),
-        leading: const BackButton(color: AppColors.white),
+        leading: const AppBackButton(color: AppColors.white),
       ),
       body: Center(
         child: hasContent

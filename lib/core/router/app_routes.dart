@@ -7,6 +7,7 @@ class AppRoutes {
   static const String content = '/content';
   static const String ranking = '/ranking';
   static const String news = '/news';
+  static const String newsDetail = 'detail'; // Rota filha
   static const String missions = '/missions';
   static const String course = '/content/course/:id';
   static const String lesson = '/content/course/:courseId/lesson/:lessonId';
