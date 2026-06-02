@@ -3,6 +3,9 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
+import 'package:injectable/injectable.dart';
+
+@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   final _mockUser = const AppUser(
     id: 'mock-uid-001',

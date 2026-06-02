@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/app_back_button.dart';
 
 class RankingPage extends StatefulWidget {
   const RankingPage({super.key});
@@ -35,7 +36,7 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
               child: Row(
                 children: [
-                  const BackButton(),
+                  const AppBackButton(),
                   const Text('Ranking', style: AppTextStyles.headlineLarge),
                   const Spacer(),
                   CircleAvatar(radius: 18, backgroundColor: AppColors.backgroundCard, child: const Icon(Icons.person, size: 18, color: AppColors.textSecondary)),
