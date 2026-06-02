@@ -12,7 +12,7 @@ class AppShell extends StatelessWidget {
     AppRoutes.home,
     AppRoutes.games,
     AppRoutes.content,
-    AppRoutes.missions,
+    AppRoutes.ranking,
   ];
 
   @override
@@ -41,7 +41,7 @@ class AppShell extends StatelessWidget {
             _buildNavItem(Icons.grid_view_rounded, 'Home'),
             _buildNavItem(Icons.rocket_launch_outlined, 'Praticar'),
             _buildNavItem(Icons.school_outlined, 'Aprender'),
-            _buildNavItem(Icons.emoji_events_outlined, 'Metas'),
+            _buildNavItem(Icons.emoji_events_rounded, 'Ranking'),
           ],
         ),
       ),
