@@ -35,3 +35,25 @@ class AuthSignInWithEmailRequested extends AuthEvent {
 class AuthSignOutRequested extends AuthEvent {
   const AuthSignOutRequested();
 }
+
+class AuthSignUpRequested extends AuthEvent {
+  const AuthSignUpRequested({
+    required this.name,
+    required this.email,
+    required this.password,
+  });
+  final String name;
+  final String email;
+  final String password;
+
+  @override
+  List<Object> get props => [name, email, password];
+}
+
+class AuthForgotPasswordRequested extends AuthEvent {
+  const AuthForgotPasswordRequested({required this.email});
+  final String email;
+
+  @override
+  List<Object> get props => [email];
+}

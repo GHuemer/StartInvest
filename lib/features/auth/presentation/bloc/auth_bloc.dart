@@ -5,6 +5,8 @@ import '../../domain/entities/user.dart';
 import '../../domain/usecases/sign_in_google.dart';
 import '../../domain/usecases/sign_in_email.dart';
 import '../../domain/usecases/sign_out.dart';
+import '../../domain/usecases/sign_up.dart';
+import '../../domain/usecases/send_password_reset_email.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 part 'auth_event.dart';
@@ -15,16 +17,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required SignInWithGoogle signInWithGoogle,
     required SignInWithEmail signInWithEmail,
     required SignOut signOut,
+    required SignUp signUp,
+    required SendPasswordResetEmail sendPasswordResetEmail,
     required AuthRepository authRepository,
   })  : _signInWithGoogle = signInWithGoogle,
         _signInWithEmail = signInWithEmail,
         _signOut = signOut,
+        _signUp = signUp,
+        _sendPasswordResetEmail = sendPasswordResetEmail,
         super(const AuthInitial()) {
     on<AuthStarted>(_onStarted);
     on<AuthSignInWithGoogleRequested>(_onSignInWithGoogle);
     on<AuthSignInWithEmailRequested>(_onSignInWithEmail);
     on<AuthSignOutRequested>(_onSignOut);
     on<AuthUserChanged>(_onUserChanged);
+    on<AuthSignUpRequested>(_onSignUp);
+    on<AuthForgotPasswordRequested>(_onForgotPassword);
 
     _authSubscription = authRepository.authStateChanges.listen(
       (user) => add(AuthUserChanged(user)),
@@ -34,6 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignInWithGoogle _signInWithGoogle;
   final SignInWithEmail _signInWithEmail;
   final SignOut _signOut;
+  final SignUp _signUp;
+  final SendPasswordResetEmail _sendPasswordResetEmail;
   late final StreamSubscription<AppUser?> _authSubscription;
 
   Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
@@ -78,6 +88,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     await _signOut();
     emit(const AuthUnauthenticated());
+  }
+
+  Future<void> _onSignUp(
+    AuthSignUpRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await _signUp(event.name, event.email, event.password);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(AuthAuthenticated(user)),
+    );
+  }
+
+  Future<void> _onForgotPassword(
+    AuthForgotPasswordRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await _sendPasswordResetEmail(event.email);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (_) => emit(const AuthPasswordResetSent()),
+    );
   }
 
   @override

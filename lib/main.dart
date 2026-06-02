@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/di/injection.dart';
@@ -9,10 +11,13 @@ import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/sign_in_email.dart';
 import 'features/auth/domain/usecases/sign_in_google.dart';
 import 'features/auth/domain/usecases/sign_out.dart';
+import 'features/auth/domain/usecases/sign_up.dart';
+import 'features/auth/domain/usecases/send_password_reset_email.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await configureDependencies();
   runApp(const StartInvestApp());
 }
@@ -29,6 +34,8 @@ class StartInvestApp extends StatelessWidget {
         signInWithGoogle: SignInWithGoogle(authRepository),
         signInWithEmail: SignInWithEmail(authRepository),
         signOut: SignOut(authRepository),
+        signUp: SignUp(authRepository),
+        sendPasswordResetEmail: SendPasswordResetEmail(authRepository),
         authRepository: authRepository,
       )..add(const AuthStarted()),
       child: MaterialApp.router(
