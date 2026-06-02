@@ -7,7 +7,6 @@ import '../bloc/missions_state.dart';
 import '../widgets/mission_card.dart';
 import '../../domain/entities/mission_entity.dart';
 import '../../../../core/di/injection.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/app_back_button.dart';
 
 class MissionsPage extends StatelessWidget {

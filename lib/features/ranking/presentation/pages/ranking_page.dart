@@ -61,7 +61,10 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [_buildFriendsTab(), _buildFriendsTab()],
+                children: [
+                  _buildRankingTab(isGlobal: false),
+                  _buildRankingTab(isGlobal: true),
+                ],
               ),
             ),
           ],
@@ -70,13 +73,13 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildFriendsTab() {
+  Widget _buildRankingTab({required bool isGlobal}) {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       children: [
         _buildMyPosition(),
         const SizedBox(height: 16),
-        _buildFriendsList(),
+        _buildFriendsList(isGlobal: isGlobal),
         const SizedBox(height: 16),
         _buildLeague(),
       ],
@@ -112,13 +115,20 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildFriendsList() {
-    final friends = [
-      ('João', '5.567', '🥇', 1),
-      ('Pedro', '5.430', '🥈', 2),
-      ('Ana', '4.002', '🥉', 3),
-      ('Maria', '3.670', '4°', 4),
-    ];
+  Widget _buildFriendsList({required bool isGlobal}) {
+    final friends = isGlobal 
+      ? [
+          ('Carlos', '12.567', '🥇', 1),
+          ('Marta', '10.430', '🥈', 2),
+          ('Roberto', '9.002', '🥉', 3),
+          ('Juliana', '8.670', '4°', 4),
+        ]
+      : [
+          ('João', '5.567', '🥇', 1),
+          ('Pedro', '5.430', '🥈', 2),
+          ('Ana', '4.002', '🥉', 3),
+          ('Maria', '3.670', '4°', 4),
+        ];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -129,8 +139,8 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Seus amigos', style: AppTextStyles.titleLarge),
-              const Icon(Icons.person_add_outlined, color: AppColors.textMuted),
+              Text(isGlobal ? 'Top Global' : 'Seus amigos', style: AppTextStyles.titleLarge),
+              if (!isGlobal) const Icon(Icons.person_add_outlined, color: AppColors.textMuted),
             ],
           ),
           const SizedBox(height: 12),
