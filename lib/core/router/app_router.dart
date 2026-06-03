@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/content/presentation/pages/content_page.dart';
 import '../../features/content/presentation/pages/course_player_page.dart';
@@ -18,12 +20,15 @@ final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.signIn,
   redirect: (context, state) {
     final authState = context.read<AuthBloc>().state;
-    final isOnAuth = state.matchedLocation == AppRoutes.signIn;
+    final location = state.matchedLocation;
+    final isOnAuthPage = location == AppRoutes.signIn ||
+        location == AppRoutes.signUp ||
+        location == AppRoutes.forgotPassword;
 
-    if (authState is AuthAuthenticated && isOnAuth) {
+    if (authState is AuthAuthenticated && isOnAuthPage) {
       return AppRoutes.home;
     }
-    if (authState is! AuthAuthenticated && !isOnAuth) {
+    if (authState is! AuthAuthenticated && !isOnAuthPage) {
       return AppRoutes.signIn;
     }
     return null;
@@ -32,6 +37,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.signIn,
       builder: (context, state) => const SignInPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.signUp,
+      builder: (context, state) => const RegisterPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.forgotPassword,
+      builder: (context, state) => const ForgotPasswordPage(),
     ),
     ShellRoute(
       builder: (context, state, child) => AppShell(child: child),

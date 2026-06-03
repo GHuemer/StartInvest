@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 class RegisterButton extends StatelessWidget {
@@ -7,7 +9,7 @@ class RegisterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {},
+      onPressed: () => context.push(AppRoutes.signUp),
       child: const Text('Registrar-se', style: AppTextStyles.titleMedium),
     );
   }

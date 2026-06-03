@@ -9,6 +9,8 @@ import 'package:startinvest/features/auth/domain/repositories/auth_repository.da
 import 'package:startinvest/features/auth/domain/usecases/sign_in_email.dart';
 import 'package:startinvest/features/auth/domain/usecases/sign_in_google.dart';
 import 'package:startinvest/features/auth/domain/usecases/sign_out.dart';
+import 'package:startinvest/features/auth/domain/usecases/sign_up.dart';
+import 'package:startinvest/features/auth/domain/usecases/send_password_reset_email.dart';
 import 'package:startinvest/features/auth/presentation/bloc/auth_bloc.dart';
 
 class MockSignInWithGoogle extends Mock implements SignInWithGoogle {}
@@ -17,6 +19,10 @@ class MockSignInWithEmail extends Mock implements SignInWithEmail {}
 
 class MockSignOut extends Mock implements SignOut {}
 
+class MockSignUp extends Mock implements SignUp {}
+
+class MockSendPasswordResetEmail extends Mock implements SendPasswordResetEmail {}
+
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
@@ -24,6 +30,8 @@ void main() {
   late MockSignInWithGoogle mockSignInWithGoogle;
   late MockSignInWithEmail mockSignInWithEmail;
   late MockSignOut mockSignOut;
+  late MockSignUp mockSignUp;
+  late MockSendPasswordResetEmail mockSendPasswordResetEmail;
   late MockAuthRepository mockAuthRepository;
 
   final tUser = AppUser(id: '1', name: 'Test User', email: 'test@test.com');
@@ -34,6 +42,8 @@ void main() {
     mockSignInWithGoogle = MockSignInWithGoogle();
     mockSignInWithEmail = MockSignInWithEmail();
     mockSignOut = MockSignOut();
+    mockSignUp = MockSignUp();
+    mockSendPasswordResetEmail = MockSendPasswordResetEmail();
     mockAuthRepository = MockAuthRepository();
 
     when(() => mockAuthRepository.authStateChanges)
@@ -43,6 +53,8 @@ void main() {
       signInWithGoogle: mockSignInWithGoogle,
       signInWithEmail: mockSignInWithEmail,
       signOut: mockSignOut,
+      signUp: mockSignUp,
+      sendPasswordResetEmail: mockSendPasswordResetEmail,
       authRepository: mockAuthRepository,
     );
   });
