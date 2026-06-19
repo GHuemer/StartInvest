@@ -2,69 +2,86 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_back_button.dart';
+import '../../domain/entities/quiz_question.dart';
+import 'category_games_page.dart';
 
-class GamesPage extends StatelessWidget {
+class GamesPage extends StatefulWidget {
   const GamesPage({super.key});
+
+  @override
+  State<GamesPage> createState() => _GamesPageState();
+}
+
+class _GamesPageState extends State<GamesPage> {
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
-                child: Row(
-                  children: [
-                    const AppBackButton(),
-                    const Text('Jogos', style: AppTextStyles.headlineLarge),
-                    const Spacer(),
-                    CircleAvatar(radius: 18, backgroundColor: AppColors.backgroundCard, child: const Icon(Icons.person, size: 18, color: AppColors.textSecondary)),
-                  ],
+      backgroundColor: AppColors.backgroundDark,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: false,
+        leading: const AppBackButton(),
+        title: const Text('Jogos', style: AppTextStyles.headlineLarge),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            const Text('Busque nossos jogos', 
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 12),
+            TextField(
+              onChanged: (value) => setState(() => _searchQuery = value),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Ex: Quiz Renda Fixa',
+                hintStyle: const TextStyle(color: Colors.white54, fontSize: 14),
+                prefixIcon: const Icon(Icons.search, color: Colors.white54),
+                filled: true,
+                fillColor: AppColors.backgroundCard,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Ex: Quiz Renda Fixa',
-                    prefixIcon: Icon(Icons.search, color: AppColors.textMuted),
-                  ),
-                ),
+            const SizedBox(height: 32),
+            const Text('Jogue com base no risco', 
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 16),
+            _RiskCard(
+              title: 'Conservador',
+              subtitle: 'Baixo risco, retorno baixo',
+              icon: Icons.shield_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.conservative)),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
-                child: const Text('Seus jogos favoritos', style: AppTextStyles.headlineMedium),
+            _RiskCard(
+              title: 'Moderado',
+              subtitle: 'Equilíbrio entre risco e retorno',
+              icon: Icons.balance,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.moderate)),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  height: 80,
-                  decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(16)),
-                  child: const Center(child: Text('Quiz! • Duelo dos Investimentos', style: AppTextStyles.bodyMedium)),
-                ),
+            _RiskCard(
+              title: 'Agressivo',
+              subtitle: 'Risco alto, retorno potencialmente maior',
+              icon: Icons.rocket_launch_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.aggressive)),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
-                child: const Text('Jogue com base no risco', style: AppTextStyles.headlineMedium),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                _RiskCard(icon: Icons.shield_outlined, title: 'Conservador', subtitle: 'Baixo risco, retorno baixo', color: AppColors.primary),
-                _RiskCard(icon: Icons.balance, title: 'Moderado', subtitle: 'Equilíbrio entre risco e retorno', color: AppColors.accent),
-                _RiskCard(icon: Icons.rocket_launch_outlined, title: 'Agressivo', subtitle: 'Risco alto, retorno potencialmente maior', color: AppColors.accentOrange),
-              ]),
-            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -73,33 +90,48 @@ class GamesPage extends StatelessWidget {
 }
 
 class _RiskCard extends StatelessWidget {
-  const _RiskCard({required this.icon, required this.title, required this.subtitle, required this.color});
-  final IconData icon;
   final String title;
   final String subtitle;
-  final Color color;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _RiskCard({
+    required this.title, 
+    required this.subtitle, 
+    required this.icon, 
+    required this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(12)),
-        child: Row(
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: AppTextStyles.titleLarge),
-                  Text(subtitle, style: AppTextStyles.bodySmall),
-                ],
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.backgroundCard,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.cardBorder.withOpacity(0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white, size: 32),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const Icon(Icons.chevron_right, color: Colors.white54),
+            ],
+          ),
         ),
       ),
     );

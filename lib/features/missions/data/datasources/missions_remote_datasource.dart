@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class MissionsRemoteDataSource {
@@ -7,12 +9,37 @@ abstract class MissionsRemoteDataSource {
 
 @LazySingleton(as: MissionsRemoteDataSource)
 class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
-  MissionsRemoteDataSourceImpl();
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
+
+  MissionsRemoteDataSourceImpl({
+    FirebaseFirestore? firestore,
+    FirebaseAuth? auth,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _auth = auth ?? FirebaseAuth.instance;
 
   @override
   Future<List<Map<String, dynamic>>> getMissionsCatalog() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    
+    final snapshot = await _firestore.collection('missions_catalog').get();
+    if (snapshot.docs.isEmpty) {
+      // Se não houver nada no Firestore, podemos retornar um mock inicial ou vazio
+      return _getMockCatalog();
+    }
+    return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUserProgress() async {
+    final user = _auth.currentUser;
+    if (user == null) return {};
+
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    if (!doc.exists) return {};
+
+    return doc.data() ?? {};
+  }
+
+  List<Map<String, dynamic>> _getMockCatalog() {
     return [
       {
         'id': '1',
@@ -123,18 +150,5 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
         'requiredCourses': 0,
       },
     ];
-  }
-
-  @override
-  Future<Map<String, dynamic>> getUserProgress() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return {
-      'level': 3,
-      'completedCoursesCount': 6,
-      'balance': 850.0,
-      'assetTypesCount': 1,
-      'loginStreak': 2,
-      'completedMissionsIds': ['1', '3'],
-    };
   }
 }

@@ -10,8 +10,12 @@ import '../../features/content/presentation/pages/content_page.dart';
 import '../../features/content/presentation/pages/course_player_page.dart';
 import '../../features/games/presentation/pages/games_page.dart';
 import '../../features/ranking/presentation/pages/ranking_page.dart';
+import '../../features/ranking/presentation/bloc/ranking_cubit.dart';
 import '../../features/news/presentation/pages/news_page.dart';
 import '../../features/missions/presentation/pages/missions_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/profile/presentation/profile_cubit.dart';
+import '../di/injection.dart';
 import '../../features/news/domain/entities/news_entry.dart';
 import '../widgets/app_shell.dart';
 import 'app_routes.dart';
@@ -75,7 +79,10 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.ranking,
-          builder: (context, state) => const RankingPage(),
+          builder: (context, state) => BlocProvider(
+            create: (context) => getIt<RankingCubit>(),
+            child: const RankingPage(),
+          ),
         ),
         GoRoute(
           path: AppRoutes.news,
@@ -93,6 +100,13 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.missions,
           builder: (context, state) => const MissionsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => BlocProvider(
+            create: (context) => getIt<ProfileCubit>()..loadProfile(),
+            child: const ProfilePage(),
+          ),
         ),
       ],
     ),
