@@ -138,6 +138,12 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  AppUser? get currentUser {
+    final user = _auth.currentUser;
+    return user != null ? UserModel.fromFirebaseUser(user) : null;
+  }
+
   String _mapError(String code) => switch (code) {
         'user-not-found' => 'Usuário não encontrado',
         'wrong-password' => 'Senha incorreta',
