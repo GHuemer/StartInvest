@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 abstract class MissionsRemoteDataSource {
   Future<List<Map<String, dynamic>>> getMissionsCatalog();
   Future<Map<String, dynamic>> getUserProgress();
+  Future<bool> completeMission(String missionId, int points);
 }
 
 @LazySingleton(as: MissionsRemoteDataSource)
@@ -19,10 +20,31 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
         _auth = auth ?? FirebaseAuth.instance;
 
   @override
+  Future<bool> completeMission(String missionId, int points) async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+
+    final userDoc = _firestore.collection('users').doc(user.uid);
+    
+    final doc = await userDoc.get();
+    final completedIds = List<String>.from(doc.data()?['completedMissionsIds'] ?? []);
+
+    if (completedIds.contains(missionId)) {
+      return false;
+    }
+
+    await userDoc.update({
+      'xp': FieldValue.increment(points),
+      'completedMissionsIds': FieldValue.arrayUnion([missionId]),
+    });
+
+    return true;
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> getMissionsCatalog() async {
     final snapshot = await _firestore.collection('missions_catalog').get();
     if (snapshot.docs.isEmpty) {
-      // Se não houver nada no Firestore, podemos retornar um mock inicial ou vazio
       return _getMockCatalog();
     }
     return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
