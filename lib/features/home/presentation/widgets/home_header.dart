@@ -22,26 +22,39 @@ class HomeHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Start Invest',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                fontFamily: AppTextStyles.fontFamily,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Start Invest',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: AppTextStyles.fontFamily,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Bem-vindo de volta,', style: AppTextStyles.greeting),
-            const SizedBox(height: 4),
-            Text('Olá, $firstName!', style: AppTextStyles.userName),
-            const SizedBox(height: 4),
-            Text(subtitle, style: AppTextStyles.pilarDescription),
-          ],
+              const SizedBox(height: 16),
+              const Text('Bem-vindo de volta,', style: AppTextStyles.greeting),
+              const SizedBox(height: 4),
+              Text(
+                'Olá, $firstName!',
+                style: AppTextStyles.userName,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: AppTextStyles.pilarDescription,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 16),
         Row(
           children: [
             IconButton(

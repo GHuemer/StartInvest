@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../profile/domain/entities/user_profile.dart';
-import '../../../profile/domain/repositories/profile_repository.dart';
-import '../../../profile/domain/entities/league_info.dart';
 import '../../../profile/presentation/profile_cubit.dart';
 import '../../domain/entities/quiz_question.dart';
 import '../../data/models/quiz_data.dart';
 import '../../../../core/di/injection.dart';
 import 'package:flutter/services.dart';
+import '../../../missions/data/datasources/missions_remote_datasource.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -26,6 +24,7 @@ class _QuizPageState extends State<QuizPage> {
   int? _selectedAnswerIndex;
   bool _isAnswered = false;
   bool _isFinished = false;
+  bool _alreadyEarnedPoints = false;
 
   void _answerQuestion(int index) {
     if (_isAnswered) return;
@@ -82,49 +81,28 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> _finishQuiz() async {
-    setState(() => _isFinished = true);
-    
     final xpGained = _calculateXP();
     final authState = context.read<AuthBloc>().state;
     
     if (authState is AuthAuthenticated) {
-      final repository = getIt<ProfileRepository>();
-      final profileResult = await repository.getUserProfile(authState.user.id);
+      final missionsDataSource = getIt<MissionsRemoteDataSource>();
+      final quizId = 'quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}';
       
-      profileResult.fold(
-        (failure) => _showErrorSnackBar('Erro ao carregar perfil: ${failure.message}'),
-        (profile) async {
-          final newXp = (profile.xp + xpGained).clamp(0, 999999);
-          final newLeague = LeagueInfo.getLeagueByXp(newXp).name;
-          
-          final updatedProfile = profile.copyWith(
-            xp: newXp,
-            league: newLeague,
-          );
-          
-          final updateResult = await repository.updateUserProfile(updatedProfile);
-          updateResult.fold(
-            (failure) => _showErrorSnackBar('Erro ao salvar progresso: ${failure.message}'),
-            (_) {
-              if (mounted) {
-                context.read<ProfileCubit>().loadProfile(force: true);
-              }
-            },
-          );
-        },
-      );
-    }
-  }
+      final success = await missionsDataSource.completeMission(quizId, xpGained);
+      
+      setState(() {
+        _isFinished = true;
+        _alreadyEarnedPoints = !success && xpGained > 0;
+      });
 
-  void _showErrorSnackBar(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.textNegative,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+      if (success) {
+        if (mounted) {
+          context.read<ProfileCubit>().loadProfile(force: true);
+        }
+      }
+    } else {
+      setState(() => _isFinished = true);
+    }
   }
 
   @override
@@ -318,14 +296,31 @@ class _QuizPageState extends State<QuizPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
-                  color: xpGained >= 0 ? AppColors.primary.withOpacity(0.2) : AppColors.textNegative.withOpacity(0.2),
+                  color: _alreadyEarnedPoints 
+                      ? Colors.orange.withOpacity(0.2)
+                      : (xpGained >= 0 ? AppColors.primary.withOpacity(0.2) : AppColors.textNegative.withOpacity(0.2)),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
-                  xpGained >= 0 ? '+ $xpGained pontos' : '$xpGained pontos',
-                  style: AppTextStyles.headlineMedium.copyWith(
-                    color: xpGained >= 0 ? AppColors.primary : AppColors.textNegative,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      _alreadyEarnedPoints 
+                          ? '0 pontos' 
+                          : (xpGained >= 0 ? '+ $xpGained pontos' : '$xpGained pontos'),
+                      style: AppTextStyles.headlineMedium.copyWith(
+                        color: _alreadyEarnedPoints ? Colors.orange : (xpGained >= 0 ? AppColors.primary : AppColors.textNegative),
+                      ),
+                    ),
+                    if (_alreadyEarnedPoints)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'Você já resgatou os pontos deste quiz!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.orange, fontSize: 14),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(height: 48),
