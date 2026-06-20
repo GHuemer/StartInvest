@@ -9,6 +9,16 @@ class SignUp {
   const SignUp(this._repository);
   final AuthRepository _repository;
 
-  Future<Either<Failure, AppUser>> call(String name, String email, String password) =>
-      _repository.signUp(name, email, password);
+  Future<Either<Failure, AppUser>> call({
+    required String username,
+    required String name,
+    required String email,
+    required String password,
+  }) =>
+      _repository.signUp(
+        username: username,
+        name: name,
+        email: email,
+        password: password,
+      );
 }

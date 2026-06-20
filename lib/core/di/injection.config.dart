@@ -43,6 +43,8 @@ import '../../features/profile/data/repositories/profile_repository_impl.dart'
     as _i334;
 import '../../features/profile/domain/repositories/profile_repository.dart'
     as _i894;
+import '../../features/profile/presentation/friend_requests_cubit.dart'
+    as _i531;
 import '../../features/profile/presentation/profile_cubit.dart' as _i666;
 import '../../features/ranking/presentation/bloc/ranking_cubit.dart' as _i448;
 import 'register_module.dart' as _i291;
@@ -88,6 +90,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i258.NewsRepository>(
       () => _i164.NewsRepositoryImpl(gh<_i173.NewsRemoteDataSource>()),
     );
+    gh.factory<_i531.FriendRequestsCubit>(
+      () => _i531.FriendRequestsCubit(
+        gh<_i894.ProfileRepository>(),
+        gh<_i787.AuthRepository>(),
+      ),
+    );
+    gh.factory<_i448.RankingCubit>(
+      () => _i448.RankingCubit(
+        gh<_i894.ProfileRepository>(),
+        gh<_i787.AuthRepository>(),
+      ),
+    );
     gh.factory<_i666.ProfileCubit>(
       () => _i666.ProfileCubit(
         gh<_i787.AuthRepository>(),
@@ -117,12 +131,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i103.NewsCubit>(
       () => _i103.NewsCubit(gh<_i258.NewsRepository>()),
-    );
-    gh.factory<_i448.RankingCubit>(
-      () => _i448.RankingCubit(
-        gh<_i894.ProfileRepository>(),
-        gh<_i797.AuthBloc>(),
-      ),
     );
     return this;
   }

@@ -11,6 +11,10 @@ class AuthStarted extends AuthEvent {
   const AuthStarted();
 }
 
+class AuthRefreshRequested extends AuthEvent {
+  const AuthRefreshRequested();
+}
+
 class AuthUserChanged extends AuthEvent {
   const AuthUserChanged(this.user);
   final AppUser? user;
@@ -38,16 +42,18 @@ class AuthSignOutRequested extends AuthEvent {
 
 class AuthSignUpRequested extends AuthEvent {
   const AuthSignUpRequested({
+    required this.username,
     required this.name,
     required this.email,
     required this.password,
   });
+  final String username;
   final String name;
   final String email;
   final String password;
 
   @override
-  List<Object> get props => [name, email, password];
+  List<Object> get props => [username, name, email, password];
 }
 
 class AuthForgotPasswordRequested extends AuthEvent {

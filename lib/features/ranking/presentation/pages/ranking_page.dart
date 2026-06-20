@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_back_button.dart';
@@ -34,15 +35,16 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
   }
 
   void _showAddFriendDialog() {
-    final TextEditingController controller = TextEditingController();
+    final controller = TextEditingController();
     bool isLoading = false;
+    final rankingCubit = context.read<RankingCubit>();
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
+      builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
           child: Stack(
             alignment: Alignment.topRight,
             children: [
@@ -81,12 +83,13 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                         ),
                         prefixIcon: const Icon(Icons.alternate_email, color: AppColors.primary),
                       ),
+                      onChanged: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: isLoading
+                        onPressed: (isLoading || controller.text.trim().isEmpty)
                             ? null
                             : () async {
                                 final username = controller.text.trim();
@@ -94,31 +97,35 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
 
                                 setState(() => isLoading = true);
 
-                                final result = await context.read<RankingCubit>().addFriendByUsername(username);
+                                try {
+                                  final result = await rankingCubit.sendFriendRequestByUsername(username);
 
-                                if (!context.mounted) return;
+                                  if (!context.mounted) return;
 
-                                result.fold(
-                                  (error) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(error),
-                                        backgroundColor: AppColors.textNegative,
-                                      ),
-                                    );
-                                  },
-                                  (_) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Amigo adicionado com sucesso!'),
-                                        backgroundColor: AppColors.primary,
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  },
-                                );
-
-                                setState(() => isLoading = false);
+                                  result.fold(
+                                    (error) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(error),
+                                          backgroundColor: AppColors.textNegative,
+                                        ),
+                                      );
+                                    },
+                                    (_) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Pedido de amizade enviado!'),
+                                          backgroundColor: AppColors.primary,
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                } finally {
+                                  if (context.mounted) {
+                                    setState(() => isLoading = false);
+                                  }
+                                }
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -134,7 +141,6 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                   ],
                 ),
               ),
-              // Botão X Vermelho
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
@@ -150,7 +156,11 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
           ),
         ),
       ),
-    );
+    ).then((_) {
+      if (mounted) {
+        context.read<RankingCubit>().loadRankings();
+      }
+    });
   }
 
   @override
@@ -175,8 +185,8 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                         radius: 18,
                         backgroundColor: AppColors.backgroundCard,
                         child: ClipOval(
-                          child: user?.photoUrl != null
-                              ? Image.network(user!.photoUrl!, fit: BoxFit.cover)
+                          child: user?.photoUrl != null && user!.photoUrl!.isNotEmpty
+                              ? Image.network(user.photoUrl!, fit: BoxFit.cover)
                               : const Icon(Icons.person, size: 18, color: AppColors.textSecondary),
                         ),
                       ),
@@ -202,18 +212,35 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                   child: BlocBuilder<RankingCubit, RankingState>(
                     builder: (context, state) {
                       if (state is RankingLoading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return _buildShimmerLoading();
                       }
                       if (state is RankingError) {
-                        return Center(child: Text(state.message, style: const TextStyle(color: Colors.white)));
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(state.message, style: const TextStyle(color: Colors.white)),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () => context.read<RankingCubit>().loadRankings(),
+                                child: const Text('Tentar Novamente'),
+                              ),
+                            ],
+                          ),
+                        );
                       }
                       if (state is RankingLoaded) {
-                        return TabBarView(
-                          controller: _tabController,
-                          children: [
-                            _buildRankingTab(isGlobal: false, user: user, ranking: state.friendsRanking),
-                            _buildRankingTab(isGlobal: true, user: user, ranking: state.globalRanking),
-                          ],
+                        return RefreshIndicator(
+                          onRefresh: () => context.read<RankingCubit>().loadRankings(),
+                          color: AppColors.primary,
+                          backgroundColor: AppColors.backgroundCard,
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              _buildRankingTab(isGlobal: false, user: user, ranking: state.friendsRanking),
+                              _buildRankingTab(isGlobal: true, user: user, ranking: state.globalRanking),
+                            ],
+                          ),
                         );
                       }
                       return const SizedBox();
@@ -232,12 +259,12 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
     final userIndex = ranking.indexWhere((p) => p.id == user?.id);
     final userInRanking = userIndex != -1 ? ranking[userIndex] : null;
     
-    // Se não estiver no ranking (ex: fora do top 20), usamos os dados do Auth
     final displayXp = userInRanking?.xp ?? user?.xp ?? 0;
     final displayPosition = userIndex != -1 ? '#${userIndex + 1}' : (isGlobal ? '20+' : '#1');
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         _buildMyPosition(user: user, xp: displayXp, position: displayPosition),
         const SizedBox(height: 16),
@@ -363,7 +390,6 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
   Widget _buildLeague({AppUser? user, required int xp}) {
     final league = LeagueInfo.getLeagueByXp(xp);
     
-    // Calcula o progresso para a próxima liga
     final currentLeagueIndex = LeagueInfo.leagues.indexOf(league);
     int nextMilestone = xp;
     double progress = 1.0;
@@ -415,6 +441,35 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        _buildShimmerBox(height: 100, borderRadius: 16),
+        const SizedBox(height: 16),
+        _buildShimmerBox(height: 350, borderRadius: 16),
+        const SizedBox(height: 16),
+        _buildShimmerBox(height: 120, borderRadius: 16),
+      ],
+    );
+  }
+
+  Widget _buildShimmerBox({required double height, double borderRadius = 12}) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.backgroundCard,
+      highlightColor: AppColors.backgroundCardLight,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 0),
+        height: height,
+        decoration: BoxDecoration(
+          color: AppColors.backgroundCard,
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
       ),
     );
   }

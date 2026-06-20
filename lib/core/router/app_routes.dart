@@ -17,4 +17,5 @@ class AppRoutes {
   static const String quiz = '/games/quiz/:id';
   static const String portfolio = '/games/portfolio/:id';
   static const String profile = '/profile';
+  static const String completeProfile = '/complete-profile';
 }

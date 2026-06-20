@@ -31,6 +31,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       final model = UserProfileModel(
         id: profile.id,
+        username: profile.username,
         name: profile.name,
         email: profile.email,
         photoUrl: profile.photoUrl,
@@ -75,14 +76,17 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, List<UserProfile>>> getFriendsRanking(List<String> friendIds) async {
     try {
-      if (friendIds.isEmpty) return const Right([]);
+      final cleanIds = friendIds.where((id) => id.isNotEmpty).take(30).toList();
+      
+      if (cleanIds.isEmpty) return const Right([]);
 
-      final query = await _firestore
-          .collection('users')
-          .where(FieldPath.documentId, whereIn: friendIds.take(30).toList())
-          .get();
+      // Busca os documentos individualmente para garantir que todos sejam encontrados
+      final snapshots = await Future.wait(
+        cleanIds.map((id) => _firestore.collection('users').doc(id).get())
+      );
 
-      final ranking = query.docs
+      final ranking = snapshots
+          .where((doc) => doc.exists)
           .map((doc) => UserProfileModel.fromFirestore(doc))
           .toList();
 
@@ -90,18 +94,26 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
       return Right(ranking);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure('Erro ao carregar ranking: ${e.toString()}'));
     }
   }
 
   @override
   Future<Either<Failure, UserProfile?>> searchUserByName(String name) async {
     try {
-      final query = await _firestore
+      var query = await _firestore
           .collection('users')
-          .where('name', isEqualTo: name)
+          .where('username', isEqualTo: name.toLowerCase().trim())
           .limit(1)
           .get();
+
+      if (query.docs.isEmpty) {
+        query = await _firestore
+            .collection('users')
+            .where('name', isEqualTo: name)
+            .limit(1)
+            .get();
+      }
 
       if (query.docs.isEmpty) return const Right(null);
       
@@ -117,6 +129,88 @@ class ProfileRepositoryImpl implements ProfileRepository {
       await _firestore.collection('users').doc(userId).update({
         'friendIds': FieldValue.arrayUnion([friendId]),
       });
+      await _firestore.collection('users').doc(friendId).update({
+        'friendIds': FieldValue.arrayUnion([userId]),
+      });
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendFriendRequest(String fromId, String toId) async {
+    try {
+      final fromDoc = await _firestore.collection('users').doc(fromId).get();
+      if (!fromDoc.exists) {
+        return Left(ServerFailure('Seu perfil não foi encontrado. Tente completar seu cadastro.'));
+      }
+      
+      final fromData = fromDoc.data()!;
+      
+      // Verifica se já existe uma solicitação pendente
+      final existing = await _firestore.collection('friend_requests')
+          .where('fromId', isEqualTo: fromId)
+          .where('toId', isEqualTo: toId)
+          .where('status', isEqualTo: 'pending')
+          .limit(1)
+          .get();
+          
+      if (existing.docs.isNotEmpty) {
+        return Left(ServerFailure('Você já enviou uma solicitação para este usuário.'));
+      }
+
+      await _firestore.collection('friend_requests').add({
+        'fromId': fromId,
+        'toId': toId,
+        'fromName': fromData['name'] ?? 'Usuário',
+        'fromUsername': fromData['username'] ?? '',
+        'status': 'pending',
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Erro ao enviar solicitação: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> watchFriendRequests(String userId) {
+    return _firestore
+        .collection('friend_requests')
+        .where('toId', isEqualTo: userId)
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+          final data = doc.data();
+          return {
+            'id': doc.id,
+            'fromId': data['fromId'],
+            'fromUser': {
+              'name': data['fromName'],
+              'username': data['fromUsername'],
+            },
+            'timestamp': data['timestamp'],
+          };
+        }).toList());
+  }
+
+  @override
+  Future<Either<Failure, void>> respondToFriendRequest(String requestId, bool accept) async {
+    try {
+      final doc = await _firestore.collection('friend_requests').doc(requestId).get();
+      if (!doc.exists) return Left(ServerFailure('Solicitação não encontrada'));
+      
+      final data = doc.data()!;
+      final fromId = data['fromId'];
+      final toId = data['toId'];
+
+      if (accept) {
+        await addFriend(fromId, toId);
+        await _firestore.collection('friend_requests').doc(requestId).update({'status': 'accepted'});
+      } else {
+        await _firestore.collection('friend_requests').doc(requestId).update({'status': 'declined'});
+      }
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

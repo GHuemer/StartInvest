@@ -34,17 +34,17 @@ class AuthRepositoryImpl implements AuthRepository {
                 .collection('users')
                 .doc(firebaseUser.uid)
                 .get();
-            if (doc.exists) return UserModel.fromMap(doc.data()!, doc.id);
-            // Primeira vez (ex: Google Sign-In) — cria o documento
-            final newUser = UserModel.fromFirebaseUser(firebaseUser);
-            await _firestore
-                .collection('users')
-                .doc(firebaseUser.uid)
-                .set(newUser.toMap());
-            return newUser;
+            if (doc.exists) {
+              return UserModel.fromMap(doc.data()!, doc.id);
+            }
+            
+            // Se o documento não existe no Firestore, retornamos um usuário sem username.
+            // NUNCA marcamos como isNewUser: true através do stream global, para evitar 
+            // redirecionamentos indesejados ao apenas "abrir o app".
+            // O isNewUser: true virá apenas do retorno direto das funções de Sign In.
+            return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
           } catch (_) {
-            // Se Firestore falhar, usa os dados do Firebase Auth como fallback
-            return UserModel.fromFirebaseUser(firebaseUser);
+            return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
           }
         },
       );
@@ -59,8 +59,14 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      // authStateChanges cuida de buscar/criar o documento no Firestore
-      return Right(UserModel.fromFirebaseUser(cred.user!));
+      
+      final doc = await _firestore.collection('users').doc(cred.user!.uid).get();
+      if (doc.exists) {
+        return Right(UserModel.fromMap(doc.data()!, doc.id));
+      }
+      // Se não existe documento para um login por e-mail, tratamos como usuário existente
+      // para evitar redirecionamentos indesejados para completar perfil.
+      return Right(UserModel.fromFirebaseUser(cred.user!, isNewUser: false));
     } on FirebaseAuthException catch (e) {
       return Left(AuthFailure(_mapError(e.code)));
     }
@@ -72,11 +78,9 @@ class AuthRepositoryImpl implements AuthRepository {
       final UserCredential cred;
 
       if (kIsWeb) {
-        // Web: usa popup diretamente no Firebase Auth
         final provider = GoogleAuthProvider();
         cred = await _auth.signInWithPopup(provider);
       } else {
-        // Android/iOS: usa o pacote google_sign_in
         final googleUser = await _googleSignIn.signIn();
         if (googleUser == null) {
           return const Left(AuthFailure('Login cancelado'));
@@ -89,8 +93,14 @@ class AuthRepositoryImpl implements AuthRepository {
         cred = await _auth.signInWithCredential(credential);
       }
 
-      // Retorna o usuário do Firebase Auth — o authStateChanges cuida do Firestore
-      return Right(UserModel.fromFirebaseUser(cred.user!));
+      final doc = await _firestore.collection('users').doc(cred.user!.uid).get();
+      if (doc.exists) {
+        return Right(UserModel.fromMap(doc.data()!, doc.id));
+      }
+
+      // Se não existe documento, retornamos o usuário sem username marcando como NOVO
+      // A UI deve redirecionar para uma tela de "Escolha seu username"
+      return Right(UserModel.fromFirebaseUser(cred.user!, isNewUser: true));
     } on FirebaseAuthException catch (e) {
       return Left(AuthFailure(_mapError(e.code)));
     } catch (e) {
@@ -99,22 +109,84 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AppUser>> signUp(
-    String name,
-    String email,
-    String password,
-  ) async {
+  Future<Either<Failure, AppUser>> signUp({
+    required String username,
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
+      // 1. Verificar se o username já existe
+      final isAvailable = await isUsernameAvailable(username);
+      if (!isAvailable) {
+        return const Left(AuthFailure('Este nome de usuário já está em uso'));
+      }
+
+      // 2. Criar no Firebase Auth
       final cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
       await cred.user!.updateDisplayName(name);
-      final user = UserModel(id: cred.user!.uid, name: name, email: email);
-      await _firestore.collection('users').doc(user.id).set(user.toMap());
+
+      // 3. Salvar no Firestore
+      final user = UserModel(
+        id: cred.user!.uid,
+        username: username.toLowerCase().trim(),
+        name: name,
+        email: email,
+      );
+      
+      final userMap = user.toMap();
+      userMap['createdAt'] = FieldValue.serverTimestamp();
+      await _firestore.collection('users').doc(user.id).set(userMap);
+      
       return Right(user);
     } on FirebaseAuthException catch (e) {
       return Left(AuthFailure(_mapError(e.code)));
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<bool> isUsernameAvailable(String username) async {
+    final query = await _firestore
+        .collection('users')
+        .where('username', isEqualTo: username.toLowerCase().trim())
+        .limit(1)
+        .get();
+    return query.docs.isEmpty;
+  }
+
+  @override
+  Future<Either<Failure, void>> updateUsername(String userId, String username) async {
+    try {
+      final isAvailable = await isUsernameAvailable(username);
+      if (!isAvailable) {
+        return const Left(AuthFailure('Este nome de usuário já está em uso'));
+      }
+
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (!doc.exists) {
+        final firebaseUser = _auth.currentUser;
+        if (firebaseUser == null) return const Left(AuthFailure('Usuário não autenticado'));
+        
+        // Se o documento não existe (caso de login social novo), criamos ele com os dados básicos e o novo username
+        final model = UserModel.fromFirebaseUser(firebaseUser, username: username.toLowerCase().trim());
+        final userMap = model.toMap();
+        userMap['createdAt'] = FieldValue.serverTimestamp();
+        await _firestore.collection('users').doc(userId).set(userMap);
+      } else {
+        // Se já existe, apenas atualizamos o username
+        await _firestore.collection('users').doc(userId).update({
+          'username': username.toLowerCase().trim(),
+        });
+      }
+      return const Right(null);
+    } catch (e) {
+      return Left(AuthFailure('Erro ao atualizar nome de usuário'));
     }
   }
 
@@ -141,7 +213,25 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   AppUser? get currentUser {
     final user = _auth.currentUser;
-    return user != null ? UserModel.fromFirebaseUser(user) : null;
+    // Nota: Aqui não temos acesso direto ao Firestore de forma síncrona
+    // O ideal é usar o authStateChanges para pegar o usuário completo
+    return user != null ? UserModel.fromFirebaseUser(user, isNewUser: false) : null;
+  }
+
+  @override
+  Future<AppUser?> getFullCurrentUser() async {
+    final firebaseUser = _auth.currentUser;
+    if (firebaseUser == null) return null;
+
+    try {
+      final doc = await _firestore.collection('users').doc(firebaseUser.uid).get();
+      if (doc.exists) {
+        return UserModel.fromMap(doc.data()!, doc.id);
+      }
+      return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
+    } catch (_) {
+      return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
+    }
   }
 
   String _mapError(String code) => switch (code) {

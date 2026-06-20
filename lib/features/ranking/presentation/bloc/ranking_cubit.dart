@@ -3,91 +3,79 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../profile/domain/repositories/profile_repository.dart';
 import '../../../profile/domain/entities/user_profile.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/domain/repositories/auth_repository.dart';
 import 'ranking_state.dart';
 
 @injectable
 class RankingCubit extends Cubit<RankingState> {
   final ProfileRepository _profileRepository;
-  final AuthBloc _authBloc;
+  final AuthRepository _authRepository;
 
-  RankingCubit(this._profileRepository, this._authBloc) : super(const RankingInitial());
+  RankingCubit(this._profileRepository, this._authRepository) : super(const RankingInitial());
 
   Future<void> loadRankings() async {
     emit(const RankingLoading());
 
-    // Obter IDs de amigos do perfil do usuário atual
-    final authState = _authBloc.state;
-    List<String> friendIds = [];
-    UserProfile? currentUserProfile;
+    try {
+      final user = _authRepository.currentUser;
+      if (user == null) {
+        emit(const RankingError('Usuário não autenticado'));
+        return;
+      }
 
-    if (authState is AuthAuthenticated) {
-      final userResult = await _profileRepository.getUserProfile(authState.user.id);
-      userResult.fold(
-        (_) => null,
-        (profile) {
-          currentUserProfile = profile;
-          friendIds = List<String>.from(profile.friendIds);
-        },
-      );
+      // 1. Buscar Perfil Atualizado do Usuário
+      final userResult = await _profileRepository.getUserProfile(user.id);
+      final profile = userResult.fold((l) => throw l, (r) => r);
+      
+      // Garante que o ID do usuário atual está na lista para o ranking de amigos
+      final Set<String> idsToFetch = Set.from(profile.friendIds);
+      idsToFetch.add(profile.id);
+
+      // 2. Buscar Rankings em paralelo
+      final results = await Future.wait([
+        _profileRepository.getRanking(),
+        _profileRepository.getFriendsRanking(idsToFetch.toList()),
+      ]);
+
+      final globalRanking = results[0].fold((l) => throw l, (r) => r as List<UserProfile>);
+      final friendsRanking = results[1].fold((l) => throw l, (r) => r as List<UserProfile>);
+
+      emit(RankingLoaded(
+        globalRanking: globalRanking,
+        friendsRanking: friendsRanking,
+      ));
+    } catch (e) {
+      emit(RankingError(e.toString()));
     }
-
-    final globalResult = await _profileRepository.getRanking();
-    
-    // Adicionar o próprio usuário na lista de IDs para o ranking de amigos
-    if (authState is AuthAuthenticated && !friendIds.contains(authState.user.id)) {
-      friendIds.add(authState.user.id);
-    }
-
-    final friendsResult = await _profileRepository.getFriendsRanking(friendIds);
-
-    globalResult.fold(
-      (failure) => emit(RankingError(failure.toString())),
-      (globalRanking) {
-        friendsResult.fold(
-          (failure) => emit(RankingError(failure.toString())),
-          (friendsRanking) => emit(RankingLoaded(
-            globalRanking: globalRanking,
-            friendsRanking: friendsRanking,
-          )),
-        );
-      },
-    );
   }
 
-  Future<Either<String, void>> addFriendByUsername(String username) async {
-    final authState = _authBloc.state;
-    if (authState is! AuthAuthenticated) return const Left('Usuário não autenticado');
+  Future<Either<String, void>> sendFriendRequestByUsername(String username) async {
+    try {
+      final user = _authRepository.currentUser;
+      if (user == null) return const Left('Usuário não autenticado');
 
-    final searchResult = await _profileRepository.searchUserByName(username);
-    
-    return searchResult.fold(
-      (failure) => Left(failure.toString()),
-      (friendProfile) async {
-        if (friendProfile == null) return const Left('Usuário não encontrado');
-        if (friendProfile.id == authState.user.id) {
-          return const Left('Você não pode adicionar a si mesmo');
-        }
-        
-        // Verifica se já é amigo
-        final userResult = await _profileRepository.getUserProfile(authState.user.id);
-        final alreadyFriend = userResult.fold(
-          (_) => false,
-          (profile) => profile.friendIds.contains(friendProfile.id),
-        );
+      // 1. Buscar usuário pelo username
+      final searchResult = await _profileRepository.searchUserByName(username);
+      final friendProfile = searchResult.fold((l) => throw l, (r) => r);
 
-        if (alreadyFriend) return const Left('Este usuário já é seu amigo');
+      if (friendProfile == null) return const Left('Usuário não encontrado');
+      if (friendProfile.id == user.id) {
+        return const Left('Você não pode adicionar a si mesmo');
+      }
 
-        final addResult = await _profileRepository.addFriend(authState.user.id, friendProfile.id);
-        
-        return addResult.fold(
-          (failure) => Left(failure.toString()),
-          (_) async {
-            await loadRankings(); // Atualiza a lista após adicionar
-            return const Right(null);
-          },
-        );
-      },
-    );
+      // 2. Verificar se já são amigos
+      final userResult = await _profileRepository.getUserProfile(user.id);
+      final currentUserProfile = userResult.fold((l) => throw l, (r) => r);
+      
+      if (currentUserProfile.friendIds.contains(friendProfile.id)) {
+        return const Left('Este usuário já é seu amigo');
+      }
+
+      // 3. Enviar solicitação
+      final requestResult = await _profileRepository.sendFriendRequest(user.id, friendProfile.id);
+      return requestResult.leftMap((f) => f.toString());
+    } catch (e) {
+      return Left(e.toString());
+    }
   }
 }
