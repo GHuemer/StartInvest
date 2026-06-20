@@ -5,6 +5,7 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/auth/presentation/pages/complete_profile_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/content/presentation/pages/content_page.dart';
 import '../../features/content/presentation/pages/course_player_page.dart';
@@ -25,16 +26,30 @@ final GoRouter appRouter = GoRouter(
   redirect: (context, state) {
     final authState = context.read<AuthBloc>().state;
     final location = state.matchedLocation;
-    final isOnAuthPage = location == AppRoutes.signIn ||
+    
+    final isAuthPage = location == AppRoutes.signIn ||
         location == AppRoutes.signUp ||
         location == AppRoutes.forgotPassword;
 
-    if (authState is AuthAuthenticated && isOnAuthPage) {
-      return AppRoutes.home;
+    if (authState is AuthAuthenticated) {
+      // Se autenticado, verifica se tem username. 
+      // Se não tiver, obriga a completar perfil (exceto se já estiver lá)
+      final hasNoUsername = authState.user.username.isEmpty;
+      
+      if (hasNoUsername && location != AppRoutes.completeProfile) {
+        return AppRoutes.completeProfile;
+      }
+      
+      // Se já tem username e está tentando ir pra auth ou completar perfil, vai pra home
+      if (!hasNoUsername && (isAuthPage || location == AppRoutes.completeProfile)) {
+        return AppRoutes.home;
+      }
     }
-    if (authState is! AuthAuthenticated && !isOnAuthPage) {
+
+    if (authState is! AuthAuthenticated && !isAuthPage) {
       return AppRoutes.signIn;
     }
+    
     return null;
   },
   routes: [
@@ -49,6 +64,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.forgotPassword,
       builder: (context, state) => const ForgotPasswordPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.completeProfile,
+      builder: (context, state) => const CompleteProfilePage(),
     ),
     ShellRoute(
       builder: (context, state, child) => AppShell(child: child),
@@ -66,7 +85,7 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) => const ContentPage(),
           routes: [
             GoRoute(
-              path: 'course', // resultará em /content/course
+              path: 'course',
               builder: (context, state) {
                 final extra = state.extra as Map<String, dynamic>?;
                 return CoursePlayerPage(

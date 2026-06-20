@@ -9,4 +9,9 @@ abstract class ProfileRepository {
   Future<Either<Failure, List<UserProfile>>> getFriendsRanking(List<String> friendIds);
   Future<Either<Failure, UserProfile?>> searchUserByName(String name);
   Future<Either<Failure, void>> addFriend(String userId, String friendId);
+  
+  // Novos métodos para o sistema de solicitações
+  Future<Either<Failure, void>> sendFriendRequest(String fromId, String toId);
+  Stream<List<Map<String, dynamic>>> watchFriendRequests(String userId);
+  Future<Either<Failure, void>> respondToFriendRequest(String requestId, bool accept);
 }

@@ -4,6 +4,7 @@ import '../../domain/entities/user_profile.dart';
 class UserProfileModel extends UserProfile {
   const UserProfileModel({
     required super.id,
+    required super.username,
     required super.name,
     required super.email,
     super.photoUrl,
@@ -21,9 +22,26 @@ class UserProfileModel extends UserProfile {
   });
 
   factory UserProfileModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    
+    String parsedMemberSince = 'junho de 2026'; // Fallback para usuários antigos
+    if (data['createdAt'] is Timestamp) {
+      final date = (data['createdAt'] as Timestamp).toDate();
+      const months = [
+        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+      ];
+      parsedMemberSince = '${months[date.month - 1]} de ${date.year}';
+    } else if (data['memberSince'] != null && data['memberSince'].toString().isNotEmpty) {
+      // Ignoramos a string antiga que foi injetada no banco por engano antes da atualização
+      if (data['memberSince'] != 'novembro de 2025') {
+        parsedMemberSince = data['memberSince'];
+      }
+    }
+
     return UserProfileModel(
       id: doc.id,
+      username: data['username'] ?? '',
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       photoUrl: data['photoUrl'],
@@ -37,12 +55,13 @@ class UserProfileModel extends UserProfile {
       loginStreak: data['loginStreak'] ?? 0,
       completedMissionsIds: List<String>.from(data['completedMissionsIds'] ?? []),
       friendIds: List<String>.from(data['friendIds'] ?? []),
-      memberSince: data['memberSince'] ?? 'novembro de 2025', // Should probably be a timestamp in production
+      memberSince: parsedMemberSince,
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
+      'username': username,
       'name': name,
       'email': email,
       'photoUrl': photoUrl,

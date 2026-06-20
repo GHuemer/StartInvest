@@ -6,6 +6,7 @@ import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/profile/presentation/friend_requests_cubit.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -20,8 +21,15 @@ class StartInvestApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<AuthBloc>()..add(const AuthStarted()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => getIt<AuthBloc>()..add(const AuthStarted()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<FriendRequestsCubit>(),
+        ),
+      ],
       child: MaterialApp.router(
         title: 'StartInvest',
         theme: AppTheme.dark,

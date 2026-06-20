@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,7 +19,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _nicknameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -29,9 +31,12 @@ class _RegisterPageState extends State<RegisterPage> {
     r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
   );
 
+  static final _usernameRegex = RegExp(r"^[a-zA-Z0-9._]+$");
+
   @override
   void dispose() {
-    _nameController.dispose();
+    _usernameController.dispose();
+    _nicknameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -42,7 +47,8 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
             AuthSignUpRequested(
-              name: _nameController.text.trim(),
+              username: _usernameController.text.trim().toLowerCase(),
+              name: _nicknameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text,
             ),
@@ -84,7 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const Text('Criar conta', style: AppTextStyles.headlineLarge),
                         const SizedBox(height: 8),
                         Text(
-                          'Preencha os dados abaixo para começar',
+                          'Escolha seu nome de usuário e apelido',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -93,21 +99,54 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 28),
+                  // CAMPO: Nome de Usuário (Username)
                   TextFormField(
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    textCapitalization: TextCapitalization.words,
+                    controller: _usernameController,
+                    keyboardType: TextInputType.text,
+                    autocorrect: false,
+                    textCapitalization: TextCapitalization.none,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
+                    ],
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: AppTextStyles.bodyLarge,
-                    decoration: const InputDecoration(hintText: 'Nome completo'),
+                    decoration: const InputDecoration(
+                      hintText: 'Nome de usuário (ex: joao_invest)',
+                      helperText: 'Este nome será usado para adicionar amigos.',
+                    ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'O nome é obrigatório';
+                        return 'O nome de usuário é obrigatório';
+                      }
+                      if (value.length < 3) {
+                        return 'Mínimo de 3 caracteres';
+                      }
+                      if (!_usernameRegex.hasMatch(value)) {
+                        return 'Use apenas letras, números, pontos ou underlines';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 12),
+                  // CAMPO: Apelido (Nickname / Name)
+                  TextFormField(
+                    controller: _nicknameController,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    style: AppTextStyles.bodyLarge,
+                    decoration: const InputDecoration(
+                      hintText: 'Como quer ser chamado? (Apelido)',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'O apelido é obrigatório';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  // CAMPO: E-mail
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -124,6 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   const SizedBox(height: 12),
+                  // CAMPO: Senha
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
@@ -154,6 +194,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   const SizedBox(height: 12),
+                  // CAMPO: Confirmar Senha
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirm,

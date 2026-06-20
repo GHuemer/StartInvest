@@ -34,7 +34,7 @@ void main() {
   late MockSendPasswordResetEmail mockSendPasswordResetEmail;
   late MockAuthRepository mockAuthRepository;
 
-  final tUser = AppUser(id: '1', name: 'Test User', email: 'test@test.com');
+  final tUser = AppUser(id: '1', username: 'testuser', name: 'Test User', email: 'test@test.com');
   const tEmail = 'test@test.com';
   const tPassword = '123456';
 
@@ -69,10 +69,14 @@ void main() {
 
   group('AuthStarted', () {
     blocTest<AuthBloc, AuthState>(
-      'deve emitir [AuthLoading] quando AuthStarted for adicionado',
-      build: () => authBloc,
+      'deve emitir [AuthUnauthenticated] quando AuthStarted for adicionado e nao houver usuario',
+      build: () {
+        when(() => mockAuthRepository.getFullCurrentUser())
+            .thenAnswer((_) async => null);
+        return authBloc;
+      },
       act: (bloc) => bloc.add(const AuthStarted()),
-      expect: () => [const AuthLoading()],
+      expect: () => [const AuthUnauthenticated()],
     );
   });
 

@@ -15,6 +15,15 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return const _HomeView();
+  }
+}
+
+class _HomeView extends StatelessWidget {
+  const _HomeView();
+
+  @override
+  Widget build(BuildContext context) {
     final user = (context.watch<AuthBloc>().state as AuthAuthenticated?)?.user;
     final firstName = user?.name.split(' ').first ?? 'Gabriel';
 

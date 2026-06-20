@@ -16,6 +16,14 @@ part 'auth_state.dart';
 
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final SignInWithGoogle _signInWithGoogle;
+  final SignInWithEmail _signInWithEmail;
+  final SignOut _signOut;
+  final SignUp _signUp;
+  final SendPasswordResetEmail _sendPasswordResetEmail;
+  final AuthRepository _authRepository;
+  late final StreamSubscription<AppUser?> _authSubscription;
+
   AuthBloc({
     required SignInWithGoogle signInWithGoogle,
     required SignInWithEmail signInWithEmail,
@@ -28,8 +36,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _signOut = signOut,
         _signUp = signUp,
         _sendPasswordResetEmail = sendPasswordResetEmail,
+        _authRepository = authRepository,
         super(const AuthInitial()) {
     on<AuthStarted>(_onStarted);
+    on<AuthRefreshRequested>(_onRefresh);
     on<AuthSignInWithGoogleRequested>(_onSignInWithGoogle);
     on<AuthSignInWithEmailRequested>(_onSignInWithEmail);
     on<AuthSignOutRequested>(_onSignOut);
@@ -37,20 +47,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignUpRequested>(_onSignUp);
     on<AuthForgotPasswordRequested>(_onForgotPassword);
 
-    _authSubscription = authRepository.authStateChanges.listen(
+    _authSubscription = _authRepository.authStateChanges.listen(
       (user) => add(AuthUserChanged(user)),
     );
   }
 
-  final SignInWithGoogle _signInWithGoogle;
-  final SignInWithEmail _signInWithEmail;
-  final SignOut _signOut;
-  final SignUp _signUp;
-  final SendPasswordResetEmail _sendPasswordResetEmail;
-  late final StreamSubscription<AppUser?> _authSubscription;
-
   Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
-    emit(const AuthLoading());
+    final user = await _authRepository.getFullCurrentUser();
+    if (user != null) {
+      emit(AuthAuthenticated(user));
+    } else {
+      emit(const AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onRefresh(AuthRefreshRequested event, Emitter<AuthState> emit) async {
+    final user = await _authRepository.getFullCurrentUser();
+    if (user != null) {
+      // Força a emissão do estado atualizado, o stream de authStateChanges também ajudará
+      emit(AuthAuthenticated(user));
+    }
   }
 
   void _onUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
@@ -98,7 +114,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _signUp(event.name, event.email, event.password);
+    final result = await _signUp(
+      username: event.username,
+      name: event.name,
+      email: event.email,
+      password: event.password,
+    );
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthAuthenticated(user)),

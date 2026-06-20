@@ -16,7 +16,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<void> loadProfile({bool force = false}) async {
-    // Evita resetar o estado se já estiver carregado, a menos que force seja true
     if (state is ProfileLoaded && !force) return;
 
     emit(const ProfileLoading());
@@ -33,13 +32,13 @@ class ProfileCubit extends Cubit<ProfileState> {
       (failure) => emit(ProfileError(failure.toString())),
       (profile) => emit(ProfileLoaded(
         name: profile.name,
-        username: profile.email.split('@').first, // Usando parte do email como username se não houver campo específico
+        username: profile.username,
         memberSince: profile.memberSince,
-        friendsCount: 0, // Ajustar quando tivermos funcionalidade de amigos
+        friendsCount: profile.friendIds.length,
         streak: profile.loginStreak,
         xp: profile.xp,
         league: profile.league,
-        podiums: 0, // Ajustar se tivermos esse dado no Firestore
+        podiums: 0,
       )),
     );
   }
@@ -54,16 +53,15 @@ class ProfileCubit extends Cubit<ProfileState> {
       if (currentUser != null) {
         final profileResult = await _profileRepository.getUserProfile(currentUser.id);
         profileResult.fold(
-          (failure) => emit(currentState), // Rollback se falhar ao buscar perfil
+          (failure) => emit(currentState),
           (profile) async {
             final updatedProfile = profile.copyWith(name: newName);
             final result = await _profileRepository.updateUserProfile(updatedProfile);
             result.fold(
               (failure) {
-                // Em caso de erro, podemos notificar ou fazer rollback
                 emit(currentState.copyWith(name: previousName));
               },
-              (_) => null, // Sucesso, já emitimos o novo estado
+              (_) => null,
             );
           },
         );
