@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "229067710309",
+    "project_id": "startinvest-72bc8",
+    "storage_bucket": "startinvest-72bc8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229067710309:android:667a121d6dafb67926cb8c",
+        "android_client_info": {
+          "package_name": "com.startinvest.startinvest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "229067710309-j7absrqei27adaips5clr2oth1ungmia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.startinvest.startinvest",
+            "certificate_hash": "2323507484cb20fccc46edae50b27ca676260018"
+          }
+        },
+        {
+          "client_id": "229067710309-6rik7vr28dgq17s3kc6kdbmh99vh6aqq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnBMUOLOoU7-Snnd6q9a4rs7BhwtpO2PI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "229067710309-6rik7vr28dgq17s3kc6kdbmh99vh6aqq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "229067710309-am2k534c2pv6pcka46vmsprgdrin27gt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.startinvest.startinvest"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
