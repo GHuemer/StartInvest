@@ -62,9 +62,12 @@ class ArticleCard extends StatelessWidget {
                       const SizedBox(width: 12),
                       const Icon(Icons.person_outline, size: 14, color: AppColors.textSecondary),
                       const SizedBox(width: 4),
-                      Text(
-                        article.author,
-                        style: AppTextStyles.bodySmall,
+                      Expanded(
+                        child: Text(
+                          article.author,
+                          style: AppTextStyles.bodySmall,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
