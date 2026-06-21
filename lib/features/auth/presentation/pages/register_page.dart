@@ -10,6 +10,10 @@ import '../bloc/auth_bloc.dart';
 import '../widgets/auth_logo.dart';
 import '../widgets/auth_terms_text.dart';
 
+enum _PasswordStrength { fraca, moderada, forte }
+
+const _kSpecialChars = {'@', '#', '%', '&', '!', '+'};
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -24,14 +28,18 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  DateTime? _selectedBirthDate;
+  _PasswordStrength? _passwordStrength;
+  final _birthDateController = TextEditingController();
 
   static final _emailRegex = RegExp(
-    r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+    r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.(br|com|net|org)$',
   );
-
-  static final _usernameRegex = RegExp(r"^[a-zA-Z0-9._]+$");
+  static final _usernameRegex = RegExp(r'^[a-zA-Z0-9._]+$');
+  static const _specialChars = _kSpecialChars;
 
   @override
   void dispose() {
@@ -40,7 +48,62 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _birthDateController.dispose();
     super.dispose();
+  }
+
+  String _formatDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    return '$day/$month/${date.year}';
+  }
+
+  Future<void> _pickBirthDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedBirthDate ?? DateTime(2000),
+      firstDate: DateTime(1906),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedBirthDate = picked;
+        _birthDateController.text = _formatDate(picked);
+      });
+      _formKey.currentState?.validate();
+    }
+  }
+
+  String? _validatePassword(String value) {
+    final name = _nicknameController.text.trim().toLowerCase();
+    final year = _selectedBirthDate?.year.toString() ?? '';
+    final specials = value.split('').where((c) => _specialChars.contains(c)).length;
+
+    if (value.length < 6 || value.length > 20) return 'Senha inválida.';
+    if (specials < 1) return 'Senha inválida.';
+    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Senha inválida.';
+    if (!RegExp(r'[a-zA-Z]').hasMatch(value)) return 'Senha inválida.';
+    if (name.isNotEmpty && value.toLowerCase().contains(name)) return 'Senha inválida.';
+    if (year.isNotEmpty && value.contains(year)) return 'Senha inválida.';
+    return null;
+  }
+
+  _PasswordStrength _computeStrength(String value) {
+    final specials = value.split('').where((c) => _specialChars.contains(c)).length;
+    final numbers = value.split('').where((c) => RegExp(r'[0-9]').hasMatch(c)).length;
+    final uppers = value.split('').where((c) => RegExp(r'[A-Z]').hasMatch(c)).length;
+    if (value.length > 12 && specials > 1 && numbers > 1 && uppers > 1) {
+      return _PasswordStrength.forte;
+    }
+    if (value.length > 8 && specials >= 1 && numbers >= 1 && uppers >= 1) {
+      return _PasswordStrength.moderada;
+    }
+    return _PasswordStrength.fraca;
+  }
+
+  void _onPasswordChanged(String value) {
+    final strength = _validatePassword(value) == null ? _computeStrength(value) : null;
+    setState(() => _passwordStrength = strength);
   }
 
   void _onSubmit() {
@@ -51,6 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
               name: _nicknameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text,
+              birthDate: _selectedBirthDate!,
             ),
           );
     }
@@ -128,7 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  // CAMPO: Apelido (Nickname / Name)
+                  // CAMPO: Nome (Apelido)
                   TextFormField(
                     controller: _nicknameController,
                     keyboardType: TextInputType.name,
@@ -138,12 +202,38 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: const InputDecoration(
                       hintText: 'Como quer ser chamado? (Apelido)',
                     ),
+                    onChanged: (_) {
+                      // Revalida senha caso o nome mude (regra: senha não pode conter nome)
+                      if (_passwordController.text.isNotEmpty) {
+                        _onPasswordChanged(_passwordController.text);
+                      }
+                    },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'O apelido é obrigatório';
                       }
                       return null;
                     },
+                  ),
+                  const SizedBox(height: 12),
+                  // CAMPO: Data de Nascimento
+                  GestureDetector(
+                    onTap: _pickBirthDate,
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        controller: _birthDateController,
+                        readOnly: true,
+                        style: AppTextStyles.bodyLarge,
+                        decoration: const InputDecoration(
+                          hintText: 'Data de nascimento',
+                          suffixIcon: Icon(Icons.calendar_today_outlined),
+                        ),
+                        validator: (_) {
+                          if (_selectedBirthDate == null) return 'Ano inválido.';
+                          return null;
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   // CAMPO: E-mail
@@ -155,9 +245,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: const InputDecoration(hintText: 'email@dominio.com'),
                     validator: (value) {
                       final email = value?.trim() ?? '';
-                      if (email.isEmpty) return 'O e-mail é obrigatório';
-                      if (!_emailRegex.hasMatch(email)) {
-                        return 'Por favor, insira um e-mail válido';
+                      if (email.isEmpty || !_emailRegex.hasMatch(email)) {
+                        return 'Formato de email inválido.';
                       }
                       return null;
                     },
@@ -169,30 +258,37 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: _obscurePassword,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: AppTextStyles.bodyLarge,
+                    onChanged: _onPasswordChanged,
                     decoration: InputDecoration(
                       hintText: 'Senha',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
                           color: AppColors.textMuted,
                         ),
-                        onPressed: () => setState(
-                          () => _obscurePassword = !_obscurePassword,
-                        ),
+                        onPressed: () =>
+                            setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'A senha é obrigatória';
-                      }
-                      if (value.length < 6) {
-                        return 'A senha deve ter no mínimo 6 caracteres';
-                      }
-                      return null;
+                      if (value == null || value.isEmpty) return 'A senha é obrigatória';
+                      return _validatePassword(value);
                     },
                   ),
+                  // Checklist de requisitos da senha
+                  if (_passwordController.text.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    _PasswordRequirements(
+                      password: _passwordController.text,
+                      name: _nicknameController.text.trim().toLowerCase(),
+                      birthYear: _selectedBirthDate?.year.toString(),
+                    ),
+                  ],
+                  // Indicador de força da senha
+                  if (_passwordStrength != null) ...[
+                    const SizedBox(height: 6),
+                    _PasswordStrengthIndicator(strength: _passwordStrength!),
+                  ],
                   const SizedBox(height: 12),
                   // CAMPO: Confirmar Senha
                   TextFormField(
@@ -204,14 +300,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Confirmar senha',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirm
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          _obscureConfirm ? Icons.visibility_off : Icons.visibility,
                           color: AppColors.textMuted,
                         ),
-                        onPressed: () => setState(
-                          () => _obscureConfirm = !_obscureConfirm,
-                        ),
+                        onPressed: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
                       ),
                     ),
                     validator: (value) {
@@ -266,6 +359,116 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PasswordStrengthIndicator extends StatelessWidget {
+  const _PasswordStrengthIndicator({required this.strength});
+
+  final _PasswordStrength strength;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, color) = switch (strength) {
+      _PasswordStrength.fraca => ('fraca', Colors.red),
+      _PasswordStrength.moderada => ('moderada', Colors.amber),
+      _PasswordStrength.forte => ('forte', Colors.green),
+    };
+    final fillFraction = switch (strength) {
+      _PasswordStrength.fraca => 1 / 3,
+      _PasswordStrength.moderada => 2 / 3,
+      _PasswordStrength.forte => 1.0,
+    };
+
+    return Row(
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: fillFraction,
+              color: color,
+              backgroundColor: color.withValues(alpha: 0.2),
+              minHeight: 6,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          'Senha $label',
+          style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w500),
+        ),
+      ],
+    );
+  }
+}
+
+class _PasswordRequirements extends StatelessWidget {
+  const _PasswordRequirements({
+    required this.password,
+    required this.name,
+    this.birthYear,
+  });
+
+  final String password;
+  final String name;
+  final String? birthYear;
+
+  @override
+  Widget build(BuildContext context) {
+    final specials =
+        password.split('').where((c) => _kSpecialChars.contains(c)).length;
+    final showNameRule = name.isNotEmpty || birthYear != null;
+    final nameOk = (name.isEmpty || !password.toLowerCase().contains(name)) &&
+        (birthYear == null || !password.contains(birthYear!));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _CheckItem('6 a 20 caracteres',
+            password.length >= 6 && password.length <= 20),
+        _CheckItem('Pelo menos 1 caractere especial (@, #, %, &, !, +)',
+            specials >= 1),
+        _CheckItem('Pelo menos 1 número', RegExp(r'[0-9]').hasMatch(password)),
+        _CheckItem(
+            'Pelo menos 1 letra (a-z, A-Z)', RegExp(r'[a-zA-Z]').hasMatch(password)),
+        if (showNameRule)
+          _CheckItem('Não contém seu nome ou ano de nascimento', nameOk),
+      ],
+    );
+  }
+}
+
+class _CheckItem extends StatelessWidget {
+  const _CheckItem(this.label, this.met);
+
+  final String label;
+  final bool met;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(
+            met ? Icons.check_circle : Icons.radio_button_unchecked,
+            color: met ? Colors.green : Colors.grey,
+            size: 16,
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: met ? Colors.green : Colors.grey,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

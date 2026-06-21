@@ -114,6 +114,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String email,
     required String password,
+    required DateTime birthDate,
   }) async {
     try {
       // 1. Verificar se o username já existe
@@ -127,7 +128,7 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      
+
       await cred.user!.updateDisplayName(name);
 
       // 3. Salvar no Firestore
@@ -136,12 +137,13 @@ class AuthRepositoryImpl implements AuthRepository {
         username: username.toLowerCase().trim(),
         name: name,
         email: email,
+        birthDate: birthDate,
       );
-      
+
       final userMap = user.toMap();
       userMap['createdAt'] = FieldValue.serverTimestamp();
       await _firestore.collection('users').doc(user.id).set(userMap);
-      
+
       return Right(user);
     } on FirebaseAuthException catch (e) {
       return Left(AuthFailure(_mapError(e.code)));
