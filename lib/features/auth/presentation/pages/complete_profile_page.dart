@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/router/app_routes.dart';
 import '../bloc/auth_bloc.dart';
@@ -48,14 +47,11 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
             _errorMessage = failure.message;
             _isLoading = false;
           }),
-          (_) async {
-            // Recarrega o estado do usuário no Bloc para refletir a mudança
-            final authBloc = context.read<AuthBloc>();
-            authBloc.add(const AuthStarted());
-            
-            // Aguarda um pouco para o redirecionamento acontecer via router
-            // ou navega manualmente para garantir
-            context.go(AppRoutes.home);
+          (_) {
+            if (!mounted) return;
+            // Recarrega o usuário do Firestore; o BlocListener navega para home
+            // quando o estado confirmar username preenchido.
+            context.read<AuthBloc>().add(const AuthRefreshRequested());
           },
         );
       }
@@ -64,7 +60,19 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated && state.user.username.isNotEmpty) {
+          context.go(AppRoutes.home);
+        }
+        if (state is AuthError) {
+          setState(() {
+            _errorMessage = state.message;
+            _isLoading = false;
+          });
+        }
+      },
+      child: Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -121,6 +129,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
             ),
           ),
         ),
+      ),
       ),
     );
   }
