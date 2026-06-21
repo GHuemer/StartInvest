@@ -14,11 +14,13 @@ class SignUp {
     required String name,
     required String email,
     required String password,
+    required DateTime birthDate,
   }) =>
       _repository.signUp(
         username: username,
         name: name,
         email: email,
         password: password,
+        birthDate: birthDate,
       );
 }

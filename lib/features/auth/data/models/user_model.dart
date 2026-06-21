@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/user.dart';
 
 class UserModel extends AppUser {
@@ -7,6 +8,7 @@ class UserModel extends AppUser {
     required super.name,
     required super.email,
     super.photoUrl,
+    super.birthDate,
     super.xp,
     super.level,
     super.league,
@@ -21,6 +23,9 @@ class UserModel extends AppUser {
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       photoUrl: map['photoUrl'],
+      birthDate: map['birthDate'] != null
+          ? (map['birthDate'] as Timestamp).toDate()
+          : null,
       xp: (map['xp'] ?? 0) as int,
       level: (map['level'] ?? 1) as int,
       league: map['league'] ?? 'bronze',
@@ -35,6 +40,7 @@ class UserModel extends AppUser {
       'name': name,
       'email': email,
       'photoUrl': photoUrl,
+      'birthDate': birthDate != null ? Timestamp.fromDate(birthDate!) : null,
       'xp': xp,
       'level': level,
       'league': league,
@@ -51,6 +57,7 @@ class UserModel extends AppUser {
       name: firebaseUser.displayName ?? '',
       email: firebaseUser.email ?? '',
       photoUrl: firebaseUser.photoURL,
+      birthDate: null,
       isNewUser: isNewUser,
     );
   }

@@ -46,14 +46,16 @@ class AuthSignUpRequested extends AuthEvent {
     required this.name,
     required this.email,
     required this.password,
+    required this.birthDate,
   });
   final String username;
   final String name;
   final String email;
   final String password;
+  final DateTime birthDate;
 
   @override
-  List<Object> get props => [username, name, email, password];
+  List<Object> get props => [username, name, email, password, birthDate];
 }
 
 class AuthForgotPasswordRequested extends AuthEvent {

@@ -10,6 +10,7 @@ abstract class AuthRepository {
     required String name,
     required String email,
     required String password,
+    required DateTime birthDate,
   });
   Future<Either<Failure, void>> sendPasswordResetEmail(String email);
   Future<Either<Failure, void>> signOut();
