@@ -87,8 +87,10 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
 
   bool get _hasToken => _brapiToken.isNotEmpty;
 
-  // Com token: até 20 tickers/req; sem token: máx 3 para Ações
-  int get _batchSize => _hasToken ? 20 : 3;
+  // Com token free: 1 ticker/req mas desbloqueia FIIs
+  // Sem token: até 3 tickers/req, FIIs indisponíveis
+  // Usamos sempre 1 ticker/req quando há token (funciona em qualquer plano)
+  int get _batchSize => _hasToken ? 1 : 3;
 
   @override
   Future<MarketAsset> getAssetPrice(String ticker, AssetType type) async {
@@ -125,48 +127,30 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
       return _fiis.map((e) => _fallbackAsset(e['ticker']!, type)).toList();
     }
 
-    // Ações e FIIs (com token): brapi.dev suporta até 20 por request
+    // Ações e FIIs: busca em paralelo (cada ticker individualmente)
     final catalog = type == AssetType.stock ? _stocks : _fiis;
-    final results = <MarketAsset>[];
 
-    for (var i = 0; i < catalog.length; i += _batchSize) {
-      final batch = catalog.skip(i).take(_batchSize).toList();
-      final tickers = batch.map((e) => e['ticker']!).toList();
-
-      // Verifica cache primeiro
-      final uncached = tickers.where((t) {
-        final c = _cache[t];
-        return c == null || DateTime.now().difference(c.$2) >= _cacheDuration;
-      }).toList();
-
-      // Adiciona do cache os que já estão frescos
-      for (final t in tickers) {
-        final c = _cache[t];
-        if (c != null && DateTime.now().difference(c.$2) < _cacheDuration) {
-          results.add(c.$1);
+    final results = await Future.wait(
+      catalog.map((info) async {
+        final ticker = info['ticker']!;
+        // Usa cache se ainda fresco
+        final cached = _cache[ticker];
+        if (cached != null &&
+            DateTime.now().difference(cached.$2) < _cacheDuration) {
+          return cached.$1;
         }
-      }
-
-      if (uncached.isEmpty) continue;
-
-      try {
-        final fetched = await _fetchBrapi(uncached, type);
-        for (final asset in fetched) {
-          _cache[asset.ticker] = (asset, DateTime.now());
-          results.add(asset);
+        try {
+          final fetched = await _fetchBrapi([ticker], type);
+          if (fetched.isNotEmpty) {
+            _cache[ticker] = (fetched.first, DateTime.now());
+            return fetched.first;
+          }
+        } catch (e) {
+          debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
         }
-        // Fallback para os que não vieram na resposta
-        final fetchedTickers = fetched.map((a) => a.ticker).toSet();
-        for (final t in uncached.where((t) => !fetchedTickers.contains(t))) {
-          results.add(_fallbackAsset(t, type));
-        }
-      } catch (e) {
-        debugPrint('[MarketAPI] Erro no batch $tickers: $e');
-        for (final t in uncached) {
-          results.add(_fallbackAsset(t, type));
-        }
-      }
-    }
+        return _fallbackAsset(ticker, type);
+      }),
+    );
 
     return results;
   }
