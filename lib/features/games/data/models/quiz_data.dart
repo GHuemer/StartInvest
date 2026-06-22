@@ -39,7 +39,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 1,
       ),
       QuizQuestion(
-        question: 'Quando um investimento em renda fixa é pós-fixado, o que isso quer dizer?',
+        question:
+            'Quando um investimento em renda fixa é pós-fixado, o que isso quer dizer?',
         options: [
           'Que o rendimento é definido no futuro e não agora.',
           'Que a rentabilidade depende de um índice, como o CDI ou a Selic.',
@@ -122,7 +123,8 @@ final List<Quiz> allQuizzes = [
   Quiz(
     id: 'q3',
     title: 'Mercado de Opções e Derivativos',
-    description: 'Teste seus conhecimentos sobre instrumentos financeiros de alta volatilidade.',
+    description:
+        'Teste seus conhecimentos sobre instrumentos financeiros de alta volatilidade.',
     difficulty: QuizDifficulty.aggressive,
     iconPath: 'assets/icons/rocket.png',
     questions: [
@@ -137,7 +139,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 1,
       ),
       QuizQuestion(
-        question: 'O que acontece se uma opção chega ao vencimento "fora do dinheiro" (OTM)?',
+        question:
+            'O que acontece se uma opção chega ao vencimento "fora do dinheiro" (OTM)?',
         options: [
           'Ela se torna uma ação automaticamente.',
           'Ela perde todo o valor e "vira pó".',
@@ -196,7 +199,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 2,
       ),
       QuizQuestion(
-        question: 'O que acontece se você resgatar um Tesouro Prefixado antes do vencimento?',
+        question:
+            'O que acontece se você resgatar um Tesouro Prefixado antes do vencimento?',
         options: [
           'Você sempre recebe exatamente o que investiu.',
           'Pode sofrer marcação a mercado e receber menos (ou mais) que o esperado.',
@@ -206,7 +210,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 1,
       ),
       QuizQuestion(
-        question: 'Qual o prazo de liquidação do Tesouro Direto (quando o dinheiro cai na conta)?',
+        question:
+            'Qual o prazo de liquidação do Tesouro Direto (quando o dinheiro cai na conta)?',
         options: [
           'D+0 (no mesmo dia).',
           'D+1 (um dia útil após a solicitação).',
@@ -314,7 +319,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 1,
       ),
       QuizQuestion(
-        question: 'Na estratégia de "Short Selling", o investidor ganha dinheiro quando:',
+        question:
+            'Na estratégia de "Short Selling", o investidor ganha dinheiro quando:',
         options: [
           'O preço do ativo sobe rapidamente.',
           'O preço do ativo cai.',
@@ -363,7 +369,8 @@ final List<Quiz> allQuizzes = [
     iconPath: 'assets/icons/shield.png',
     questions: [
       QuizQuestion(
-        question: 'O que acontece com o seu dinheiro na poupança se a inflação for maior que o rendimento?',
+        question:
+            'O que acontece com o seu dinheiro na poupança se a inflação for maior que o rendimento?',
         options: [
           'O saldo aumenta e o poder de compra também.',
           'O saldo aumenta, mas o poder de compra diminui (perda real).',
@@ -373,7 +380,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 1,
       ),
       QuizQuestion(
-        question: 'Qual a regra atual de rendimento da poupança quando a Selic está acima de 8,5% ao ano?',
+        question:
+            'Qual a regra atual de rendimento da poupança quando a Selic está acima de 8,5% ao ano?',
         options: [
           '0,5% ao mês + Taxa Referencial (TR).',
           '70% da taxa Selic + TR.',
@@ -383,7 +391,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 0,
       ),
       QuizQuestion(
-        question: 'O Fundo Garantidor de Crédito (FGC) protege a poupança em até qual valor por CPF e instituição?',
+        question:
+            'O Fundo Garantidor de Crédito (FGC) protege a poupança em até qual valor por CPF e instituição?',
         options: [
           'R\$ 50.000,00.',
           'R\$ 100.000,00.',
@@ -393,7 +402,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 2,
       ),
       QuizQuestion(
-        question: 'Por que a poupança é considerada um investimento de baixa eficiência?',
+        question:
+            'Por que a poupança é considerada um investimento de baixa eficiência?',
         options: [
           'Porque o risco de quebra do banco é muito alto.',
           'Porque costuma render menos que outros ativos de baixo risco, como o Tesouro Selic.',
@@ -521,7 +531,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 0,
       ),
       QuizQuestion(
-        question: 'Qual o principal risco de armazenar criptomoedas em uma Corretora (Exchange)?',
+        question:
+            'Qual o principal risco de armazenar criptomoedas em uma Corretora (Exchange)?',
         options: [
           'A corretora pode cobrar muitas taxas.',
           'Se a corretora for hackeada ou falir, você pode perder o acesso aos seus ativos.',
@@ -639,7 +650,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 1,
       ),
       QuizQuestion(
-        question: 'O que acontece se uma empresa sai do índice que o ETF replica?',
+        question:
+            'O que acontece se uma empresa sai do índice que o ETF replica?',
         options: [
           'O ETF é encerrado e todos perdem o dinheiro.',
           'O gestor do ETF vende as ações dessa empresa e compra a que entrar no lugar.',
@@ -678,7 +690,8 @@ final List<Quiz> allQuizzes = [
         correctAnswerIndex: 0,
       ),
       QuizQuestion(
-        question: 'Na "Aversão à Perda", a dor de perder R\$ 1.000,00 é geralmente:',
+        question:
+            'Na "Aversão à Perda", a dor de perder R\$ 1.000,00 é geralmente:',
         options: [
           'Igual ao prazer de ganhar R\$ 1.000,00.',
           'Menor do que o prazer de ganhar R\$ 1.000,00.',

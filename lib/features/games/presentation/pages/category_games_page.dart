@@ -31,10 +31,12 @@ class _CategoryGamesPageState extends State<CategoryGamesPage> {
   @override
   Widget build(BuildContext context) {
     final difficultyName = _getDifficultyName(widget.difficulty);
-    
+
     // Filtragem direta para evitar problemas de estado
     final List<Quiz> quizzes = allQuizzes.where((quiz) {
-      final bool matchesSearch = quiz.title.toLowerCase().contains(_searchQuery.toLowerCase());
+      final bool matchesSearch = quiz.title.toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
       final bool matchesDifficulty = quiz.difficulty == widget.difficulty;
       return matchesSearch && matchesDifficulty;
     }).toList();
@@ -59,8 +61,13 @@ class _CategoryGamesPageState extends State<CategoryGamesPage> {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Ex: Introdução a criptomoedas',
-                hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
-                prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                hintStyle: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textMuted,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.textMuted,
+                ),
                 filled: true,
                 fillColor: AppColors.backgroundCard,
                 border: OutlineInputBorder(
@@ -79,14 +86,27 @@ class _CategoryGamesPageState extends State<CategoryGamesPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Filtros aplicados:', 
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                    Text('• Jogos $difficultyName', 
-                      style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    const Text(
+                      'Filtros aplicados:',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '• Jogos $difficultyName',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
-                Text('${quizzes.length} resultados', 
-                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                Text(
+                  '${quizzes.length} resultados',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
               ],
             ),
           ),
@@ -94,8 +114,11 @@ class _CategoryGamesPageState extends State<CategoryGamesPage> {
           Expanded(
             child: quizzes.isEmpty
                 ? const Center(
-                    child: Text('Nenhum jogo encontrado', 
-                      style: TextStyle(color: Colors.white54, fontSize: 16)))
+                    child: Text(
+                      'Nenhum jogo encontrado',
+                      style: TextStyle(color: Colors.white54, fontSize: 16),
+                    ),
+                  )
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     itemCount: quizzes.length,
@@ -120,7 +143,8 @@ class _QuizListItem extends StatelessWidget {
     if (t.contains('cripto')) return Icons.currency_bitcoin;
     if (t.contains('ação') || t.contains('ações')) return Icons.trending_up;
     if (t.contains('fii') || t.contains('imobiliário')) return Icons.apartment;
-    if (t.contains('tesouro') || t.contains('renda fixa')) return Icons.account_balance;
+    if (t.contains('tesouro') || t.contains('renda fixa'))
+      return Icons.account_balance;
     if (t.contains('etf') || t.contains('índice')) return Icons.pie_chart;
     if (t.contains('fundo')) return Icons.donut_large;
     return Icons.videogame_asset;
@@ -174,8 +198,8 @@ class _QuizListItem extends StatelessWidget {
                     Text(
                       quiz.title,
                       style: const TextStyle(
-                        color: Colors.white, 
-                        fontSize: 16, 
+                        color: Colors.white,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -184,11 +208,16 @@ class _QuizListItem extends StatelessWidget {
                       children: [
                         // Tag de Tipo do Jogo (Quiz)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+                            border: Border.all(
+                              color: AppColors.primary.withOpacity(0.5),
+                            ),
                           ),
                           child: const Text(
                             'QUIZ',
@@ -202,11 +231,18 @@ class _QuizListItem extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         // Informação Extra (Qtd de perguntas)
-                        Icon(Icons.help_outline, size: 14, color: AppColors.textMuted),
+                        Icon(
+                          Icons.help_outline,
+                          size: 14,
+                          color: AppColors.textMuted,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${quiz.questions.length} perguntas',
-                          style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -220,7 +256,7 @@ class _QuizListItem extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.arrow_forward_ios, 
+                  Icons.arrow_forward_ios,
                   color: Colors.white70,
                   size: 14,
                 ),

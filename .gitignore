@@ -49,9 +49,10 @@ google-services.json
 GoogleService-Info.plist
 firebase_options.dart
 
-# Environment
+# Environment / API keys
 .env
 .env.*
+dart_defines.env
 
 # SonarCloud cache
 .sonar/

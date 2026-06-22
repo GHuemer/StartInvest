@@ -5,16 +5,11 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_back_button.dart';
 import '../../domain/entities/quiz_question.dart';
 import 'category_games_page.dart';
+import 'portfolio_hub_page.dart';
+import 'projection_setup_page.dart';
 
-class GamesPage extends StatefulWidget {
+class GamesPage extends StatelessWidget {
   const GamesPage({super.key});
-
-  @override
-  State<GamesPage> createState() => _GamesPageState();
-}
-
-class _GamesPageState extends State<GamesPage> {
-  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +28,15 @@ class _GamesPageState extends State<GamesPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            const Text('Busque nossos jogos', 
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 12),
+            // ── Busca ──────────────────────────────────────────────────────
             TextField(
-              onChanged: (value) => setState(() => _searchQuery = value),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Ex: Quiz Renda Fixa',
-                hintStyle: const TextStyle(color: Colors.white54, fontSize: 14),
-                prefixIcon: const Icon(Icons.search, color: Colors.white54),
+                hintStyle:
+                    const TextStyle(color: Colors.white54, fontSize: 14),
+                prefixIcon:
+                    const Icon(Icons.search, color: Colors.white54),
                 filled: true,
                 fillColor: AppColors.backgroundCard,
                 border: OutlineInputBorder(
@@ -51,19 +45,33 @@ class _GamesPageState extends State<GamesPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            const Text('Praticar',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 28),
+            // ── Praticar ───────────────────────────────────────────────────
+            const Text(
+              'Praticar',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             const SizedBox(height: 16),
             _GameCard(
+              icon: Icons.query_stats,
               title: 'Market Predictor',
               subtitle: 'Preveja os movimentos do mercado',
-              icon: '📈',
               onTap: () => context.push('/games/market-predictor'),
             ),
-            const SizedBox(height: 32),
-            const Text('Jogue com base no risco',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 28),
+            // ── Filtro por risco ───────────────────────────────────────────
+            const Text(
+              'Jogue com base no risco',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             const SizedBox(height: 16),
             _RiskCard(
               title: 'Conservador',
@@ -71,7 +79,11 @@ class _GamesPageState extends State<GamesPage> {
               icon: Icons.shield_outlined,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.conservative)),
+                MaterialPageRoute(
+                  builder: (_) => const CategoryGamesPage(
+                    difficulty: QuizDifficulty.conservative,
+                  ),
+                ),
               ),
             ),
             _RiskCard(
@@ -80,7 +92,11 @@ class _GamesPageState extends State<GamesPage> {
               icon: Icons.balance,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.moderate)),
+                MaterialPageRoute(
+                  builder: (_) => const CategoryGamesPage(
+                    difficulty: QuizDifficulty.moderate,
+                  ),
+                ),
               ),
             ),
             _RiskCard(
@@ -89,7 +105,44 @@ class _GamesPageState extends State<GamesPage> {
               icon: Icons.rocket_launch_outlined,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.aggressive)),
+                MaterialPageRoute(
+                  builder: (_) => const CategoryGamesPage(
+                    difficulty: QuizDifficulty.aggressive,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
+            // ── Simuladores ────────────────────────────────────────────────
+            const Text(
+              'Simuladores',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _GameCard(
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'Simulador de Investimentos',
+              subtitle:
+                  'Compre e venda Ações, FIIs e Renda Fixa com dinheiro virtual. Ganhe XP com seus lucros!',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PortfolioHubPage()),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _GameCard(
+              icon: Icons.show_chart,
+              title: 'Projetor de Investimentos',
+              subtitle:
+                  'Simule quanto seu dinheiro pode render no futuro com base no histórico real.',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ProjectionSetupPage()),
               ),
             ),
             const SizedBox(height: 32),
@@ -100,13 +153,82 @@ class _GamesPageState extends State<GamesPage> {
   }
 }
 
+// ── Widgets ──────────────────────────────────────────────────────────────────
+
 class _GameCard extends StatelessWidget {
+  final IconData icon;
   final String title;
   final String subtitle;
-  final String icon;
   final VoidCallback onTap;
 
   const _GameCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.backgroundCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                        color: Colors.white60, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.arrow_forward_ios,
+                color: Colors.white38, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RiskCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _RiskCard({
     required this.title,
     required this.subtitle,
     required this.icon,
@@ -125,56 +247,8 @@ class _GameCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.backgroundCard,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder.withOpacity(0.3)),
-          ),
-          child: Row(
-            children: [
-              Text(icon, style: const TextStyle(fontSize: 32)),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right, color: Colors.white54),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RiskCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _RiskCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.onTap
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.backgroundCard,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder.withOpacity(0.3)),
+            border: Border.all(
+                color: AppColors.cardBorder.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
@@ -184,8 +258,19 @@ class _RiskCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                          color: Colors.white70, fontSize: 12),
+                    ),
                   ],
                 ),
               ),
