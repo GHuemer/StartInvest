@@ -52,8 +52,12 @@ import '../../features/games/domain/usecases/portfolio/get_wallets_usecase.dart'
     as _i974;
 import '../../features/games/domain/usecases/portfolio/sell_asset_usecase.dart'
     as _i985;
+import '../../features/games/domain/usecases/projection/run_projection_usecase.dart'
+    as _i91;
 import '../../features/games/presentation/bloc/portfolio/portfolio_bloc.dart'
     as _i381;
+import '../../features/games/presentation/bloc/projection/projection_bloc.dart'
+    as _i61;
 import '../../features/missions/data/datasources/missions_remote_datasource.dart'
     as _i908;
 import '../../features/missions/data/repositories/missions_repository_impl.dart'
@@ -156,6 +160,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i974.GetWalletsUseCase>(
       () => _i974.GetWalletsUseCase(gh<_i989.PortfolioRepository>()),
     );
+    gh.factory<_i91.RunProjectionUseCase>(
+      () => _i91.RunProjectionUseCase(gh<_i989.PortfolioRepository>()),
+    );
     gh.lazySingleton<_i258.NewsRepository>(
       () => _i164.NewsRepositoryImpl(gh<_i173.NewsRemoteDataSource>()),
     );
@@ -163,6 +170,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i985.SellAssetUseCase(
         gh<_i989.PortfolioRepository>(),
         gh<_i1064.CalculatePortfolioXpUseCase>(),
+      ),
+    );
+    gh.factory<_i61.ProjectionBloc>(
+      () => _i61.ProjectionBloc(
+        gh<_i91.RunProjectionUseCase>(),
+        gh<_i989.PortfolioRepository>(),
       ),
     );
     gh.factory<_i381.PortfolioBloc>(

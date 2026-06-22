@@ -166,7 +166,7 @@ class _PortfolioHubView extends StatelessWidget {
           ...state.wallets.map(
             (w) => WalletCard(
               wallet: w,
-              positions: const [],
+              positions: state.positionsMap[w.id] ?? const [],
               onTap: () => _openWallet(context, w.id, w.name),
             ),
           ),

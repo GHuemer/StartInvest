@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -8,6 +9,7 @@ abstract class MarketApiDataSource {
   Future<MarketAsset> getAssetPrice(String ticker, AssetType type);
   Future<List<MarketAsset>> getAssetsByType(AssetType type);
   Future<List<MarketAsset>> searchAssets(String query, AssetType type);
+  Future<double> getHistoricalCagr(String ticker, AssetType type);
 }
 
 @LazySingleton(as: MarketApiDataSource)
@@ -239,6 +241,69 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
       fetchedAt: DateTime.now(),
     );
   }
+
+  @override
+  Future<double> getHistoricalCagr(String ticker, AssetType type) async {
+    if (type == AssetType.fixedIncome) {
+      final info = _fixedIncome.firstWhere(
+        (e) => e['ticker'] == ticker,
+        orElse: () => {'rate': '1.0'},
+      );
+      final rateMultiplier = double.tryParse(info['rate']!) ?? 1.0;
+      return _cdiAnnualRate * rateMultiplier;
+    }
+
+    try {
+      final queryParams = <String, dynamic>{
+        'range': 'max',
+        'interval': '1mo',
+        'fundamental': 'false',
+        'dividends': 'false',
+      };
+      if (_hasToken) queryParams['token'] = _brapiToken;
+
+      final response = await _dio.get(
+        '$_brapiBase/quote/$ticker',
+        queryParameters: queryParams,
+      );
+      final results = response.data['results'] as List? ?? [];
+      if (results.isEmpty) throw Exception('Sem dados');
+
+      final historicalData =
+          results.first['historicalDataPrice'] as List? ?? [];
+      if (historicalData.length < 24) throw Exception('Histórico insuficiente');
+
+      final firstClose =
+          (historicalData.first['close'] as num?)?.toDouble() ?? 0;
+      final lastClose =
+          (historicalData.last['close'] as num?)?.toDouble() ?? 0;
+      final firstDateSec =
+          (historicalData.first['date'] as num?)?.toInt() ?? 0;
+      final lastDateSec =
+          (historicalData.last['date'] as num?)?.toInt() ?? 0;
+
+      if (firstClose <= 0 || lastClose <= 0 || firstDateSec == lastDateSec) {
+        throw Exception('Dados inválidos');
+      }
+
+      final years = (lastDateSec - firstDateSec) / (365.25 * 24 * 3600);
+      if (years < 0.5) throw Exception('Período muito curto');
+
+      final cagr = pow(lastClose / firstClose, 1 / years).toDouble() - 1;
+      // Sanity check: CAGR entre -50% e +200% a.a.
+      if (cagr < -0.5 || cagr > 2.0) throw Exception('CAGR fora do esperado');
+      return cagr;
+    } catch (e) {
+      debugPrint('[MarketAPI] CAGR fallback para $ticker: $e');
+      return _defaultCagr(type);
+    }
+  }
+
+  double _defaultCagr(AssetType type) => switch (type) {
+    AssetType.stock => 0.12,
+    AssetType.fii => 0.08,
+    AssetType.fixedIncome => _cdiAnnualRate,
+  };
 
   MarketAsset _fallbackAsset(String ticker, AssetType type) {
     final catalog = type == AssetType.stock ? _stocks : _fiis;

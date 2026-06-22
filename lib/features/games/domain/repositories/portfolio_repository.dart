@@ -4,6 +4,7 @@ import '../entities/wallet.dart';
 import '../entities/position.dart';
 import '../entities/trade.dart';
 import '../entities/market_asset.dart';
+import '../entities/simulation_result.dart';
 
 abstract class PortfolioRepository {
   Future<Either<Failure, List<Wallet>>> getWallets();
@@ -37,4 +38,16 @@ abstract class PortfolioRepository {
     AssetType type,
   );
   Future<Either<Failure, void>> deleteWallet(String walletId);
+  Future<Either<Failure, void>> syncWalletBalance(
+    String walletId,
+    List<Position> positions,
+    double availableBalance,
+  );
+  Future<Either<Failure, double>> getHistoricalCagr(
+    String ticker,
+    AssetType type,
+  );
+  Future<Either<Failure, void>> awardXp(int xp);
+  Future<Either<Failure, void>> saveProjectionHistory(SimulationResult result);
+  Future<Either<Failure, List<SimulationResult>>> getProjectionHistory();
 }

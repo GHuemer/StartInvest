@@ -7,6 +7,7 @@ class Wallet extends Equatable {
   final double startingBalance;
   final double availableBalance;
   final DateTime createdAt;
+  final double? lastPortfolioValue;
 
   const Wallet({
     required this.id,
@@ -15,6 +16,7 @@ class Wallet extends Equatable {
     required this.startingBalance,
     required this.availableBalance,
     required this.createdAt,
+    this.lastPortfolioValue,
   });
 
   double get totalInvested => startingBalance - availableBalance;
@@ -27,6 +29,7 @@ class Wallet extends Equatable {
       startingBalance: startingBalance,
       availableBalance: availableBalance ?? this.availableBalance,
       createdAt: createdAt,
+      lastPortfolioValue: lastPortfolioValue,
     );
   }
 
@@ -38,5 +41,6 @@ class Wallet extends Equatable {
     startingBalance,
     availableBalance,
     createdAt,
+    lastPortfolioValue,
   ];
 }

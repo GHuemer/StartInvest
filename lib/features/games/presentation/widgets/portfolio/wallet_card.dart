@@ -19,7 +19,9 @@ class WalletCard extends StatelessWidget {
   double get _totalCurrentValue =>
       positions.fold(0.0, (sum, p) => sum + p.currentValue);
 
-  double get _portfolioValue => wallet.availableBalance + _totalCurrentValue;
+  double get _portfolioValue =>
+      wallet.lastPortfolioValue ??
+      (wallet.availableBalance + _totalCurrentValue);
 
   double get _returnPct => wallet.startingBalance > 0
       ? ((_portfolioValue - wallet.startingBalance) / wallet.startingBalance) *

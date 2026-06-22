@@ -19,9 +19,10 @@ class PortfolioLoading extends PortfolioState {
 
 class WalletsLoaded extends PortfolioState {
   final List<Wallet> wallets;
-  const WalletsLoaded(this.wallets);
+  final Map<String, List<Position>> positionsMap;
+  const WalletsLoaded(this.wallets, {this.positionsMap = const {}});
   @override
-  List<Object?> get props => [wallets];
+  List<Object?> get props => [wallets, positionsMap];
 }
 
 class PositionsLoaded extends PortfolioState {

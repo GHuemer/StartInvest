@@ -51,9 +51,16 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
   ) async {
     emit(const PortfolioLoading());
     final result = await _getWallets();
-    result.fold(
-      (Failure f) => emit(PortfolioError(f.message)),
-      (wallets) => emit(WalletsLoaded(wallets)),
+    await result.fold(
+      (Failure f) async => emit(PortfolioError(f.message)),
+      (wallets) async {
+        final positionsMap = <String, List<Position>>{};
+        for (final w in wallets) {
+          final posResult = await _getPositions(w.id);
+          posResult.fold((_) {}, (pos) => positionsMap[w.id] = pos);
+        }
+        emit(WalletsLoaded(wallets, positionsMap: positionsMap));
+      },
     );
   }
 
@@ -226,6 +233,13 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
         availableBalance: current.availableBalance,
         startingBalance: current.startingBalance,
       ),
+    );
+
+    // Sincroniza saldo no Firestore com preços de mercado reais (missões/ranking)
+    await _repository.syncWalletBalance(
+      event.walletId,
+      updated,
+      current.availableBalance,
     );
   }
 }

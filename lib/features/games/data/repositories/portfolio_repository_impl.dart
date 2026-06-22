@@ -5,6 +5,7 @@ import '../../domain/entities/wallet.dart';
 import '../../domain/entities/position.dart';
 import '../../domain/entities/trade.dart';
 import '../../domain/entities/market_asset.dart';
+import '../../domain/entities/simulation_result.dart';
 import '../../domain/repositories/portfolio_repository.dart';
 import '../datasources/market_api_datasource.dart';
 import '../datasources/portfolio_firestore_datasource.dart';
@@ -146,6 +147,64 @@ class PortfolioRepositoryImpl implements PortfolioRepository {
     try {
       await _firestore.deleteWallet(walletId);
       return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> syncWalletBalance(
+    String walletId,
+    List<Position> positions,
+    double availableBalance,
+  ) async {
+    try {
+      await _firestore.syncWalletBalance(walletId, positions, availableBalance);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, double>> getHistoricalCagr(
+    String ticker,
+    AssetType type,
+  ) async {
+    try {
+      final cagr = await _market.getHistoricalCagr(ticker, type);
+      return Right(cagr);
+    } catch (e) {
+      return Left(NetworkFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> awardXp(int xp) async {
+    try {
+      await _firestore.awardXp(xp);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> saveProjectionHistory(
+      SimulationResult result) async {
+    try {
+      await _firestore.saveProjectionHistory(result);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<SimulationResult>>> getProjectionHistory() async {
+    try {
+      final history = await _firestore.getProjectionHistory();
+      return Right(history);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

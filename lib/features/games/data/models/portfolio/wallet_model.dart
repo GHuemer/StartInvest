@@ -9,6 +9,7 @@ class WalletModel extends Wallet {
     required super.startingBalance,
     required super.availableBalance,
     required super.createdAt,
+    super.lastPortfolioValue,
   });
 
   factory WalletModel.fromFirestore(String id, Map<String, dynamic> data) {
@@ -19,6 +20,8 @@ class WalletModel extends Wallet {
       startingBalance: (data['startingBalance'] as num?)?.toDouble() ?? 0.0,
       availableBalance: (data['availableBalance'] as num?)?.toDouble() ?? 0.0,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      lastPortfolioValue:
+          (data['lastPortfolioValue'] as num?)?.toDouble(),
     );
   }
 
