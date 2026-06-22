@@ -19,12 +19,15 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   static const Duration _cacheDuration = Duration(seconds: 60);
 
   // brapi.dev — suporta CORS (*), funciona no Flutter Web e mobile
-  // Free tier: até 3 tickers por request para Ações; FIIs exigem token
   static const String _brapiBase = 'https://brapi.dev/api';
 
-  // Para desbloquear FIIs, registre em https://brapi.dev e adicione seu token:
-  // ignore: unused_field
-  static const String? _brapiToken = null;
+  // Token injetado via --dart-define=BRAPI_TOKEN=... em tempo de build.
+  // Sem token: máx 3 ações/req, FIIs indisponíveis.
+  // Com token (brapi.dev/login): até 20 tickers/req e FIIs desbloqueados.
+  static const String _brapiToken = String.fromEnvironment(
+    'BRAPI_TOKEN',
+    defaultValue: '',
+  );
 
   MarketApiDataSourceImpl(this._dio);
 
@@ -82,13 +85,16 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   static const double _cdiAnnualRate = 0.1375;
   static const double _cdiDailyRate = _cdiAnnualRate / 252;
 
-  // Tamanho máximo do batch sem token no brapi.dev
-  static const int _batchSize = 3;
+  bool get _hasToken => _brapiToken.isNotEmpty;
+
+  // Com token: até 20 tickers/req; sem token: máx 3 para Ações
+  int get _batchSize => _hasToken ? 20 : 3;
 
   @override
   Future<MarketAsset> getAssetPrice(String ticker, AssetType type) async {
     if (type == AssetType.fixedIncome) return _fixedIncomeAsset(ticker);
-    if (type == AssetType.fii) return _fallbackAsset(ticker, type);
+    if (type == AssetType.fii && !_hasToken)
+      return _fallbackAsset(ticker, type);
 
     final cached = _cache[ticker];
     if (cached != null &&
@@ -114,13 +120,13 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
       return _fixedIncome.map((e) => _fixedIncomeAsset(e['ticker']!)).toList();
     }
 
-    // FIIs exigem token no brapi.dev — usa fallback com preços de referência
-    if (type == AssetType.fii) {
+    // FIIs sem token: fallback imediato (brapi.dev exige token para FIIs)
+    if (type == AssetType.fii && !_hasToken) {
       return _fiis.map((e) => _fallbackAsset(e['ticker']!, type)).toList();
     }
 
-    // Ações: brapi.dev suporta até 3 por request sem token
-    final catalog = _stocks;
+    // Ações e FIIs (com token): brapi.dev suporta até 20 por request
+    final catalog = type == AssetType.stock ? _stocks : _fiis;
     final results = <MarketAsset>[];
 
     for (var i = 0; i < catalog.length; i += _batchSize) {
@@ -181,7 +187,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   ) async {
     final tickerStr = tickers.join(',');
     final queryParams = <String, dynamic>{};
-    if (_brapiToken != null) queryParams['token'] = _brapiToken;
+    if (_hasToken) queryParams['token'] = _brapiToken;
 
     final response = await _dio.get(
       '$_brapiBase/quote/$tickerStr',
