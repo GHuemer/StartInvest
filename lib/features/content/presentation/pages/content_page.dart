@@ -11,9 +11,9 @@ class ContentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ContentBloc(
-        contentRepository: ContentRepositoryImpl(),
-      )..add(ContentStarted()),
+      create: (context) =>
+          ContentBloc(contentRepository: ContentRepositoryImpl())
+            ..add(ContentStarted()),
       child: const ContentView(),
     );
   }

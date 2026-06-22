@@ -28,7 +28,10 @@ class AuthSignInWithGoogleRequested extends AuthEvent {
 }
 
 class AuthSignInWithEmailRequested extends AuthEvent {
-  const AuthSignInWithEmailRequested({required this.email, required this.password});
+  const AuthSignInWithEmailRequested({
+    required this.email,
+    required this.password,
+  });
   final String email;
   final String password;
 

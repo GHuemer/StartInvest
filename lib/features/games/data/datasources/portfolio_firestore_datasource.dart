@@ -254,8 +254,12 @@ class PortfolioFirestoreDataSourceImpl implements PortfolioFirestoreDataSource {
 
     for (final w in allWallets) {
       if (w.id == walletId) {
-        final walletPortfolioValue = updatedAvailableBalance +
-            updatedPositions.fold(0.0, (s, p) => s + p.quantity * p.currentPrice);
+        final walletPortfolioValue =
+            updatedAvailableBalance +
+            updatedPositions.fold(
+              0.0,
+              (s, p) => s + p.quantity * p.currentPrice,
+            );
         totalBalance += walletPortfolioValue;
         for (final p in updatedPositions) {
           assetTypes.add(p.assetType.value);
@@ -308,14 +312,16 @@ class PortfolioFirestoreDataSourceImpl implements PortfolioFirestoreDataSource {
       'periodLabel': result.periodLabel,
       'consolidatedPoints': result.consolidatedPoints,
       'assets': result.assets
-          .map((a) => {
-                'ticker': a.ticker,
-                'name': a.name,
-                'assetType': a.assetType.value,
-                'investedAmount': a.investedAmount,
-                'annualRate': a.annualRate,
-                'dataPoints': a.dataPoints,
-              })
+          .map(
+            (a) => {
+              'ticker': a.ticker,
+              'name': a.name,
+              'assetType': a.assetType.value,
+              'investedAmount': a.investedAmount,
+              'annualRate': a.annualRate,
+              'dataPoints': a.dataPoints,
+            },
+          )
           .toList(),
     });
   }
@@ -339,8 +345,7 @@ class PortfolioFirestoreDataSourceImpl implements PortfolioFirestoreDataSource {
           assetType: AssetTypeLabel.fromString(map['assetType'] as String),
           investedAmount: (map['investedAmount'] as num).toDouble(),
           annualRate: (map['annualRate'] as num).toDouble(),
-          dataPoints:
-              rawPoints.map((v) => (v as num).toDouble()).toList(),
+          dataPoints: rawPoints.map((v) => (v as num).toDouble()).toList(),
         );
       }).toList();
 
@@ -349,8 +354,9 @@ class PortfolioFirestoreDataSourceImpl implements PortfolioFirestoreDataSource {
         assets: assets,
         periodMonths: (data['periodMonths'] as num).toInt(),
         periodLabel: data['periodLabel'] as String,
-        consolidatedPoints:
-            rawConsolidated.map((v) => (v as num).toDouble()).toList(),
+        consolidatedPoints: rawConsolidated
+            .map((v) => (v as num).toDouble())
+            .toList(),
         createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       );
     }).toList();

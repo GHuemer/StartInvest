@@ -59,7 +59,16 @@ class ProfileLoaded extends ProfileState {
   }
 
   @override
-  List<Object?> get props => [name, username, memberSince, friendsCount, streak, xp, league, podiums];
+  List<Object?> get props => [
+    name,
+    username,
+    memberSince,
+    friendsCount,
+    streak,
+    xp,
+    league,
+    podiums,
+  ];
 }
 
 class ProfileError extends ProfileState {

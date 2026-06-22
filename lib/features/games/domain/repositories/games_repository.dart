@@ -9,24 +9,16 @@ abstract class GamesRepository {
     String difficulty,
   );
 
-  Future<Either<Failure, GameSession>> createGameSession(
-    String difficulty,
-  );
+  Future<Either<Failure, GameSession>> createGameSession(String difficulty);
 
-  Future<Either<Failure, GameSession>> updateGameSession(
-    GameSession session,
-  );
+  Future<Either<Failure, GameSession>> updateGameSession(GameSession session);
 
-  Future<Either<Failure, GameResult>> finishGameSession(
-    GameSession session,
-  );
+  Future<Either<Failure, GameResult>> finishGameSession(GameSession session);
 
   Future<Either<Failure, void>> saveGameResult(
     GameResult result,
     String userId,
   );
 
-  Future<Either<Failure, List<GameResult>>> getUserGameResults(
-    String userId,
-  );
+  Future<Either<Failure, List<GameResult>>> getUserGameResults(String userId);
 }

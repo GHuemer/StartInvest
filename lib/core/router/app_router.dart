@@ -29,22 +29,24 @@ final GoRouter appRouter = GoRouter(
   redirect: (context, state) {
     final authState = context.read<AuthBloc>().state;
     final location = state.matchedLocation;
-    
-    final isAuthPage = location == AppRoutes.signIn ||
+
+    final isAuthPage =
+        location == AppRoutes.signIn ||
         location == AppRoutes.signUp ||
         location == AppRoutes.forgotPassword;
 
     if (authState is AuthAuthenticated) {
-      // Se autenticado, verifica se tem username. 
+      // Se autenticado, verifica se tem username.
       // Se não tiver, obriga a completar perfil (exceto se já estiver lá)
       final hasNoUsername = authState.user.username.isEmpty;
-      
+
       if (hasNoUsername && location != AppRoutes.completeProfile) {
         return AppRoutes.completeProfile;
       }
-      
+
       // Se já tem username e está tentando ir pra auth ou completar perfil, vai pra home
-      if (!hasNoUsername && (isAuthPage || location == AppRoutes.completeProfile)) {
+      if (!hasNoUsername &&
+          (isAuthPage || location == AppRoutes.completeProfile)) {
         return AppRoutes.home;
       }
     }
@@ -52,7 +54,7 @@ final GoRouter appRouter = GoRouter(
     if (authState is! AuthAuthenticated && !isAuthPage) {
       return AppRoutes.signIn;
     }
-    
+
     return null;
   },
   routes: [
@@ -90,7 +92,8 @@ final GoRouter appRouter = GoRouter(
                 GoRoute(
                   path: ':difficulty',
                   builder: (context, state) {
-                    final difficulty = state.pathParameters['difficulty'] ?? 'easy';
+                    final difficulty =
+                        state.pathParameters['difficulty'] ?? 'easy';
                     return BlocProvider(
                       create: (context) => getIt<GamesBloc>(),
                       child: MarketPredictorPage(difficulty: difficulty),

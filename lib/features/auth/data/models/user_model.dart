@@ -50,7 +50,11 @@ class UserModel extends AppUser {
 
   /// Converte o objeto do Firebase Auth para o nosso UserModel
   /// Nota: O username precisará ser preenchido após o login social se for a primeira vez
-  factory UserModel.fromFirebaseUser(dynamic firebaseUser, {String? username, bool isNewUser = false}) {
+  factory UserModel.fromFirebaseUser(
+    dynamic firebaseUser, {
+    String? username,
+    bool isNewUser = false,
+  }) {
     return UserModel(
       id: firebaseUser.uid,
       username: username ?? '',

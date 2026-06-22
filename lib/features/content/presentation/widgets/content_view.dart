@@ -23,14 +23,19 @@ class ContentView extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
                 child: Row(
                   children: [
-                    const Text('Portal de Ensino',
-                        style: AppTextStyles.headlineLarge),
+                    const Text(
+                      'Portal de Ensino',
+                      style: AppTextStyles.headlineLarge,
+                    ),
                     const Spacer(),
                     CircleAvatar(
                       radius: 18,
                       backgroundColor: AppColors.backgroundCard,
-                      child: const Icon(Icons.person,
-                          size: 18, color: AppColors.textSecondary),
+                      child: const Icon(
+                        Icons.person,
+                        size: 18,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -50,7 +55,10 @@ class ContentView extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
-                child: const Text('Cursos', style: AppTextStyles.headlineMedium),
+                child: const Text(
+                  'Cursos',
+                  style: AppTextStyles.headlineMedium,
+                ),
               ),
             ),
             SliverToBoxAdapter(
@@ -67,7 +75,8 @@ class ContentView extends StatelessWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      separatorBuilder: (_, unused) => const SizedBox(width: 12),
+                      separatorBuilder: (_, unused) =>
+                          const SizedBox(width: 12),
                       itemCount: state.courses.length,
                       itemBuilder: (context, i) {
                         final course = state.courses[i];
@@ -93,8 +102,10 @@ class ContentView extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
-                child: const Text('Artigos e Textos',
-                    style: AppTextStyles.headlineMedium),
+                child: const Text(
+                  'Artigos e Textos',
+                  style: AppTextStyles.headlineMedium,
+                ),
               ),
             ),
             BlocBuilder<ContentBloc, ContentState>(
@@ -114,23 +125,20 @@ class ContentView extends StatelessWidget {
                 return SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, i) {
-                        final article = state.articles[i];
-                        return ArticleCard(
-                          article: article,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ArticleDetailPage(article: article),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      childCount: state.articles.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, i) {
+                      final article = state.articles[i];
+                      return ArticleCard(
+                        article: article,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ArticleDetailPage(article: article),
+                            ),
+                          );
+                        },
+                      );
+                    }, childCount: state.articles.length),
                   ),
                 );
               },

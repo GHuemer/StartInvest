@@ -53,8 +53,9 @@ class GamesBloc extends Bloc<GamesEvent, GamesState> {
     // Calcula pontos apenas se acertou
     int pointsEarned = 0;
     if (isCorrect) {
-      pointsEarned =
-          session.calculatePointsForQuestion(session.currentQuestionIndex);
+      pointsEarned = session.calculatePointsForQuestion(
+        session.currentQuestionIndex,
+      );
     }
 
     final totalPoints = session.totalPoints + pointsEarned;
@@ -64,11 +65,13 @@ class GamesBloc extends Bloc<GamesEvent, GamesState> {
       totalPoints: totalPoints,
     );
 
-    emit(QuestionAnswered(
-      session: updatedSession,
-      isCorrect: isCorrect,
-      pointsEarned: pointsEarned,
-    ));
+    emit(
+      QuestionAnswered(
+        session: updatedSession,
+        isCorrect: isCorrect,
+        pointsEarned: pointsEarned,
+      ),
+    );
   }
 
   Future<void> _onNextQuestion(
@@ -83,9 +86,7 @@ class GamesBloc extends Bloc<GamesEvent, GamesState> {
     final nextIndex = session.currentQuestionIndex + 1;
 
     if (nextIndex < session.questions.length) {
-      final updatedSession = session.copyWith(
-        currentQuestionIndex: nextIndex,
-      );
+      final updatedSession = session.copyWith(currentQuestionIndex: nextIndex);
       emit(GameStarted(updatedSession));
     } else {
       // Fim do jogo

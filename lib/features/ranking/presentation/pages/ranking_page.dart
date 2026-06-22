@@ -18,7 +18,8 @@ class RankingPage extends StatefulWidget {
   State<RankingPage> createState() => _RankingPageState();
 }
 
-class _RankingPageState extends State<RankingPage> with SingleTickerProviderStateMixin {
+class _RankingPageState extends State<RankingPage>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -74,14 +75,19 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Nome de usuário',
-                        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
+                        hintStyle: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textMuted,
+                        ),
                         filled: true,
                         fillColor: AppColors.backgroundDark,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
-                        prefixIcon: const Icon(Icons.alternate_email, color: AppColors.primary),
+                        prefixIcon: const Icon(
+                          Icons.alternate_email,
+                          color: AppColors.primary,
+                        ),
                       ),
                       onChanged: (_) => setState(() {}),
                     ),
@@ -98,23 +104,31 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                                 setState(() => isLoading = true);
 
                                 try {
-                                  final result = await rankingCubit.sendFriendRequestByUsername(username);
+                                  final result = await rankingCubit
+                                      .sendFriendRequestByUsername(username);
 
                                   if (!context.mounted) return;
 
                                   result.fold(
                                     (error) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text(error),
-                                          backgroundColor: AppColors.textNegative,
+                                          backgroundColor:
+                                              AppColors.textNegative,
                                         ),
                                       );
                                     },
                                     (_) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Pedido de amizade enviado!'),
+                                          content: Text(
+                                            'Pedido de amizade enviado!',
+                                          ),
                                           backgroundColor: AppColors.primary,
                                         ),
                                       );
@@ -131,11 +145,23 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: isLoading
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Text('Enviar Convite', style: TextStyle(fontWeight: FontWeight.bold)),
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Enviar Convite',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                       ),
                     ),
                   ],
@@ -185,9 +211,15 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                         radius: 18,
                         backgroundColor: AppColors.backgroundCard,
                         child: ClipOval(
-                          child: user?.photoUrl != null && user!.photoUrl!.isNotEmpty
+                          child:
+                              user?.photoUrl != null &&
+                                  user!.photoUrl!.isNotEmpty
                               ? Image.network(user.photoUrl!, fit: BoxFit.cover)
-                              : const Icon(Icons.person, size: 18, color: AppColors.textSecondary),
+                              : const Icon(
+                                  Icons.person,
+                                  size: 18,
+                                  color: AppColors.textSecondary,
+                                ),
                         ),
                       ),
                     ],
@@ -197,13 +229,22 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Container(
-                    decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(24)),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundCard,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                     child: TabBar(
                       controller: _tabController,
-                      indicator: BoxDecoration(color: AppColors.backgroundCardLight, borderRadius: BorderRadius.circular(24)),
+                      indicator: BoxDecoration(
+                        color: AppColors.backgroundCardLight,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                       labelColor: AppColors.white,
                       unselectedLabelColor: AppColors.textMuted,
-                      tabs: const [Tab(text: 'Amigos'), Tab(text: 'Global')],
+                      tabs: const [
+                        Tab(text: 'Amigos'),
+                        Tab(text: 'Global'),
+                      ],
                     ),
                   ),
                 ),
@@ -219,10 +260,14 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(state.message, style: const TextStyle(color: Colors.white)),
+                              Text(
+                                state.message,
+                                style: const TextStyle(color: Colors.white),
+                              ),
                               const SizedBox(height: 16),
                               ElevatedButton(
-                                onPressed: () => context.read<RankingCubit>().loadRankings(),
+                                onPressed: () =>
+                                    context.read<RankingCubit>().loadRankings(),
                                 child: const Text('Tentar Novamente'),
                               ),
                             ],
@@ -231,14 +276,23 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                       }
                       if (state is RankingLoaded) {
                         return RefreshIndicator(
-                          onRefresh: () => context.read<RankingCubit>().loadRankings(),
+                          onRefresh: () =>
+                              context.read<RankingCubit>().loadRankings(),
                           color: AppColors.primary,
                           backgroundColor: AppColors.backgroundCard,
                           child: TabBarView(
                             controller: _tabController,
                             children: [
-                              _buildRankingTab(isGlobal: false, user: user, ranking: state.friendsRanking),
-                              _buildRankingTab(isGlobal: true, user: user, ranking: state.globalRanking),
+                              _buildRankingTab(
+                                isGlobal: false,
+                                user: user,
+                                ranking: state.friendsRanking,
+                              ),
+                              _buildRankingTab(
+                                isGlobal: true,
+                                user: user,
+                                ranking: state.globalRanking,
+                              ),
                             ],
                           ),
                         );
@@ -255,12 +309,18 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildRankingTab({required bool isGlobal, required List<UserProfile> ranking, AppUser? user}) {
+  Widget _buildRankingTab({
+    required bool isGlobal,
+    required List<UserProfile> ranking,
+    AppUser? user,
+  }) {
     final userIndex = ranking.indexWhere((p) => p.id == user?.id);
     final userInRanking = userIndex != -1 ? ranking[userIndex] : null;
-    
+
     final displayXp = userInRanking?.xp ?? user?.xp ?? 0;
-    final displayPosition = userIndex != -1 ? '#${userIndex + 1}' : (isGlobal ? '20+' : '#1');
+    final displayPosition = userIndex != -1
+        ? '#${userIndex + 1}'
+        : (isGlobal ? '20+' : '#1');
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -268,19 +328,30 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
       children: [
         _buildMyPosition(user: user, xp: displayXp, position: displayPosition),
         const SizedBox(height: 16),
-        _buildFriendsList(isGlobal: isGlobal, ranking: ranking, currentUserId: user?.id),
+        _buildFriendsList(
+          isGlobal: isGlobal,
+          ranking: ranking,
+          currentUserId: user?.id,
+        ),
         const SizedBox(height: 16),
         _buildLeague(user: user, xp: displayXp),
       ],
     );
   }
 
-  Widget _buildMyPosition({AppUser? user, required int xp, required String position}) {
+  Widget _buildMyPosition({
+    AppUser? user,
+    required int xp,
+    required String position,
+  }) {
     final firstName = user?.name.split(' ').first ?? 'Você';
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundCard,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Row(
         children: [
           Expanded(
@@ -289,7 +360,10 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
               children: [
                 const Text('Sua posição', style: AppTextStyles.titleLarge),
                 const SizedBox(height: 4),
-                Text('$position $firstName', style: AppTextStyles.headlineMedium),
+                Text(
+                  '$position $firstName',
+                  style: AppTextStyles.headlineMedium,
+                ),
               ],
             ),
           ),
@@ -314,21 +388,34 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildFriendsList({required bool isGlobal, required List<UserProfile> ranking, String? currentUserId}) {
+  Widget _buildFriendsList({
+    required bool isGlobal,
+    required List<UserProfile> ranking,
+    String? currentUserId,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundCard,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(isGlobal ? 'Top Global' : 'Seus amigos', style: AppTextStyles.titleLarge),
+              Text(
+                isGlobal ? 'Top Global' : 'Seus amigos',
+                style: AppTextStyles.titleLarge,
+              ),
               if (!isGlobal)
                 IconButton(
                   onPressed: _showAddFriendDialog,
-                  icon: const Icon(Icons.person_add_outlined, color: AppColors.primary),
+                  icon: const Icon(
+                    Icons.person_add_outlined,
+                    color: AppColors.primary,
+                  ),
                 ),
             ],
           ),
@@ -336,7 +423,12 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
           if (ranking.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
-              child: Center(child: Text('Nenhum dado disponível', style: AppTextStyles.bodyMedium)),
+              child: Center(
+                child: Text(
+                  'Nenhum dado disponível',
+                  style: AppTextStyles.bodyMedium,
+                ),
+              ),
             )
           else
             ...ranking.asMap().entries.map((entry) {
@@ -353,18 +445,33 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
-                  color: isCurrentUser ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+                  color: isCurrentUser
+                      ? AppColors.primary.withOpacity(0.1)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    SizedBox(width: 30, child: Text(rankIcon, style: const TextStyle(fontSize: 20))),
+                    SizedBox(
+                      width: 30,
+                      child: Text(
+                        rankIcon,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     CircleAvatar(
                       radius: 18,
                       backgroundColor: AppColors.backgroundCardLight,
                       child: item.photoUrl != null && item.photoUrl!.isNotEmpty
-                          ? ClipOval(child: Image.network(item.photoUrl!, fit: BoxFit.cover, width: 36, height: 36))
+                          ? ClipOval(
+                              child: Image.network(
+                                item.photoUrl!,
+                                fit: BoxFit.cover,
+                                width: 36,
+                                height: 36,
+                              ),
+                            )
                           : const Icon(Icons.person, size: 18),
                     ),
                     const SizedBox(width: 12),
@@ -372,8 +479,12 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                       child: Text(
                         isCurrentUser ? '${item.name} (Você)' : item.name,
                         style: AppTextStyles.titleMedium.copyWith(
-                          color: isCurrentUser ? AppColors.primary : Colors.white,
-                          fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
+                          color: isCurrentUser
+                              ? AppColors.primary
+                              : Colors.white,
+                          fontWeight: isCurrentUser
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -389,21 +500,25 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
 
   Widget _buildLeague({AppUser? user, required int xp}) {
     final league = LeagueInfo.getLeagueByXp(xp);
-    
+
     final currentLeagueIndex = LeagueInfo.leagues.indexOf(league);
     int nextMilestone = xp;
     double progress = 1.0;
-    
+
     if (currentLeagueIndex < LeagueInfo.leagues.length - 1) {
       final nextLeague = LeagueInfo.leagues[currentLeagueIndex + 1];
       nextMilestone = nextLeague.minXp;
       final currentMilestone = league.minXp;
-      progress = ((xp - currentMilestone) / (nextMilestone - currentMilestone)).clamp(0.0, 1.0);
+      progress = ((xp - currentMilestone) / (nextMilestone - currentMilestone))
+          .clamp(0.0, 1.0);
     }
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.backgroundCard, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundCard,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -417,7 +532,10 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(league.name.toUpperCase(), style: AppTextStyles.titleMedium),
+                    Text(
+                      league.name.toUpperCase(),
+                      style: AppTextStyles.titleMedium,
+                    ),
                     const SizedBox(height: 6),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
@@ -430,10 +548,10 @@ class _RankingPageState extends State<RankingPage> with SingleTickerProviderStat
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      currentLeagueIndex < LeagueInfo.leagues.length - 1 
-                        ? '$xp / $nextMilestone para ${LeagueInfo.leagues[currentLeagueIndex + 1].name}'
-                        : 'Nível Máximo atingido!', 
-                      style: AppTextStyles.bodySmall
+                      currentLeagueIndex < LeagueInfo.leagues.length - 1
+                          ? '$xp / $nextMilestone para ${LeagueInfo.leagues[currentLeagueIndex + 1].name}'
+                          : 'Nível Máximo atingido!',
+                      style: AppTextStyles.bodySmall,
                     ),
                   ],
                 ),

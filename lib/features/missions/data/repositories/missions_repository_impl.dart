@@ -14,7 +14,9 @@ class MissionsRepositoryImpl implements MissionsRepository {
   Future<List<MissionEntity>> getMissions() async {
     try {
       final catalogData = await remoteDataSource.getMissionsCatalog();
-      return catalogData.map((json) => MissionModel.fromFirestore(json, json['id'])).toList();
+      return catalogData
+          .map((json) => MissionModel.fromFirestore(json, json['id']))
+          .toList();
     } catch (e) {
       // Em uma implementação real, trataríamos erros com um Either ou lançando Exceptions personalizadas
       return [];

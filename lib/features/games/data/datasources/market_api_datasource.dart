@@ -275,12 +275,9 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
 
       final firstClose =
           (historicalData.first['close'] as num?)?.toDouble() ?? 0;
-      final lastClose =
-          (historicalData.last['close'] as num?)?.toDouble() ?? 0;
-      final firstDateSec =
-          (historicalData.first['date'] as num?)?.toInt() ?? 0;
-      final lastDateSec =
-          (historicalData.last['date'] as num?)?.toInt() ?? 0;
+      final lastClose = (historicalData.last['close'] as num?)?.toDouble() ?? 0;
+      final firstDateSec = (historicalData.first['date'] as num?)?.toInt() ?? 0;
+      final lastDateSec = (historicalData.last['date'] as num?)?.toInt() ?? 0;
 
       if (firstClose <= 0 || lastClose <= 0 || firstDateSec == lastDateSec) {
         throw Exception('Dados inválidos');

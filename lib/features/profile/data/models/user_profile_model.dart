@@ -23,16 +23,28 @@ class UserProfileModel extends UserProfile {
 
   factory UserProfileModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
-    
-    String parsedMemberSince = 'junho de 2026'; // Fallback para usuários antigos
+
+    String parsedMemberSince =
+        'junho de 2026'; // Fallback para usuários antigos
     if (data['createdAt'] is Timestamp) {
       final date = (data['createdAt'] as Timestamp).toDate();
       const months = [
-        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+        'janeiro',
+        'fevereiro',
+        'março',
+        'abril',
+        'maio',
+        'junho',
+        'julho',
+        'agosto',
+        'setembro',
+        'outubro',
+        'novembro',
+        'dezembro',
       ];
       parsedMemberSince = '${months[date.month - 1]} de ${date.year}';
-    } else if (data['memberSince'] != null && data['memberSince'].toString().isNotEmpty) {
+    } else if (data['memberSince'] != null &&
+        data['memberSince'].toString().isNotEmpty) {
       // Ignoramos a string antiga que foi injetada no banco por engano antes da atualização
       if (data['memberSince'] != 'novembro de 2025') {
         parsedMemberSince = data['memberSince'];
@@ -53,7 +65,9 @@ class UserProfileModel extends UserProfile {
       balance: (data['balance'] ?? 0.0).toDouble(),
       assetTypesCount: data['assetTypesCount'] ?? 0,
       loginStreak: data['loginStreak'] ?? 0,
-      completedMissionsIds: List<String>.from(data['completedMissionsIds'] ?? []),
+      completedMissionsIds: List<String>.from(
+        data['completedMissionsIds'] ?? [],
+      ),
       friendIds: List<String>.from(data['friendIds'] ?? []),
       memberSince: parsedMemberSince,
     );

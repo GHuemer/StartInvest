@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -24,13 +25,20 @@ jobs:
         run: flutter pub get
 
       - name: Verificar formatação
-        run: dart format lib --output=none --set-exit-if-changed || true
+        run: dart format lib --output=none --set-exit-if-changed
 
       - name: Análise estática
         run: flutter analyze
 
       - name: Rodar testes
-        run: flutter test --coverage || true
+        run: flutter test --coverage
+
+      - name: Upload cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+          retention-days: 1
 
       - name: Build Web
         run: flutter build web --no-wasm-dry-run --release

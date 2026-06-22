@@ -7,10 +7,7 @@ import '../widgets/market_predictor_game.dart';
 class MarketPredictorPage extends StatelessWidget {
   final String difficulty;
 
-  const MarketPredictorPage({
-    super.key,
-    required this.difficulty,
-  });
+  const MarketPredictorPage({super.key, required this.difficulty});
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +27,8 @@ class MarketPredictorPage extends StatelessWidget {
         builder: (context, state) {
           if (state is GamesInitial || state is GameLoading) {
             context.read<GamesBloc>().add(
-                  StartMarketPredictorEvent(difficulty),
-                );
+              StartMarketPredictorEvent(difficulty),
+            );
             return const Scaffold(
               backgroundColor: AppColors.backgroundDark,
               body: Center(
@@ -40,11 +37,10 @@ class MarketPredictorPage extends StatelessWidget {
             );
           }
 
-          if (state is GameStarted || state is QuestionAnswered || state is GameFinished) {
-            return MarketPredictorGame(
-              difficulty: difficulty,
-              state: state,
-            );
+          if (state is GameStarted ||
+              state is QuestionAnswered ||
+              state is GameFinished) {
+            return MarketPredictorGame(difficulty: difficulty, state: state);
           }
 
           return const Scaffold(

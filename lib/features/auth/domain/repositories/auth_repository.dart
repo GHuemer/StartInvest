@@ -4,7 +4,10 @@ import '../entities/user.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, AppUser>> signInWithGoogle();
-  Future<Either<Failure, AppUser>> signInWithEmail(String email, String password);
+  Future<Either<Failure, AppUser>> signInWithEmail(
+    String email,
+    String password,
+  );
   Future<Either<Failure, AppUser>> signUp({
     required String username,
     required String name,

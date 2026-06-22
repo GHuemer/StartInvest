@@ -17,37 +17,37 @@ class AuthRepositoryImpl implements AuthRepository {
     FirebaseAuth? firebaseAuth,
     FirebaseFirestore? firestore,
     GoogleSignIn? googleSignIn,
-  })  : _auth = firebaseAuth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+  }) : _auth = firebaseAuth ?? FirebaseAuth.instance,
+       _firestore = firestore ?? FirebaseFirestore.instance,
+       _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
   final GoogleSignIn _googleSignIn;
 
   @override
-  Stream<AppUser?> get authStateChanges => _auth.authStateChanges().asyncMap(
-        (firebaseUser) async {
-          if (firebaseUser == null) return null;
-          try {
-            final doc = await _firestore
-                .collection('users')
-                .doc(firebaseUser.uid)
-                .get();
-            if (doc.exists) {
-              return UserModel.fromMap(doc.data()!, doc.id);
-            }
-            
-            // Se o documento não existe no Firestore, retornamos um usuário sem username.
-            // NUNCA marcamos como isNewUser: true através do stream global, para evitar 
-            // redirecionamentos indesejados ao apenas "abrir o app".
-            // O isNewUser: true virá apenas do retorno direto das funções de Sign In.
-            return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
-          } catch (_) {
-            return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
-          }
-        },
-      );
+  Stream<AppUser?> get authStateChanges => _auth.authStateChanges().asyncMap((
+    firebaseUser,
+  ) async {
+    if (firebaseUser == null) return null;
+    try {
+      final doc = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
+      if (doc.exists) {
+        return UserModel.fromMap(doc.data()!, doc.id);
+      }
+
+      // Se o documento não existe no Firestore, retornamos um usuário sem username.
+      // NUNCA marcamos como isNewUser: true através do stream global, para evitar
+      // redirecionamentos indesejados ao apenas "abrir o app".
+      // O isNewUser: true virá apenas do retorno direto das funções de Sign In.
+      return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
+    } catch (_) {
+      return UserModel.fromFirebaseUser(firebaseUser, isNewUser: false);
+    }
+  });
 
   @override
   Future<Either<Failure, AppUser>> signInWithEmail(
@@ -59,8 +59,11 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      
-      final doc = await _firestore.collection('users').doc(cred.user!.uid).get();
+
+      final doc = await _firestore
+          .collection('users')
+          .doc(cred.user!.uid)
+          .get();
       if (doc.exists) {
         return Right(UserModel.fromMap(doc.data()!, doc.id));
       }
@@ -93,7 +96,10 @@ class AuthRepositoryImpl implements AuthRepository {
         cred = await _auth.signInWithCredential(credential);
       }
 
-      final doc = await _firestore.collection('users').doc(cred.user!.uid).get();
+      final doc = await _firestore
+          .collection('users')
+          .doc(cred.user!.uid)
+          .get();
       if (doc.exists) {
         return Right(UserModel.fromMap(doc.data()!, doc.id));
       }
@@ -163,7 +169,10 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateUsername(String userId, String username) async {
+  Future<Either<Failure, void>> updateUsername(
+    String userId,
+    String username,
+  ) async {
     try {
       final isAvailable = await isUsernameAvailable(username);
       if (!isAvailable) {
@@ -173,10 +182,14 @@ class AuthRepositoryImpl implements AuthRepository {
       final doc = await _firestore.collection('users').doc(userId).get();
       if (!doc.exists) {
         final firebaseUser = _auth.currentUser;
-        if (firebaseUser == null) return const Left(AuthFailure('Usuário não autenticado'));
-        
+        if (firebaseUser == null)
+          return const Left(AuthFailure('Usuário não autenticado'));
+
         // Se o documento não existe (caso de login social novo), criamos ele com os dados básicos e o novo username
-        final model = UserModel.fromFirebaseUser(firebaseUser, username: username.toLowerCase().trim());
+        final model = UserModel.fromFirebaseUser(
+          firebaseUser,
+          username: username.toLowerCase().trim(),
+        );
         final userMap = model.toMap();
         userMap['createdAt'] = FieldValue.serverTimestamp();
         await _firestore.collection('users').doc(userId).set(userMap);
@@ -217,7 +230,9 @@ class AuthRepositoryImpl implements AuthRepository {
     final user = _auth.currentUser;
     // Nota: Aqui não temos acesso direto ao Firestore de forma síncrona
     // O ideal é usar o authStateChanges para pegar o usuário completo
-    return user != null ? UserModel.fromFirebaseUser(user, isNewUser: false) : null;
+    return user != null
+        ? UserModel.fromFirebaseUser(user, isNewUser: false)
+        : null;
   }
 
   @override
@@ -226,7 +241,10 @@ class AuthRepositoryImpl implements AuthRepository {
     if (firebaseUser == null) return null;
 
     try {
-      final doc = await _firestore.collection('users').doc(firebaseUser.uid).get();
+      final doc = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
       if (doc.exists) {
         return UserModel.fromMap(doc.data()!, doc.id);
       }
@@ -237,13 +255,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   String _mapError(String code) => switch (code) {
-        'user-not-found' => 'Usuário não encontrado',
-        'wrong-password' => 'Senha incorreta',
-        'invalid-credential' => 'E-mail ou senha incorretos',
-        'email-already-in-use' => 'E-mail já cadastrado',
-        'weak-password' => 'Senha muito fraca (mínimo 6 caracteres)',
-        'invalid-email' => 'E-mail inválido',
-        'too-many-requests' => 'Muitas tentativas. Tente novamente mais tarde',
-        _ => 'Erro de autenticação',
-      };
+    'user-not-found' => 'Usuário não encontrado',
+    'wrong-password' => 'Senha incorreta',
+    'invalid-credential' => 'E-mail ou senha incorretos',
+    'email-already-in-use' => 'E-mail já cadastrado',
+    'weak-password' => 'Senha muito fraca (mínimo 6 caracteres)',
+    'invalid-email' => 'E-mail inválido',
+    'too-many-requests' => 'Muitas tentativas. Tente novamente mais tarde',
+    _ => 'Erro de autenticação',
+  };
 }

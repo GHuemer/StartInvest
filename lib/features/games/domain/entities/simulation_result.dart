@@ -68,8 +68,7 @@ class SimulationResult extends Equatable {
     this.createdAt,
   });
 
-  double get totalInvested =>
-      assets.fold(0, (s, a) => s + a.investedAmount);
+  double get totalInvested => assets.fold(0, (s, a) => s + a.investedAmount);
   double get totalProjected =>
       consolidatedPoints.isNotEmpty ? consolidatedPoints.last : totalInvested;
   double get totalGainPercent => totalInvested > 0
@@ -78,5 +77,10 @@ class SimulationResult extends Equatable {
   bool get isYearly => periodMonths > 12;
 
   @override
-  List<Object?> get props => [assets, periodMonths, consolidatedPoints, createdAt];
+  List<Object?> get props => [
+    assets,
+    periodMonths,
+    consolidatedPoints,
+    createdAt,
+  ];
 }

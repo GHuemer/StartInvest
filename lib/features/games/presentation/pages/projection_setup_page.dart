@@ -96,9 +96,9 @@ class _ProjectionSetupView extends StatelessWidget {
                   const SizedBox(height: 24),
                   _AssetList(
                     assets: state.assets,
-                    onRemove: (t) => context
-                        .read<ProjectionBloc>()
-                        .add(RemoveProjectionAsset(t)),
+                    onRemove: (t) => context.read<ProjectionBloc>().add(
+                      RemoveProjectionAsset(t),
+                    ),
                     onEditAmount: (ticker, current) =>
                         _showAmountDialog(context, ticker, current),
                   ),
@@ -149,8 +149,7 @@ class _ProjectionSetupView extends StatelessWidget {
     );
   }
 
-  void _showAmountDialog(
-      BuildContext context, String ticker, double current) {
+  void _showAmountDialog(BuildContext context, String ticker, double current) {
     final ctrl = TextEditingController(
       text: current.toStringAsFixed(2).replaceAll('.', ','),
     );
@@ -165,8 +164,7 @@ class _ProjectionSetupView extends StatelessWidget {
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          keyboardType:
-              const TextInputType.numberWithOptions(decimal: true),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'[\d,.]')),
           ],
@@ -185,23 +183,28 @@ class _ProjectionSetupView extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar',
-                style: TextStyle(color: Colors.white54)),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white54),
+            ),
           ),
           TextButton(
             onPressed: () {
-              final val =
-                  double.tryParse(ctrl.text.replaceAll(',', '.')) ?? 0;
+              final val = double.tryParse(ctrl.text.replaceAll(',', '.')) ?? 0;
               if (val > 0) {
-                context
-                    .read<ProjectionBloc>()
-                    .add(UpdateProjectionAmount(ticker, val));
+                context.read<ProjectionBloc>().add(
+                  UpdateProjectionAmount(ticker, val),
+                );
               }
               Navigator.pop(ctx);
             },
-            child: const Text('OK',
-                style: TextStyle(
-                    color: AppColors.primary, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -251,9 +254,10 @@ class _InfoBanner extends StatelessWidget {
                 Text(
                   'Simulação futura',
                   style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -272,9 +276,10 @@ class _InfoBanner extends StatelessWidget {
             child: const Text(
               '+5 XP',
               style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12),
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
@@ -296,7 +301,10 @@ class _PeriodSelector extends StatelessWidget {
         const Text(
           'Período de projeção',
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
         ),
         const SizedBox(height: 10),
         SingleChildScrollView(
@@ -309,7 +317,9 @@ class _PeriodSelector extends StatelessWidget {
                 child: Container(
                   margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primary
@@ -380,15 +390,20 @@ class _AssetList extends StatelessWidget {
         const Text(
           'Seus ativos',
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
         ),
         const SizedBox(height: 10),
-        ...assets.map((a) => _AssetItem(
-              asset: a,
-              fmt: fmt,
-              onRemove: () => onRemove(a.ticker),
-              onEditAmount: () => onEditAmount(a.ticker, a.amount),
-            )),
+        ...assets.map(
+          (a) => _AssetItem(
+            asset: a,
+            fmt: fmt,
+            onRemove: () => onRemove(a.ticker),
+            onEditAmount: () => onEditAmount(a.ticker, a.amount),
+          ),
+        ),
       ],
     );
   }
@@ -437,9 +452,10 @@ class _AssetItem extends StatelessWidget {
             child: Text(
               _typeLabel,
               style: TextStyle(
-                  color: _typeColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10),
+                color: _typeColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 10,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -450,9 +466,10 @@ class _AssetItem extends StatelessWidget {
                 Text(
                   asset.ticker,
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
                 Text(
                   asset.name,
@@ -474,9 +491,10 @@ class _AssetItem extends StatelessWidget {
               child: Text(
                 fmt.format(asset.amount),
                 style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
@@ -508,7 +526,8 @@ class _SimularButton extends StatelessWidget {
             disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -516,9 +535,10 @@ class _SimularButton extends StatelessWidget {
               Text(
                 'Simular',
                 style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
               SizedBox(width: 8),
               Icon(Icons.arrow_forward, color: Colors.black, size: 18),
@@ -586,7 +606,8 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
         child: Column(
@@ -598,9 +619,10 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
                 const Text(
                   'Adicionar ativo',
                   style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
                 const Spacer(),
                 GestureDetector(
@@ -623,31 +645,38 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
                 height: 220,
                 child: ListView(
                   children: _catalog
-                      .map((item) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              item.$1,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                      .map(
+                        (item) => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            item.$1,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
-                            subtitle: Text(
-                              item.$2,
-                              style: const TextStyle(
-                                  color: Colors.white54, fontSize: 12),
+                          ),
+                          subtitle: Text(
+                            item.$2,
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
                             ),
-                            trailing: const Icon(Icons.add_circle_outline,
-                                color: AppColors.primary),
-                            onTap: () => setState(() {
-                              _selectedAsset = ProjectionAssetInput(
-                                ticker: item.$1,
-                                name: item.$2,
-                                assetType: _selectedType,
-                                amount: 1000,
-                              );
-                              _amountCtrl.text = '1000,00';
-                            }),
-                          ))
+                          ),
+                          trailing: const Icon(
+                            Icons.add_circle_outline,
+                            color: AppColors.primary,
+                          ),
+                          onTap: () => setState(() {
+                            _selectedAsset = ProjectionAssetInput(
+                              ticker: item.$1,
+                              name: item.$2,
+                              assetType: _selectedType,
+                              amount: 1000,
+                            );
+                            _amountCtrl.text = '1000,00';
+                          }),
+                        ),
+                      )
                       .toList(),
                 ),
               )
@@ -660,8 +689,11 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle,
-                        color: AppColors.primary, size: 20),
+                    const Icon(
+                      Icons.check_circle,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -669,21 +701,27 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
                         Text(
                           _selectedAsset!.ticker,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
                           _selectedAsset!.name,
                           style: const TextStyle(
-                              color: Colors.white54, fontSize: 11),
+                            color: Colors.white54,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
                     const Spacer(),
                     GestureDetector(
                       onTap: () => setState(() => _selectedAsset = null),
-                      child: const Icon(Icons.edit_outlined,
-                          color: Colors.white38, size: 18),
+                      child: const Icon(
+                        Icons.edit_outlined,
+                        color: Colors.white38,
+                        size: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -697,8 +735,9 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
               TextField(
                 controller: _amountCtrl,
                 autofocus: true,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[\d,.]')),
                 ],
@@ -723,12 +762,15 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Text(
                     'Adicionar',
                     style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -740,12 +782,11 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
   }
 
   void _confirm() {
-    final val =
-        double.tryParse(_amountCtrl.text.replaceAll(',', '.')) ?? 0;
+    final val = double.tryParse(_amountCtrl.text.replaceAll(',', '.')) ?? 0;
     if (val <= 0 || _selectedAsset == null) return;
     context.read<ProjectionBloc>().add(
-          AddProjectionAsset(_selectedAsset!.copyWith(amount: val)),
-        );
+      AddProjectionAsset(_selectedAsset!.copyWith(amount: val)),
+    );
     Navigator.pop(context);
   }
 }
@@ -782,9 +823,7 @@ class _TypeTabs extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isSelected ? Colors.black : Colors.white54,
-                  fontWeight: isSelected
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 12,
                 ),
               ),

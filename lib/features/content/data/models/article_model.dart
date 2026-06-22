@@ -18,8 +18,8 @@ class ArticleModel extends Article {
       content: map['content'] ?? '',
       author: map['author'] ?? '',
       readingTime: map['readingTime'] ?? '',
-      publishedAt: map['publishedAt'] != null 
-          ? DateTime.parse(map['publishedAt']) 
+      publishedAt: map['publishedAt'] != null
+          ? DateTime.parse(map['publishedAt'])
           : DateTime.now(),
       imageUrl: map['imageUrl'],
     );

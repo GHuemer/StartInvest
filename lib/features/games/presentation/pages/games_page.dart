@@ -33,10 +33,8 @@ class GamesPage extends StatelessWidget {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Ex: Quiz Renda Fixa',
-                hintStyle:
-                    const TextStyle(color: Colors.white54, fontSize: 14),
-                prefixIcon:
-                    const Icon(Icons.search, color: Colors.white54),
+                hintStyle: const TextStyle(color: Colors.white54, fontSize: 14),
+                prefixIcon: const Icon(Icons.search, color: Colors.white54),
                 filled: true,
                 fillColor: AppColors.backgroundCard,
                 border: OutlineInputBorder(
@@ -141,8 +139,7 @@ class GamesPage extends StatelessWidget {
                   'Simule quanto seu dinheiro pode render no futuro com base no histórico real.',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const ProjectionSetupPage()),
+                MaterialPageRoute(builder: (_) => const ProjectionSetupPage()),
               ),
             ),
             const SizedBox(height: 32),
@@ -177,8 +174,7 @@ class _GameCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.backgroundCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.3)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -206,15 +202,17 @@ class _GameCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                        color: Colors.white60, fontSize: 12),
+                    style: const TextStyle(color: Colors.white60, fontSize: 12),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward_ios,
-                color: Colors.white38, size: 16),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white38,
+              size: 16,
+            ),
           ],
         ),
       ),
@@ -248,7 +246,8 @@ class _RiskCard extends StatelessWidget {
             color: AppColors.backgroundCard,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-                color: AppColors.cardBorder.withValues(alpha: 0.3)),
+              color: AppColors.cardBorder.withValues(alpha: 0.3),
+            ),
           ),
           child: Row(
             children: [
@@ -269,7 +268,9 @@ class _RiskCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                          color: Colors.white70, fontSize: 12),
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
