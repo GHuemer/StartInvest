@@ -8,6 +8,7 @@ class MarketAsset extends Equatable {
   final double currentPrice;
   final double changePercent;
   final DateTime fetchedAt;
+  final bool isOffline;
 
   const MarketAsset({
     required this.ticker,
@@ -16,6 +17,7 @@ class MarketAsset extends Equatable {
     required this.currentPrice,
     required this.changePercent,
     required this.fetchedAt,
+    this.isOffline = false,
   });
 
   bool get isStale => DateTime.now().difference(fetchedAt).inSeconds > 60;
@@ -28,6 +30,7 @@ class MarketAsset extends Equatable {
       currentPrice: currentPrice ?? this.currentPrice,
       changePercent: changePercent ?? this.changePercent,
       fetchedAt: DateTime.now(),
+      isOffline: isOffline,
     );
   }
 
@@ -39,5 +42,6 @@ class MarketAsset extends Equatable {
     currentPrice,
     changePercent,
     fetchedAt,
+    isOffline,
   ];
 }

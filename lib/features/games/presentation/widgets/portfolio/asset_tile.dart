@@ -69,10 +69,24 @@ class AssetTile extends StatelessWidget {
               fontSize: 13,
             ),
           ),
-          Text(
-            '${isPositive ? '+' : ''}${asset.changePercent.toStringAsFixed(2)}%',
-            style: TextStyle(color: changeColor, fontSize: 11),
-          ),
+          if (asset.isOffline)
+            const Text(
+              '-- (offline)',
+              style: TextStyle(color: Colors.white38, fontSize: 11),
+            )
+          else if (asset.type == AssetType.fixedIncome)
+            Text(
+              '+${asset.changePercent.toStringAsFixed(2)}% a.a.',
+              style: const TextStyle(
+                color: AppColors.textPositive,
+                fontSize: 11,
+              ),
+            )
+          else
+            Text(
+              '${isPositive ? '+' : ''}${asset.changePercent.toStringAsFixed(2)}%',
+              style: TextStyle(color: changeColor, fontSize: 11),
+            ),
         ],
       ),
     );

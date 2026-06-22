@@ -44,10 +44,30 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   ];
 
   static const List<Map<String, String>> _fixedIncome = [
-    {'ticker': 'CDB_CDI_100', 'name': 'CDB 100% CDI'},
-    {'ticker': 'CDB_CDI_110', 'name': 'CDB 110% CDI'},
-    {'ticker': 'TESOURO_SELIC', 'name': 'Tesouro Selic 2027'},
-    {'ticker': 'TESOURO_IPCA', 'name': 'Tesouro IPCA+ 2029'},
+    {
+      'ticker': 'CDB_CDI_100',
+      'name': 'CDB 100% CDI',
+      'price': '1000.00',
+      'rate': '1.0',
+    },
+    {
+      'ticker': 'CDB_CDI_110',
+      'name': 'CDB 110% CDI',
+      'price': '1000.00',
+      'rate': '1.1',
+    },
+    {
+      'ticker': 'TESOURO_SELIC',
+      'name': 'Tesouro Selic 2027',
+      'price': '14250.00',
+      'rate': '1.0',
+    },
+    {
+      'ticker': 'TESOURO_IPCA',
+      'name': 'Tesouro IPCA+ 2029',
+      'price': '4100.00',
+      'rate': '1.05',
+    },
   ];
 
   // CDI anual aproximado (usar para simulação de Renda Fixa)
@@ -132,16 +152,25 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   MarketAsset _fixedIncomeAsset(String ticker) {
     final info = _fixedIncome.firstWhere(
       (e) => e['ticker'] == ticker,
-      orElse: () => {'ticker': ticker, 'name': ticker},
+      orElse: () => {
+        'ticker': ticker,
+        'name': ticker,
+        'price': '1000',
+        'rate': '1.0',
+      },
     );
-    // Preço base 1000 com rendimento CDI diário acumulado hoje
-    final price = 1000.0 * (1 + _cdiDailyRate);
+    final basePrice = double.tryParse(info['price']!) ?? 1000.0;
+    final rateMultiplier = double.tryParse(info['rate']!) ?? 1.0;
+    final effectiveDailyRate = _cdiDailyRate * rateMultiplier;
+    final currentPrice = basePrice * (1 + effectiveDailyRate);
+    // changePercent exibe o rendimento anual estimado (mais informativo para RF)
+    final annualYieldPct = _cdiAnnualRate * rateMultiplier * 100;
     return MarketAsset(
       ticker: ticker,
       name: info['name']!,
       type: AssetType.fixedIncome,
-      currentPrice: price,
-      changePercent: _cdiDailyRate * 100,
+      currentPrice: currentPrice,
+      changePercent: annualYieldPct,
       fetchedAt: DateTime.now(),
     );
   }
@@ -158,6 +187,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
       type: type,
       currentPrice: double.tryParse(info['price'] ?? '0') ?? 0.0,
       changePercent: 0.0,
+      isOffline: true,
       fetchedAt: DateTime.now(),
     );
   }
