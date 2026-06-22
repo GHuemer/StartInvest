@@ -15,6 +15,7 @@ class MissionEntity extends Equatable {
   final int requiredLevel;
   final int requiredCourses;
   final double progress; // 0.0 to 1.0
+  final int rewardPoints; // Quantos pontos o jogador ganha ao completar
 
   const MissionEntity({
     required this.id,
@@ -26,6 +27,7 @@ class MissionEntity extends Equatable {
     this.requiredLevel = 0,
     this.requiredCourses = 0,
     this.progress = 0.0,
+    this.rewardPoints = 50, // Padrão de 50 pontos para as antigas
   });
 
   bool get isLocked => status == MissionStatus.locked;
@@ -45,9 +47,10 @@ class MissionEntity extends Equatable {
       requiredLevel: requiredLevel,
       requiredCourses: requiredCourses,
       progress: progress ?? this.progress,
+      rewardPoints: rewardPoints,
     );
   }
 
   @override
-  List<Object?> get props => [id, title, description, icon, category, status, requiredLevel, requiredCourses, progress];
+  List<Object?> get props => [id, title, description, icon, category, status, requiredLevel, requiredCourses, progress, rewardPoints];
 }
