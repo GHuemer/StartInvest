@@ -1,6 +1,7 @@
 name: SonarCloud Analysis
 
 on:
+<<<<<<< HEAD
   workflow_run:
     workflows: ["CI"]
     types: [completed]
@@ -14,10 +15,32 @@ jobs:
 
     steps:
       - name: Checkout código
+=======
+  push:
+    branches:
+      - main
+      - develop
+      - 'improvement/**'
+      - 'feature/**'
+      - 'fix/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  sonar:
+    name: Build, Test & Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+>>>>>>> origin/improvement/auth-bloc-tests
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+<<<<<<< HEAD
       - name: Baixar cobertura do CI
         uses: actions/download-artifact@v4
         with:
@@ -28,6 +51,32 @@ jobs:
 
       - name: Análise SonarCloud
         uses: SonarSource/sonarcloud-github-action@v3
+=======
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        working-directory: startinvest
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        working-directory: startinvest
+        run: flutter test --coverage
+
+      - name: Verify coverage report
+        run: |
+          echo "Checking coverage file..."
+          ls -la startinvest/coverage/
+          wc -l startinvest/coverage/lcov.info
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: startinvest
+>>>>>>> origin/improvement/auth-bloc-tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
