@@ -5,6 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../missions/presentation/bloc/missions_cubit.dart';
+import '../../../missions/presentation/bloc/missions_state.dart';
+import '../../../missions/domain/entities/mission_entity.dart';
+import '../../../../core/di/injection.dart';
 import '../../domain/entities/challenge.dart';
 import '../widgets/home_header.dart';
 import '../widgets/pilar_card.dart';
@@ -15,7 +19,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView();
+    return BlocProvider(
+      create: (context) => getIt<MissionsCubit>()..init(),
+      child: const _HomeView(),
+    );
   }
 }
 
@@ -62,7 +69,42 @@ class _HomeView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              ChallengeCard(challenge: dailyChallenge),
+              
+              // Widget de Desafio conectado as missoes reais
+              BlocBuilder<MissionsCubit, MissionsState>(
+                builder: (context, state) {
+                  // Procura a primeira missao disponivel que ainda nao foi completada
+                  final availableMission = state.allMissions.where((m) => m.status == MissionStatus.available).firstOrNull;
+
+                  if (availableMission == null) {
+                     return const ChallengeCard(
+                      challenge: Challenge(
+                        id: 'done',
+                        tag: 'Concluído',
+                        title: 'Tudo Limpo!',
+                        description: 'Você completou os desafios diários. Volte amanhã!',
+                        points: 0,
+                        iconType: 'emoji_events',
+                      ),
+                    );
+                  }
+
+                  return ChallengeCard(
+                    challenge: Challenge(
+                      id: availableMission.id,
+                      tag: 'Novo Desafio',
+                      title: availableMission.title,
+                      description: availableMission.description,
+                      points: availableMission.rewardPoints,
+                      iconType: availableMission.icon.codePoint.toString(), // Truque para passar icone
+                      isRealIcon: true,
+                      actualIcon: availableMission.icon,
+                    ),
+                    onTap: () => context.go(AppRoutes.missions),
+                  );
+                },
+              ),
+
               const SizedBox(height: 40),
               GridView.count(
                 shrinkWrap: true,
