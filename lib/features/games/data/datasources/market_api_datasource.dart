@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/entities/market_asset.dart';
 import '../../domain/entities/position.dart';
@@ -16,7 +17,10 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   // Cache: ticker -> (asset, fetchedAt)
   final Map<String, (MarketAsset, DateTime)> _cache = {};
   static const Duration _cacheDuration = Duration(seconds: 60);
-  static const String _baseUrl = 'https://brapi.dev/api';
+
+  // Yahoo Finance — sem token, tickers brasileiros usam sufixo .SA
+  static const String _yahooBase =
+      'https://query2.finance.yahoo.com/v8/finance/chart';
 
   MarketApiDataSourceImpl(this._dio);
 
@@ -70,7 +74,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     },
   ];
 
-  // CDI anual aproximado (usar para simulação de Renda Fixa)
+  // CDI anual aproximado para simulação de Renda Fixa
   static const double _cdiAnnualRate = 0.1375;
   static const double _cdiDailyRate = _cdiAnnualRate / 252;
 
@@ -87,22 +91,11 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     }
 
     try {
-      final response = await _dio.get('$_baseUrl/quote/$ticker');
-      final results = response.data['results'] as List;
-      if (results.isEmpty) throw Exception('Ticker não encontrado: $ticker');
-      final data = results.first as Map<String, dynamic>;
-      final asset = MarketAsset(
-        ticker: ticker,
-        name: data['longName'] ?? data['shortName'] ?? ticker,
-        type: type,
-        currentPrice: (data['regularMarketPrice'] as num).toDouble(),
-        changePercent:
-            (data['regularMarketChangePercent'] as num?)?.toDouble() ?? 0.0,
-        fetchedAt: DateTime.now(),
-      );
+      final asset = await _fetchFromYahoo(ticker, type);
       _cache[ticker] = (asset, DateTime.now());
       return asset;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
       return _fallbackAsset(ticker, type);
     }
   }
@@ -114,29 +107,28 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     }
 
     final catalog = type == AssetType.stock ? _stocks : _fiis;
-    final tickers = catalog.map((e) => e['ticker']!).join(',');
 
-    try {
-      final response = await _dio.get('$_baseUrl/quote/$tickers');
-      final results = response.data['results'] as List;
-      final assets = results.map((data) {
-        final ticker = data['symbol'] as String;
-        final asset = MarketAsset(
-          ticker: ticker,
-          name: data['longName'] ?? data['shortName'] ?? ticker,
-          type: type,
-          currentPrice: (data['regularMarketPrice'] as num).toDouble(),
-          changePercent:
-              (data['regularMarketChangePercent'] as num?)?.toDouble() ?? 0.0,
-          fetchedAt: DateTime.now(),
-        );
-        _cache[ticker] = (asset, DateTime.now());
-        return asset;
-      }).toList();
-      return assets;
-    } catch (_) {
-      return catalog.map((e) => _fallbackAsset(e['ticker']!, type)).toList();
-    }
+    // Busca em paralelo — Yahoo Finance suporta sem limite de token
+    final results = await Future.wait(
+      catalog.map((info) async {
+        final ticker = info['ticker']!;
+        try {
+          final cached = _cache[ticker];
+          if (cached != null &&
+              DateTime.now().difference(cached.$2) < _cacheDuration) {
+            return cached.$1;
+          }
+          final asset = await _fetchFromYahoo(ticker, type);
+          _cache[ticker] = (asset, DateTime.now());
+          return asset;
+        } catch (e) {
+          debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
+          return _fallbackAsset(ticker, type);
+        }
+      }),
+    );
+
+    return results;
   }
 
   @override
@@ -147,6 +139,41 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     return all
         .where((a) => a.ticker.contains(q) || a.name.toUpperCase().contains(q))
         .toList();
+  }
+
+  Future<MarketAsset> _fetchFromYahoo(String ticker, AssetType type) async {
+    final yahooTicker = '${ticker}.SA';
+    final response = await _dio.get(
+      '$_yahooBase/$yahooTicker',
+      queryParameters: {'interval': '1d', 'range': '1d'},
+    );
+
+    final result =
+        (response.data['chart']['result'] as List?)?.first
+            as Map<String, dynamic>?;
+    if (result == null) throw Exception('Sem dados para $ticker');
+
+    final meta = result['meta'] as Map<String, dynamic>;
+    final price = (meta['regularMarketPrice'] as num).toDouble();
+    final prevClose = (meta['previousClose'] as num?)?.toDouble() ?? price;
+    final changePct = prevClose > 0
+        ? ((price - prevClose) / prevClose) * 100
+        : 0.0;
+
+    final catalog = type == AssetType.stock ? _stocks : _fiis;
+    final catalogName = catalog
+        .where((e) => e['ticker'] == ticker)
+        .map((e) => e['name']!)
+        .firstOrNull;
+
+    return MarketAsset(
+      ticker: ticker,
+      name: catalogName ?? (meta['shortName'] as String? ?? ticker),
+      type: type,
+      currentPrice: price,
+      changePercent: changePct,
+      fetchedAt: DateTime.now(),
+    );
   }
 
   MarketAsset _fixedIncomeAsset(String ticker) {
@@ -163,7 +190,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     final rateMultiplier = double.tryParse(info['rate']!) ?? 1.0;
     final effectiveDailyRate = _cdiDailyRate * rateMultiplier;
     final currentPrice = basePrice * (1 + effectiveDailyRate);
-    // changePercent exibe o rendimento anual estimado (mais informativo para RF)
+    // changePercent mostra rendimento anual estimado (mais informativo para RF)
     final annualYieldPct = _cdiAnnualRate * rateMultiplier * 100;
     return MarketAsset(
       ticker: ticker,

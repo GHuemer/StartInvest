@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_back_button.dart';
@@ -68,7 +69,8 @@ class _AssetBrowserPageState extends State<AssetBrowserPage>
       final ds = getIt<MarketApiDataSource>();
       final assets = await ds.getAssetsByType(type);
       if (mounted) setState(() => _cache[type] = assets);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[AssetBrowser] Erro ao carregar ativos: $e');
     } finally {
       if (mounted) setState(() => _loading[type] = false);
     }
