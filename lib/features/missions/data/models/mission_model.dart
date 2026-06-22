@@ -12,6 +12,7 @@ class MissionModel extends MissionEntity {
     super.requiredLevel,
     super.requiredCourses,
     super.progress,
+    super.rewardPoints,
   });
 
   factory MissionModel.fromFirestore(Map<String, dynamic> json, String documentId) {
@@ -23,6 +24,7 @@ class MissionModel extends MissionEntity {
       category: _parseCategory(json['category'] ?? ''),
       requiredLevel: json['requiredLevel'] ?? 0,
       requiredCourses: json['requiredCourses'] ?? 0,
+      rewardPoints: json['rewardPoints'] ?? 50,
     );
   }
 

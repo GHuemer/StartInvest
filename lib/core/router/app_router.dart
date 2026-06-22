@@ -10,6 +10,9 @@ import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/content/presentation/pages/content_page.dart';
 import '../../features/content/presentation/pages/course_player_page.dart';
 import '../../features/games/presentation/pages/games_page.dart';
+import '../../features/games/presentation/pages/games_hub_page.dart';
+import '../../features/games/presentation/pages/market_predictor_page.dart';
+import '../../features/games/presentation/bloc/games_bloc.dart';
 import '../../features/ranking/presentation/pages/ranking_page.dart';
 import '../../features/ranking/presentation/bloc/ranking_cubit.dart';
 import '../../features/news/presentation/pages/news_page.dart';
@@ -79,6 +82,24 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.games,
           builder: (context, state) => const GamesPage(),
+          routes: [
+            GoRoute(
+              path: 'market-predictor',
+              builder: (context, state) => const GamesHubPage(),
+              routes: [
+                GoRoute(
+                  path: ':difficulty',
+                  builder: (context, state) {
+                    final difficulty = state.pathParameters['difficulty'] ?? 'easy';
+                    return BlocProvider(
+                      create: (context) => getIt<GamesBloc>(),
+                      child: MarketPredictorPage(difficulty: difficulty),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
         GoRoute(
           path: AppRoutes.content,

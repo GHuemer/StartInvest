@@ -28,10 +28,16 @@ import '../../features/auth/domain/usecases/sign_up.dart' as _i190;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
 import '../../features/games/data/datasources/market_api_datasource.dart'
     as _i114;
+import '../../features/games/data/datasources/market_questions_datasource.dart'
+    as _i486;
 import '../../features/games/data/datasources/portfolio_firestore_datasource.dart'
     as _i30;
+import '../../features/games/data/repositories/games_repository_impl.dart'
+    as _i438;
 import '../../features/games/data/repositories/portfolio_repository_impl.dart'
     as _i1067;
+import '../../features/games/domain/repositories/games_repository.dart'
+    as _i604;
 import '../../features/games/domain/repositories/portfolio_repository.dart'
     as _i989;
 import '../../features/games/domain/usecases/portfolio/buy_asset_usecase.dart'
@@ -54,6 +60,7 @@ import '../../features/games/domain/usecases/portfolio/sell_asset_usecase.dart'
     as _i985;
 import '../../features/games/domain/usecases/projection/run_projection_usecase.dart'
     as _i91;
+import '../../features/games/presentation/bloc/games_bloc.dart' as _i974;
 import '../../features/games/presentation/bloc/portfolio/portfolio_bloc.dart'
     as _i381;
 import '../../features/games/presentation/bloc/projection/projection_bloc.dart'
@@ -97,6 +104,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i59.FirebaseAuth>(() => registerModule.firebaseAuth);
     gh.lazySingleton<_i116.GoogleSignIn>(() => registerModule.googleSignIn);
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
+    gh.lazySingleton<_i486.MarketQuestionsDatasource>(
+      () => registerModule.marketQuestionsDatasource,
+    );
+    gh.lazySingleton<_i604.GamesRepository>(
+      () => _i438.GamesRepositoryImpl(
+        datasource: gh<_i486.MarketQuestionsDatasource>(),
+        firestore: gh<_i974.FirebaseFirestore>(),
+      ),
+    );
     gh.lazySingleton<_i114.MarketApiDataSource>(
       () => _i114.MarketApiDataSourceImpl(gh<_i361.Dio>()),
     );
@@ -128,6 +144,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i894.ProfileRepository>(
       () => _i334.ProfileRepositoryImpl(gh<_i974.FirebaseFirestore>()),
+    );
+    gh.factory<_i974.GamesBloc>(
+      () => _i974.GamesBloc(gh<_i604.GamesRepository>()),
     );
     gh.lazySingleton<_i787.AuthRepository>(
       () => _i153.AuthRepositoryImpl(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_back_button.dart';
@@ -43,6 +44,23 @@ class GamesPage extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
               ),
+            ),
+            const SizedBox(height: 28),
+            // ── Praticar ───────────────────────────────────────────────────
+            const Text(
+              'Praticar',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _GameCard(
+              icon: Icons.query_stats,
+              title: 'Market Predictor',
+              subtitle: 'Preveja os movimentos do mercado',
+              onTap: () => context.push('/games/market-predictor'),
             ),
             const SizedBox(height: 28),
             // ── Filtro por risco ───────────────────────────────────────────
