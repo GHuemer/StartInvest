@@ -72,13 +72,24 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
   List<Map<String, dynamic>> _getMockCatalog() {
     return [
       {
-        'id': '1',
-        'title': 'Primeiro Passo',
-        'description': 'Assista sua primeira aula no app',
+        'id': 'mission_quiz_conservative',
+        'title': 'Primeira Vitória',
+        'description': 'Jogue e ganhe pontos em um Quiz Conservador',
         'icon': 'play',
-        'category': 'learning',
+        'category': 'practice',
         'requiredLevel': 0,
         'requiredCourses': 0,
+        'rewardPoints': 30, // Pontuação base
+      },
+      {
+        'id': 'mission_quiz_moderate',
+        'title': 'Apostador Ousado',
+        'description': 'Jogue e ganhe pontos em um Quiz Moderado',
+        'icon': 'trending',
+        'category': 'practice',
+        'requiredLevel': 0,
+        'requiredCourses': 0,
+        'rewardPoints': 60, // Pontuação média
       },
       {
         'id': '2',
@@ -88,15 +99,7 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
         'category': 'learning',
         'requiredLevel': 2,
         'requiredCourses': 5,
-      },
-      {
-        'id': '3',
-        'title': 'Investidor Iniciante',
-        'description': 'Realize sua primeira simulação de compra',
-        'icon': 'trending',
-        'category': 'practice',
-        'requiredLevel': 1,
-        'requiredCourses': 0,
+        'rewardPoints': 100, // Pontuação intermediária
       },
       {
         'id': '4',
@@ -106,24 +109,7 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
         'category': 'practice',
         'requiredLevel': 3,
         'requiredCourses': 0,
-      },
-      {
-        'id': '5',
-        'title': 'Mestre da Renda Fixa',
-        'description': 'Conclua o curso de Tesouro Direto',
-        'icon': 'bank',
-        'category': 'learning',
-        'requiredLevel': 4,
-        'requiredCourses': 8,
-      },
-      {
-        'id': '6',
-        'title': 'Primeiro K',
-        'description': 'Alcance R\$ 1.000,00 de patrimônio simulado',
-        'icon': 'savings',
-        'category': 'practice',
-        'requiredLevel': 2,
-        'requiredCourses': 0,
+        'rewardPoints': 80,
       },
       {
         'id': '7',
@@ -133,6 +119,7 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
         'category': 'practice',
         'requiredLevel': 0,
         'requiredCourses': 0,
+        'rewardPoints': 50,
       },
       {
         'id': '8',
@@ -142,42 +129,7 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
         'category': 'learning',
         'requiredLevel': 7,
         'requiredCourses': 15,
-      },
-      {
-        'id': '9',
-        'title': 'Baleia do Simulador',
-        'description': 'Alcance R\$ 50.000,00 de patrimônio simulado',
-        'icon': 'waves',
-        'category': 'practice',
-        'requiredLevel': 10,
-        'requiredCourses': 0,
-      },
-      {
-        'id': '10',
-        'title': 'Educador Financeiro',
-        'description': 'Conclua todos os cursos básicos',
-        'icon': 'school',
-        'category': 'learning',
-        'requiredLevel': 5,
-        'requiredCourses': 10,
-      },
-      {
-        'id': '11',
-        'title': 'Milionário',
-        'description': 'Alcance R\$ 1.000.000,00 de patrimônio simulado',
-        'icon': 'savings',
-        'category': 'practice',
-        'requiredLevel': 15,
-        'requiredCourses': 0,
-      },
-      {
-        'id': '12',
-        'title': 'Estrategista',
-        'description': 'Tenha 10 tipos de ativos diferentes no simulador',
-        'icon': 'pie',
-        'category': 'practice',
-        'requiredLevel': 8,
-        'requiredCourses': 0,
+        'rewardPoints': 150, // Pontuação máxima permitida
       },
     ];
   }

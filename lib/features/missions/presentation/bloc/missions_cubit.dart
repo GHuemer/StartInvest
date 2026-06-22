@@ -21,11 +21,13 @@ class MissionsCubit extends Cubit<MissionsState> {
       final progressData = await _repository.getUserProgress();
 
       final userLevel = progressData['level'] ?? 3; // Fallback para mock se o campo não existir
-      final userCoursesCount = progressData['completedCoursesCount'] ?? 6;
-      final userBalance = (progressData['balance'] ?? 850.0).toDouble();
-      final userAssetTypes = progressData['assetTypesCount'] ?? 1;
-      final userLoginStreak = progressData['loginStreak'] ?? 2;
-      final List<dynamic> userCompletedMissions = progressData['completedMissionsIds'] ?? ['1', '3'];
+      final userCoursesCount = progressData['completedCoursesCount'] ?? 0;
+      final userBalance = (progressData['balance'] ?? 0.0).toDouble();
+      final userAssetTypes = progressData['assetTypesCount'] ?? 0;
+      final userLoginStreak = progressData['loginStreak'] ?? 0;
+      
+      // Remove o mock estático ['1', '3'] e usa apenas os dados reais do Firebase
+      final List<dynamic> userCompletedMissions = progressData['completedMissionsIds'] ?? [];
 
       final updatedMissions = catalog.map((mission) {
         MissionStatus status = MissionStatus.locked;
@@ -44,35 +46,22 @@ class MissionsCubit extends Cubit<MissionsState> {
         status = MissionStatus.available;
         
         switch (mission.id) {
+          case 'mission_quiz_conservative':
+          case 'mission_quiz_moderate':
+            // Missões de Quiz ficam sempre disponíveis até serem completadas no jogo
+            progress = 0.0;
+            break;
           case '2': // Estudioso (5 módulos)
           progress = (userCoursesCount / 5).clamp(0.0, 1.0);
           break;
         case '4': // Diversificador (3 ativos)
           progress = (userAssetTypes / 3).clamp(0.0, 1.0);
           break;
-        case '5': // Mestre da Renda Fixa (8 módulos)
-          progress = (userCoursesCount / 8).clamp(0.0, 1.0);
-          break;
-        case '6': // Primeiro K (1.000 balance)
-          progress = (userBalance / 1000.0).clamp(0.0, 1.0);
-          break;
         case '7': // Fiel ao Mercado (3 dias)
           progress = (userLoginStreak / 3).clamp(0.0, 1.0);
           break;
         case '8': // Analista Pleno (15 módulos)
           progress = (userCoursesCount / 15).clamp(0.0, 1.0);
-          break;
-        case '9': // Baleia (50.000 balance)
-          progress = (userBalance / 50000.0).clamp(0.0, 1.0);
-          break;
-        case '10': // Educador (10 módulos)
-          progress = (userCoursesCount / 10).clamp(0.0, 1.0);
-          break;
-        case '11': // Milionário (1.000.000 balance)
-          progress = (userBalance / 1000000.0).clamp(0.0, 1.0);
-          break;
-        case '12': // Estrategista (10 ativos)
-          progress = (userAssetTypes / 10.0).clamp(0.0, 1.0);
           break;
         default:
           progress = 0.0;

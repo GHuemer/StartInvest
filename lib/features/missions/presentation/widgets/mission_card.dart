@@ -69,7 +69,7 @@ class MissionCard extends StatelessWidget {
                 Icon(Icons.check_circle, color: AppColors.primary, size: 14),
                 SizedBox(width: 4),
                 Text(
-                  'Completado',
+                  'Completada',
                   style: TextStyle(
                     color: AppColors.primary,
                     fontSize: 11,
@@ -78,17 +78,35 @@ class MissionCard extends StatelessWidget {
                 ),
               ],
             ),
-          ] else if (hasProgress) ...[
+          ] else if (!isLocked) ...[
             const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: mission.progress,
-                minHeight: 6,
-                backgroundColor: AppColors.divider,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.star, color: Colors.orange, size: 12),
+                const SizedBox(width: 4),
+                Text(
+                  '+${mission.rewardPoints} XP',
+                  style: const TextStyle(
+                    color: Colors.orange,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
+            if (hasProgress) ...[
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: mission.progress,
+                  minHeight: 6,
+                  backgroundColor: AppColors.divider,
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
+                ),
+              ),
+            ]
           ],
         ],
       ),

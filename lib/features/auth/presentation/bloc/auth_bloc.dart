@@ -23,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SendPasswordResetEmail _sendPasswordResetEmail;
   final AuthRepository _authRepository;
   late final StreamSubscription<AppUser?> _authSubscription;
+  bool _isAuthenticating = false; // Adicionamos uma flag de trava
 
   AuthBloc({
     required SignInWithGoogle signInWithGoogle,
@@ -70,6 +71,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
+    if (_isAuthenticating) return; // Ignora o stream se estivermos criando conta/logando manualmente
+
     if (event.user != null) {
       emit(AuthAuthenticated(event.user!));
     } else {
@@ -81,24 +84,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignInWithGoogleRequested event,
     Emitter<AuthState> emit,
   ) async {
+    _isAuthenticating = true;
     emit(const AuthLoading());
     final result = await _signInWithGoogle();
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthAuthenticated(user)),
     );
+    _isAuthenticating = false;
   }
 
   Future<void> _onSignInWithEmail(
     AuthSignInWithEmailRequested event,
     Emitter<AuthState> emit,
   ) async {
+    _isAuthenticating = true;
     emit(const AuthLoading());
     final result = await _signInWithEmail(event.email, event.password);
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthAuthenticated(user)),
     );
+    _isAuthenticating = false;
   }
 
   Future<void> _onSignOut(
@@ -113,6 +120,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignUpRequested event,
     Emitter<AuthState> emit,
   ) async {
+    _isAuthenticating = true;
     emit(const AuthLoading());
     final result = await _signUp(
       username: event.username,
@@ -125,6 +133,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthAuthenticated(user)),
     );
+    _isAuthenticating = false;
   }
 
   Future<void> _onForgotPassword(

@@ -24,6 +24,7 @@ class _QuizPageState extends State<QuizPage> {
   bool _isAnswered = false;
   bool _isFinished = false;
   bool _alreadyEarnedPoints = false;
+  int _missionBonusXp = 0; // Guardamos o bônus na classe para a UI
 
   void _answerQuestion(int index) {
     if (_isAnswered) return;
@@ -85,13 +86,57 @@ class _QuizPageState extends State<QuizPage> {
     
     if (authState is AuthAuthenticated) {
       final missionsDataSource = getIt<MissionsRemoteDataSource>();
-      final quizId = 'quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}';
       
-      final success = await missionsDataSource.completeMission(quizId, xpGained);
+      // Mapeia a missão de acordo com a dificuldade jogada
+      String? missionIdToComplete;
+      if (xpGained > 0) {
+        if (widget.quiz.difficulty == QuizDifficulty.conservative) {
+          missionIdToComplete = 'mission_quiz_conservative';
+        } else if (widget.quiz.difficulty == QuizDifficulty.moderate) {
+          missionIdToComplete = 'mission_quiz_moderate';
+        }
+      }
+      
+      bool success = false;
+      int missionBonusXp = 0;
+
+      // 1. Tenta completar a Missão Específica
+      if (missionIdToComplete != null) {
+        // Busca quantos pontos a missão vale no catálogo
+        final catalog = await missionsDataSource.getMissionsCatalog();
+        final missionData = catalog.firstWhere(
+          (m) => m['id'] == missionIdToComplete, 
+          orElse: () => {'rewardPoints': 0}
+        );
+        missionBonusXp = missionData['rewardPoints'] ?? 0;
+
+        // Tenta completar a missão (só funciona na 1ª vez)
+        final missionSuccess = await missionsDataSource.completeMission(missionIdToComplete, missionBonusXp);
+        
+        // Em seguida, SALVA O XP DO QUIZ DE FORMA INDEPENDENTE
+        // Assim, mesmo se a missão falhar (já feita), ele ainda ganha o XP normal do Quiz!
+        final quizSuccess = await missionsDataSource.completeMission('quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}', xpGained);
+
+        success = missionSuccess || quizSuccess;
+        
+        // Ajustamos se ele ganhou o XP base do Quiz para saber se mostra "Você já resgatou..."
+        _alreadyEarnedPoints = !quizSuccess && xpGained > 0;
+        
+        // Se a missão não foi feita dessa vez, zeramos o bônus para a exibição na tela final
+        if (!missionSuccess) {
+          missionBonusXp = 0;
+        }
+
+        _missionBonusXp = missionBonusXp; // Salva para o ResultScreen
+
+      } else {
+        // Se não for uma missão específica, apenas atualizamos o XP genérico do quiz
+        success = await missionsDataSource.completeMission('quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}', xpGained);
+        _alreadyEarnedPoints = !success && xpGained > 0;
+      }
       
       setState(() {
         _isFinished = true;
-        _alreadyEarnedPoints = !success && xpGained > 0;
       });
 
       if (success) {
@@ -258,6 +303,9 @@ class _QuizPageState extends State<QuizPage> {
     final isWin = xpGained > 0;
     final isNeutral = xpGained == 0;
     
+    // Adicionamos lógica para buscar visualmente o bônus, caso haja (para exibir na tela)
+    int displayScore = xpGained + _missionBonusXp;
+    
     String title = 'Parabéns!';
     IconData icon = Icons.emoji_events;
     Color iconColor = AppColors.accent;
@@ -288,7 +336,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Pontuação Final: $_score/${widget.quiz.questions.length}',
+                'Acertos: $_score/${widget.quiz.questions.length}', // Correção: exibe apenas os acertos
                 style: AppTextStyles.titleLarge.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 24),
@@ -297,7 +345,7 @@ class _QuizPageState extends State<QuizPage> {
                 decoration: BoxDecoration(
                   color: _alreadyEarnedPoints 
                       ? Colors.orange.withOpacity(0.2)
-                      : (xpGained >= 0 ? AppColors.primary.withOpacity(0.2) : AppColors.textNegative.withOpacity(0.2)),
+                      : (displayScore >= 0 ? AppColors.primary.withOpacity(0.2) : AppColors.textNegative.withOpacity(0.2)),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -305,16 +353,25 @@ class _QuizPageState extends State<QuizPage> {
                     Text(
                       _alreadyEarnedPoints 
                           ? '0 pontos' 
-                          : (xpGained >= 0 ? '+ $xpGained pontos' : '$xpGained pontos'),
+                          : (displayScore >= 0 ? '+ $displayScore pontos' : '$displayScore pontos'),
                       style: AppTextStyles.headlineMedium.copyWith(
-                        color: _alreadyEarnedPoints ? Colors.orange : (xpGained >= 0 ? AppColors.primary : AppColors.textNegative),
+                        color: _alreadyEarnedPoints ? Colors.orange : (displayScore >= 0 ? AppColors.primary : AppColors.textNegative),
                       ),
                     ),
+                    if (!_alreadyEarnedPoints && isWin && _missionBonusXp > 0)
+                       Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          '(inclui +$_missionBonusXp da missão!)',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColors.primary.withValues(alpha: 0.8), fontSize: 12),
+                        ),
+                      ),
                     if (_alreadyEarnedPoints)
                       const Padding(
                         padding: EdgeInsets.only(top: 8.0),
                         child: Text(
-                          'Você já resgatou os pontos deste quiz!',
+                          'Você já resgatou os pontos desta missão!',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.orange, fontSize: 14),
                         ),
