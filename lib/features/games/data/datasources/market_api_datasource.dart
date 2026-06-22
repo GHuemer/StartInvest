@@ -18,9 +18,13 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   final Map<String, (MarketAsset, DateTime)> _cache = {};
   static const Duration _cacheDuration = Duration(seconds: 60);
 
-  // Yahoo Finance — sem token, tickers brasileiros usam sufixo .SA
-  static const String _yahooBase =
-      'https://query2.finance.yahoo.com/v8/finance/chart';
+  // brapi.dev — suporta CORS (*), funciona no Flutter Web e mobile
+  // Free tier: até 3 tickers por request para Ações; FIIs exigem token
+  static const String _brapiBase = 'https://brapi.dev/api';
+
+  // Para desbloquear FIIs, registre em https://brapi.dev e adicione seu token:
+  // ignore: unused_field
+  static const String? _brapiToken = null;
 
   MarketApiDataSourceImpl(this._dio);
 
@@ -78,11 +82,13 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   static const double _cdiAnnualRate = 0.1375;
   static const double _cdiDailyRate = _cdiAnnualRate / 252;
 
+  // Tamanho máximo do batch sem token no brapi.dev
+  static const int _batchSize = 3;
+
   @override
   Future<MarketAsset> getAssetPrice(String ticker, AssetType type) async {
-    if (type == AssetType.fixedIncome) {
-      return _fixedIncomeAsset(ticker);
-    }
+    if (type == AssetType.fixedIncome) return _fixedIncomeAsset(ticker);
+    if (type == AssetType.fii) return _fallbackAsset(ticker, type);
 
     final cached = _cache[ticker];
     if (cached != null &&
@@ -91,13 +97,15 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     }
 
     try {
-      final asset = await _fetchFromYahoo(ticker, type);
-      _cache[ticker] = (asset, DateTime.now());
-      return asset;
+      final asset = await _fetchBrapi([ticker], type);
+      if (asset.isNotEmpty) {
+        _cache[ticker] = (asset.first, DateTime.now());
+        return asset.first;
+      }
     } catch (e) {
       debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
-      return _fallbackAsset(ticker, type);
     }
+    return _fallbackAsset(ticker, type);
   }
 
   @override
@@ -106,27 +114,53 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
       return _fixedIncome.map((e) => _fixedIncomeAsset(e['ticker']!)).toList();
     }
 
-    final catalog = type == AssetType.stock ? _stocks : _fiis;
+    // FIIs exigem token no brapi.dev — usa fallback com preços de referência
+    if (type == AssetType.fii) {
+      return _fiis.map((e) => _fallbackAsset(e['ticker']!, type)).toList();
+    }
 
-    // Busca em paralelo — Yahoo Finance suporta sem limite de token
-    final results = await Future.wait(
-      catalog.map((info) async {
-        final ticker = info['ticker']!;
-        try {
-          final cached = _cache[ticker];
-          if (cached != null &&
-              DateTime.now().difference(cached.$2) < _cacheDuration) {
-            return cached.$1;
-          }
-          final asset = await _fetchFromYahoo(ticker, type);
-          _cache[ticker] = (asset, DateTime.now());
-          return asset;
-        } catch (e) {
-          debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
-          return _fallbackAsset(ticker, type);
+    // Ações: brapi.dev suporta até 3 por request sem token
+    final catalog = _stocks;
+    final results = <MarketAsset>[];
+
+    for (var i = 0; i < catalog.length; i += _batchSize) {
+      final batch = catalog.skip(i).take(_batchSize).toList();
+      final tickers = batch.map((e) => e['ticker']!).toList();
+
+      // Verifica cache primeiro
+      final uncached = tickers.where((t) {
+        final c = _cache[t];
+        return c == null || DateTime.now().difference(c.$2) >= _cacheDuration;
+      }).toList();
+
+      // Adiciona do cache os que já estão frescos
+      for (final t in tickers) {
+        final c = _cache[t];
+        if (c != null && DateTime.now().difference(c.$2) < _cacheDuration) {
+          results.add(c.$1);
         }
-      }),
-    );
+      }
+
+      if (uncached.isEmpty) continue;
+
+      try {
+        final fetched = await _fetchBrapi(uncached, type);
+        for (final asset in fetched) {
+          _cache[asset.ticker] = (asset, DateTime.now());
+          results.add(asset);
+        }
+        // Fallback para os que não vieram na resposta
+        final fetchedTickers = fetched.map((a) => a.ticker).toSet();
+        for (final t in uncached.where((t) => !fetchedTickers.contains(t))) {
+          results.add(_fallbackAsset(t, type));
+        }
+      } catch (e) {
+        debugPrint('[MarketAPI] Erro no batch $tickers: $e');
+        for (final t in uncached) {
+          results.add(_fallbackAsset(t, type));
+        }
+      }
+    }
 
     return results;
   }
@@ -141,39 +175,44 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
         .toList();
   }
 
-  Future<MarketAsset> _fetchFromYahoo(String ticker, AssetType type) async {
-    final yahooTicker = '${ticker}.SA';
+  Future<List<MarketAsset>> _fetchBrapi(
+    List<String> tickers,
+    AssetType type,
+  ) async {
+    final tickerStr = tickers.join(',');
+    final queryParams = <String, dynamic>{};
+    if (_brapiToken != null) queryParams['token'] = _brapiToken;
+
     final response = await _dio.get(
-      '$_yahooBase/$yahooTicker',
-      queryParameters: {'interval': '1d', 'range': '1d'},
+      '$_brapiBase/quote/$tickerStr',
+      queryParameters: queryParams,
     );
+    final raw = response.data;
 
-    final result =
-        (response.data['chart']['result'] as List?)?.first
-            as Map<String, dynamic>?;
-    if (result == null) throw Exception('Sem dados para $ticker');
+    if (raw['error'] == true) {
+      throw Exception(raw['message'] ?? 'brapi.dev error');
+    }
 
-    final meta = result['meta'] as Map<String, dynamic>;
-    final price = (meta['regularMarketPrice'] as num).toDouble();
-    final prevClose = (meta['previousClose'] as num?)?.toDouble() ?? price;
-    final changePct = prevClose > 0
-        ? ((price - prevClose) / prevClose) * 100
-        : 0.0;
-
-    final catalog = type == AssetType.stock ? _stocks : _fiis;
-    final catalogName = catalog
-        .where((e) => e['ticker'] == ticker)
-        .map((e) => e['name']!)
-        .firstOrNull;
-
-    return MarketAsset(
-      ticker: ticker,
-      name: catalogName ?? (meta['shortName'] as String? ?? ticker),
-      type: type,
-      currentPrice: price,
-      changePercent: changePct,
-      fetchedAt: DateTime.now(),
-    );
+    final list = raw['results'] as List? ?? [];
+    return list.map((data) {
+      final ticker = data['symbol'] as String;
+      final catalog = type == AssetType.stock ? _stocks : _fiis;
+      final catalogName = catalog
+          .where((e) => e['ticker'] == ticker)
+          .map((e) => e['name']!)
+          .firstOrNull;
+      final price = (data['regularMarketPrice'] as num).toDouble();
+      final changePct =
+          (data['regularMarketChangePercent'] as num?)?.toDouble() ?? 0.0;
+      return MarketAsset(
+        ticker: ticker,
+        name: catalogName ?? (data['shortName'] as String? ?? ticker),
+        type: type,
+        currentPrice: price,
+        changePercent: changePct,
+        fetchedAt: DateTime.now(),
+      );
+    }).toList();
   }
 
   MarketAsset _fixedIncomeAsset(String ticker) {
