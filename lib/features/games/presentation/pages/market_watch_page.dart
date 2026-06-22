@@ -18,7 +18,10 @@ class MarketWatchPage extends StatelessWidget {
               child: Row(
                 children: [
                   const AppBackButton(),
-                  const Text('Market Watch', style: AppTextStyles.headlineLarge),
+                  const Text(
+                    'Market Watch',
+                    style: AppTextStyles.headlineLarge,
+                  ),
                 ],
               ),
             ),
@@ -29,7 +32,11 @@ class MarketWatchPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.remove_red_eye_outlined, size: 80, color: Colors.green),
+                      const Icon(
+                        Icons.remove_red_eye_outlined,
+                        size: 80,
+                        color: Colors.green,
+                      ),
                       const SizedBox(height: 24),
                       const Text(
                         'Market Watch',
@@ -54,7 +61,13 @@ class MarketWatchPage extends StatelessWidget {
                           children: [
                             Icon(Icons.construction, color: Colors.orange),
                             SizedBox(width: 12),
-                            Text('Em Desenvolvimento', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Em Desenvolvimento',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ),

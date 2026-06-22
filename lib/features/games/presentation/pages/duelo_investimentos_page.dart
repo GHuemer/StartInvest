@@ -29,7 +29,11 @@ class DueloInvestimentosPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.compare_arrows, size: 80, color: Colors.blue),
+                      const Icon(
+                        Icons.compare_arrows,
+                        size: 80,
+                        color: Colors.blue,
+                      ),
                       const SizedBox(height: 24),
                       const Text(
                         'Duelo dos Investimentos',
@@ -53,7 +57,13 @@ class DueloInvestimentosPage extends StatelessWidget {
                           children: [
                             Icon(Icons.timer_outlined, color: Colors.orange),
                             SizedBox(width: 12),
-                            Text('Lançamento em breve', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Lançamento em breve',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ),

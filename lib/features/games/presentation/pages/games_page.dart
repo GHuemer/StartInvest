@@ -4,6 +4,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_back_button.dart';
 import '../../domain/entities/quiz_question.dart';
 import 'category_games_page.dart';
+import 'portfolio_hub_page.dart';
 
 class GamesPage extends StatefulWidget {
   const GamesPage({super.key});
@@ -32,8 +33,21 @@ class _GamesPageState extends State<GamesPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            const Text('Busque nossos jogos', 
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+            _SimulatorCard(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PortfolioHubPage()),
+              ),
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              'Busque nossos jogos',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             const SizedBox(height: 12),
             TextField(
               onChanged: (value) => setState(() => _searchQuery = value),
@@ -51,8 +65,14 @@ class _GamesPageState extends State<GamesPage> {
               ),
             ),
             const SizedBox(height: 32),
-            const Text('Jogue com base no risco', 
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+            const Text(
+              'Jogue com base no risco',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             const SizedBox(height: 16),
             _RiskCard(
               title: 'Conservador',
@@ -60,7 +80,11 @@ class _GamesPageState extends State<GamesPage> {
               icon: Icons.shield_outlined,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.conservative)),
+                MaterialPageRoute(
+                  builder: (_) => const CategoryGamesPage(
+                    difficulty: QuizDifficulty.conservative,
+                  ),
+                ),
               ),
             ),
             _RiskCard(
@@ -69,7 +93,11 @@ class _GamesPageState extends State<GamesPage> {
               icon: Icons.balance,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.moderate)),
+                MaterialPageRoute(
+                  builder: (_) => const CategoryGamesPage(
+                    difficulty: QuizDifficulty.moderate,
+                  ),
+                ),
               ),
             ),
             _RiskCard(
@@ -78,10 +106,81 @@ class _GamesPageState extends State<GamesPage> {
               icon: Icons.rocket_launch_outlined,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CategoryGamesPage(difficulty: QuizDifficulty.aggressive)),
+                MaterialPageRoute(
+                  builder: (_) => const CategoryGamesPage(
+                    difficulty: QuizDifficulty.aggressive,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SimulatorCard extends StatelessWidget {
+  final VoidCallback onTap;
+  const _SimulatorCard({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1A2E1A), Color(0xFF0F1F0F)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primary.withOpacity(0.4)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.account_balance_wallet_outlined,
+                color: AppColors.primary,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Simulador de Investimentos',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Compre e venda Ações, FIIs e Renda Fixa com dinheiro virtual. Ganhe XP com seus lucros!',
+                    style: TextStyle(color: Colors.white60, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.primary,
+              size: 16,
+            ),
           ],
         ),
       ),
@@ -96,10 +195,10 @@ class _RiskCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _RiskCard({
-    required this.title, 
-    required this.subtitle, 
-    required this.icon, 
-    required this.onTap
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
   });
 
   @override
@@ -124,8 +223,21 @@ class _RiskCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                    Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ),

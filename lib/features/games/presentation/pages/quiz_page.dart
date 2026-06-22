@@ -27,9 +27,11 @@ class _QuizPageState extends State<QuizPage> {
 
   void _answerQuestion(int index) {
     if (_isAnswered) return;
-    
-    final isCorrect = index == widget.quiz.questions[_currentQuestionIndex].correctAnswerIndex;
-    
+
+    final isCorrect =
+        index ==
+        widget.quiz.questions[_currentQuestionIndex].correctAnswerIndex;
+
     if (isCorrect) {
       HapticFeedback.mediumImpact();
     } else {
@@ -82,13 +84,17 @@ class _QuizPageState extends State<QuizPage> {
   Future<void> _finishQuiz() async {
     final xpGained = _calculateXP();
     final authState = context.read<AuthBloc>().state;
-    
+
     if (authState is AuthAuthenticated) {
       final missionsDataSource = getIt<MissionsRemoteDataSource>();
-      final quizId = 'quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}';
-      
-      final success = await missionsDataSource.completeMission(quizId, xpGained);
-      
+      final quizId =
+          'quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}';
+
+      final success = await missionsDataSource.completeMission(
+        quizId,
+        xpGained,
+      );
+
       setState(() {
         _isFinished = true;
         _alreadyEarnedPoints = !success && xpGained > 0;
@@ -176,11 +182,19 @@ class _QuizPageState extends State<QuizPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: Text(
-                      _currentQuestionIndex == widget.quiz.questions.length - 1 ? 'Finalizar' : 'Próxima',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      _currentQuestionIndex == widget.quiz.questions.length - 1
+                          ? 'Finalizar'
+                          : 'Próxima',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -194,10 +208,10 @@ class _QuizPageState extends State<QuizPage> {
   Widget _buildOption(int index, QuizQuestion question) {
     bool isCorrect = index == question.correctAnswerIndex;
     bool isSelected = index == _selectedAnswerIndex;
-    
+
     Color borderColor = Colors.transparent;
     Color bgColor = AppColors.backgroundCard;
-    
+
     if (_isAnswered) {
       if (isCorrect) {
         borderColor = AppColors.primary;
@@ -227,14 +241,22 @@ class _QuizPageState extends State<QuizPage> {
               height: 32,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: isSelected || (_isAnswered && isCorrect) ? AppColors.primary : AppColors.textMuted),
-                color: isSelected || (_isAnswered && isCorrect) ? AppColors.primary : Colors.transparent,
+                border: Border.all(
+                  color: isSelected || (_isAnswered && isCorrect)
+                      ? AppColors.primary
+                      : AppColors.textMuted,
+                ),
+                color: isSelected || (_isAnswered && isCorrect)
+                    ? AppColors.primary
+                    : Colors.transparent,
               ),
               child: Center(
                 child: Text(
                   String.fromCharCode(65 + index),
                   style: TextStyle(
-                    color: isSelected || (_isAnswered && isCorrect) ? Colors.white : AppColors.textMuted,
+                    color: isSelected || (_isAnswered && isCorrect)
+                        ? Colors.white
+                        : AppColors.textMuted,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -257,7 +279,7 @@ class _QuizPageState extends State<QuizPage> {
     final xpGained = _calculateXP();
     final isWin = xpGained > 0;
     final isNeutral = xpGained == 0;
-    
+
     String title = 'Parabéns!';
     IconData icon = Icons.emoji_events;
     Color iconColor = AppColors.accent;
@@ -284,30 +306,45 @@ class _QuizPageState extends State<QuizPage> {
               const SizedBox(height: 24),
               Text(
                 title,
-                style: AppTextStyles.headlineLarge.copyWith(color: Colors.white),
+                style: AppTextStyles.headlineLarge.copyWith(
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Pontuação Final: $_score/${widget.quiz.questions.length}',
-                style: AppTextStyles.titleLarge.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  color: _alreadyEarnedPoints 
+                  color: _alreadyEarnedPoints
                       ? Colors.orange.withOpacity(0.2)
-                      : (xpGained >= 0 ? AppColors.primary.withOpacity(0.2) : AppColors.textNegative.withOpacity(0.2)),
+                      : (xpGained >= 0
+                            ? AppColors.primary.withOpacity(0.2)
+                            : AppColors.textNegative.withOpacity(0.2)),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   children: [
                     Text(
-                      _alreadyEarnedPoints 
-                          ? '0 pontos' 
-                          : (xpGained >= 0 ? '+ $xpGained pontos' : '$xpGained pontos'),
+                      _alreadyEarnedPoints
+                          ? '0 pontos'
+                          : (xpGained >= 0
+                                ? '+ $xpGained pontos'
+                                : '$xpGained pontos'),
                       style: AppTextStyles.headlineMedium.copyWith(
-                        color: _alreadyEarnedPoints ? Colors.orange : (xpGained >= 0 ? AppColors.primary : AppColors.textNegative),
+                        color: _alreadyEarnedPoints
+                            ? Colors.orange
+                            : (xpGained >= 0
+                                  ? AppColors.primary
+                                  : AppColors.textNegative),
                       ),
                     ),
                     if (_alreadyEarnedPoints)
@@ -330,9 +367,18 @@ class _QuizPageState extends State<QuizPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Fechar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
+                  child: const Text(
+                    'Fechar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -347,19 +393,33 @@ class _QuizPageState extends State<QuizPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.backgroundCard,
-        title: const Text('Tem certeza?', style: TextStyle(color: Colors.white)),
-        content: const Text('Seu progresso neste quiz será perdido.', style: TextStyle(color: Colors.white70)),
+        title: const Text(
+          'Tem certeza?',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Seu progresso neste quiz será perdido.',
+          style: TextStyle(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context), // Fecha o dialog
-            child: const Text('Ficar', style: TextStyle(color: AppColors.primary)),
+            child: const Text(
+              'Ficar',
+              style: TextStyle(color: AppColors.primary),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Fecha o dialog
-              Navigator.pop(this.context); // Fecha a tela do quiz usando o contexto correto do StatefulWidget
+              Navigator.pop(
+                this.context,
+              ); // Fecha a tela do quiz usando o contexto correto do StatefulWidget
             },
-            child: const Text('Sair', style: TextStyle(color: AppColors.textNegative)),
+            child: const Text(
+              'Sair',
+              style: TextStyle(color: AppColors.textNegative),
+            ),
           ),
         ],
       ),
