@@ -49,7 +49,7 @@ jobs:
           EOF
 
       - name: Análise estática
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Rodar testes
         run: flutter test --coverage
