@@ -26,8 +26,9 @@ class SignInPage extends StatelessWidget {
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.textNegative),
+              content: Text(state.message),
+              backgroundColor: AppColors.textNegative,
+            ),
           );
         }
       },

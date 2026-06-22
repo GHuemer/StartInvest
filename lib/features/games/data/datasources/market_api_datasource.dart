@@ -92,6 +92,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   // Com token free: 1 ticker/req mas desbloqueia FIIs
   // Sem token: até 3 tickers/req, FIIs indisponíveis
   // Usamos sempre 1 ticker/req quando há token (funciona em qualquer plano)
+  // ignore: unused_element
   int get _batchSize => _hasToken ? 1 : 3;
 
   @override
@@ -275,12 +276,9 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
 
       final firstClose =
           (historicalData.first['close'] as num?)?.toDouble() ?? 0;
-      final lastClose =
-          (historicalData.last['close'] as num?)?.toDouble() ?? 0;
-      final firstDateSec =
-          (historicalData.first['date'] as num?)?.toInt() ?? 0;
-      final lastDateSec =
-          (historicalData.last['date'] as num?)?.toInt() ?? 0;
+      final lastClose = (historicalData.last['close'] as num?)?.toDouble() ?? 0;
+      final firstDateSec = (historicalData.first['date'] as num?)?.toInt() ?? 0;
+      final lastDateSec = (historicalData.last['date'] as num?)?.toInt() ?? 0;
 
       if (firstClose <= 0 || lastClose <= 0 || firstDateSec == lastDateSec) {
         throw Exception('Dados inválidos');

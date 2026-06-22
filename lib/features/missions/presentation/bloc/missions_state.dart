@@ -15,7 +15,8 @@ class MissionsState extends Equatable {
   });
 
   int get completedCount => allMissions.where((m) => m.isCompleted).length;
-  double get totalProgress => allMissions.isEmpty ? 0 : completedCount / allMissions.length;
+  double get totalProgress =>
+      allMissions.isEmpty ? 0 : completedCount / allMissions.length;
 
   MissionsState copyWith({
     List<MissionEntity>? allMissions,
@@ -32,5 +33,10 @@ class MissionsState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [allMissions, filteredMissions, activeFilter, isLoading];
+  List<Object?> get props => [
+    allMissions,
+    filteredMissions,
+    activeFilter,
+    isLoading,
+  ];
 }

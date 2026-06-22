@@ -24,8 +24,6 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _answered = false;
-  bool? _lastAnswer;
-  bool? _isCorrect;
 
   @override
   void initState() {
@@ -47,7 +45,6 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
 
     setState(() {
       _answered = true;
-      _lastAnswer = answer;
     });
 
     context.read<GamesBloc>().add(AnswerQuestionEvent(answer));
@@ -59,15 +56,14 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
 
     if (state is QuestionAnswered) {
       final session = state.session;
-      final isLastQuestion = session.currentQuestionIndex + 1 == session.questions.length;
+      final isLastQuestion =
+          session.currentQuestionIndex + 1 == session.questions.length;
 
       if (isLastQuestion) {
         context.read<GamesBloc>().add(const FinishGameEvent());
       } else {
         setState(() {
           _answered = false;
-          _lastAnswer = null;
-          _isCorrect = null;
         });
         _animationController.reset();
         context.read<GamesBloc>().add(const NextQuestionEvent());
@@ -90,12 +86,10 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
 
         if (state is GameStarted) {
           session = state.session;
-          _isCorrect = null;
         } else if (state is QuestionAnswered) {
           session = state.session;
           isCorrect = state.isCorrect;
           pointsEarned = state.pointsEarned;
-          _isCorrect = isCorrect;
         }
 
         if (session == null) {
@@ -105,8 +99,7 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
           );
         }
 
-        final currentQuestion =
-            session.questions[session.currentQuestionIndex];
+        final currentQuestion = session.questions[session.currentQuestionIndex];
 
         return Scaffold(
           backgroundColor: AppColors.backgroundDark,
@@ -214,10 +207,9 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
                               ? AppColors.primary.withOpacity(0.1)
                               : AppColors.textNegative.withOpacity(0.1),
                           border: Border.all(
-                            color:
-                                isCorrect
-                                    ? AppColors.primary
-                                    : AppColors.textNegative,
+                            color: isCorrect
+                                ? AppColors.primary
+                                : AppColors.textNegative,
                           ),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -227,10 +219,9 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
                               isCorrect ? '✓' : '✗',
                               style: TextStyle(
                                 fontSize: 32,
-                                color:
-                                    isCorrect
-                                        ? AppColors.primary
-                                        : AppColors.textNegative,
+                                color: isCorrect
+                                    ? AppColors.primary
+                                    : AppColors.textNegative,
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -243,10 +234,9 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
                                         ? 'Resposta Correta!'
                                         : 'Resposta Errada!',
                                     style: AppTextStyles.titleLarge.copyWith(
-                                      color:
-                                          isCorrect
-                                              ? AppColors.primary
-                                              : AppColors.textNegative,
+                                      color: isCorrect
+                                          ? AppColors.primary
+                                          : AppColors.textNegative,
                                     ),
                                   ),
                                   if (isCorrect && pointsEarned != null)
@@ -329,13 +319,29 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
             children: [
               Text('Jogo Finalizado!', style: AppTextStyles.headlineLarge),
               const SizedBox(height: 24),
-              _ResultRow(label: 'Pontuação', value: '${result.totalPoints} pts', color: AppColors.primary),
+              _ResultRow(
+                label: 'Pontuação',
+                value: '${result.totalPoints} pts',
+                color: AppColors.primary,
+              ),
               const SizedBox(height: 8),
-              _ResultRow(label: 'Acertos', value: '${result.correctAnswers}/${result.totalQuestions}', color: AppColors.textPositive),
+              _ResultRow(
+                label: 'Acertos',
+                value: '${result.correctAnswers}/${result.totalQuestions}',
+                color: AppColors.textPositive,
+              ),
               const SizedBox(height: 8),
-              _ResultRow(label: 'Precisão', value: '${result.accuracy.toStringAsFixed(1)}%', color: AppColors.primary),
+              _ResultRow(
+                label: 'Precisão',
+                value: '${result.accuracy.toStringAsFixed(1)}%',
+                color: AppColors.primary,
+              ),
               const SizedBox(height: 8),
-              _ResultRow(label: 'Melhor Streak', value: '${result.bestStreak}🔥', color: AppColors.yellowHighlight),
+              _ResultRow(
+                label: 'Melhor Streak',
+                value: '${result.bestStreak}🔥',
+                color: AppColors.yellowHighlight,
+              ),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
@@ -401,10 +407,7 @@ class _ProgressIndicator extends StatelessWidget {
   final int current;
   final int total;
 
-  const _ProgressIndicator({
-    required this.current,
-    required this.total,
-  });
+  const _ProgressIndicator({required this.current, required this.total});
 
   @override
   Widget build(BuildContext context) {
@@ -414,14 +417,8 @@ class _ProgressIndicator extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Progresso',
-              style: AppTextStyles.titleMedium,
-            ),
-            Text(
-              '$current/$total',
-              style: AppTextStyles.bodyMedium,
-            ),
+            Text('Progresso', style: AppTextStyles.titleMedium),
+            Text('$current/$total', style: AppTextStyles.bodyMedium),
           ],
         ),
         const SizedBox(height: 8),
@@ -431,8 +428,7 @@ class _ProgressIndicator extends StatelessWidget {
             value: current / total,
             minHeight: 8,
             backgroundColor: AppColors.cardBorder,
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.primary),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
         ),
       ],
@@ -482,10 +478,7 @@ class _AnswerButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const _AnswerButton({
-    required this.label,
-    required this.onPressed,
-  });
+  const _AnswerButton({required this.label, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -498,10 +491,7 @@ class _AnswerButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
             color: AppColors.backgroundCard,
-            border: Border.all(
-              color: AppColors.primary,
-              width: 2,
-            ),
+            border: Border.all(color: AppColors.primary, width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(

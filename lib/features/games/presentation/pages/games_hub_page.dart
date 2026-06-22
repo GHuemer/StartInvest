@@ -14,10 +14,7 @@ class GamesHubPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.backgroundCard,
         elevation: 0,
-        title: Text(
-          'Praticar',
-          style: AppTextStyles.headlineLarge,
-        ),
+        title: Text('Praticar', style: AppTextStyles.headlineLarge),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -25,10 +22,7 @@ class GamesHubPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Market Predictor',
-              style: AppTextStyles.headlineLarge,
-            ),
+            Text('Market Predictor', style: AppTextStyles.headlineLarge),
             const SizedBox(height: 8),
             Text(
               'Veja uma situação de mercado e preveja se as ações vão subir ou descer.',
@@ -122,18 +116,11 @@ class _DifficultySelector extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          description,
-                          style: AppTextStyles.bodySmall,
-                        ),
+                        Text(description, style: AppTextStyles.bodySmall),
                       ],
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: color,
-                    size: 24,
-                  ),
+                  Icon(Icons.arrow_forward, color: color, size: 24),
                 ],
               ),
               const SizedBox(height: 12),

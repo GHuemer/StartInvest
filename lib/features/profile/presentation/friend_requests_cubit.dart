@@ -14,7 +14,8 @@ class FriendRequestsCubit extends Cubit<FriendRequestsState> {
   StreamSubscription? _subscription;
   StreamSubscription? _authSubscription;
 
-  FriendRequestsCubit(this._profileRepository, this._authRepository) : super(FriendRequestsInitial()) {
+  FriendRequestsCubit(this._profileRepository, this._authRepository)
+    : super(FriendRequestsInitial()) {
     _authSubscription = _authRepository.authStateChanges.listen((user) {
       if (user != null) {
         _initForUser(user.id);
@@ -27,7 +28,9 @@ class FriendRequestsCubit extends Cubit<FriendRequestsState> {
 
   void _initForUser(String userId) {
     _subscription?.cancel();
-    _subscription = _profileRepository.watchFriendRequests(userId).listen((requests) {
+    _subscription = _profileRepository.watchFriendRequests(userId).listen((
+      requests,
+    ) {
       emit(FriendRequestsLoaded(requests));
     });
   }
@@ -38,19 +41,19 @@ class FriendRequestsCubit extends Cubit<FriendRequestsState> {
   }
 
   Future<void> acceptRequest(String requestId) async {
-    final result = await _profileRepository.respondToFriendRequest(requestId, true);
-    result.fold(
-      (failure) => null, 
-      (_) => null,
+    final result = await _profileRepository.respondToFriendRequest(
+      requestId,
+      true,
     );
+    result.fold((failure) => null, (_) => null);
   }
 
   Future<void> declineRequest(String requestId) async {
-    final result = await _profileRepository.respondToFriendRequest(requestId, false);
-    result.fold(
-      (failure) => null,
-      (_) => null,
+    final result = await _profileRepository.respondToFriendRequest(
+      requestId,
+      false,
     );
+    result.fold((failure) => null, (_) => null);
   }
 
   @override

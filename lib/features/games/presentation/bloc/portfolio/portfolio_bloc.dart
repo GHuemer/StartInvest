@@ -51,17 +51,16 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
   ) async {
     emit(const PortfolioLoading());
     final result = await _getWallets();
-    await result.fold(
-      (Failure f) async => emit(PortfolioError(f.message)),
-      (wallets) async {
-        final positionsMap = <String, List<Position>>{};
-        for (final w in wallets) {
-          final posResult = await _getPositions(w.id);
-          posResult.fold((_) {}, (pos) => positionsMap[w.id] = pos);
-        }
-        emit(WalletsLoaded(wallets, positionsMap: positionsMap));
-      },
-    );
+    await result.fold((Failure f) async => emit(PortfolioError(f.message)), (
+      wallets,
+    ) async {
+      final positionsMap = <String, List<Position>>{};
+      for (final w in wallets) {
+        final posResult = await _getPositions(w.id);
+        posResult.fold((_) {}, (pos) => positionsMap[w.id] = pos);
+      }
+      emit(WalletsLoaded(wallets, positionsMap: positionsMap));
+    });
   }
 
   Future<void> _onCreateWallet(

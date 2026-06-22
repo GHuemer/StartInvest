@@ -55,5 +55,17 @@ class AppUser extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, username, name, email, photoUrl, birthDate, xp, level, league, subtitle, isNewUser];
+  List<Object?> get props => [
+    id,
+    username,
+    name,
+    email,
+    photoUrl,
+    birthDate,
+    xp,
+    level,
+    league,
+    subtitle,
+    isNewUser,
+  ];
 }

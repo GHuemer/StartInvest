@@ -7,11 +7,7 @@ class NewsCard extends StatelessWidget {
   final NewsEntry news;
   final VoidCallback onTap;
 
-  const NewsCard({
-    super.key,
-    required this.news,
-    required this.onTap,
-  });
+  const NewsCard({super.key, required this.news, required this.onTap});
 
   Color _getTagColor() {
     switch (news.category) {
@@ -44,7 +40,10 @@ class NewsCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getTagColor().withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -74,7 +73,9 @@ class NewsCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               news.content,
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textMuted,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -84,7 +85,9 @@ class NewsCard extends StatelessWidget {
               children: [
                 Text(
                   'Fonte: ${news.source}',
-                  style: AppTextStyles.bodySmall.copyWith(fontStyle: FontStyle.italic),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
                 Row(
                   children: [
@@ -95,7 +98,11 @@ class NewsCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.chevron_right, color: AppColors.primary, size: 16),
+                    const Icon(
+                      Icons.chevron_right,
+                      color: AppColors.primary,
+                      size: 16,
+                    ),
                   ],
                 ),
               ],

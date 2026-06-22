@@ -52,10 +52,14 @@ class NewsView extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: TextField(
-                      onChanged: (value) => context.read<NewsCubit>().searchNews(value),
+                      onChanged: (value) =>
+                          context.read<NewsCubit>().searchNews(value),
                       decoration: InputDecoration(
                         hintText: 'Buscar notícias...',
-                        prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.textMuted,
+                        ),
                         filled: true,
                         fillColor: AppColors.backgroundCard,
                         border: OutlineInputBorder(
@@ -88,29 +92,32 @@ class NewsView extends StatelessWidget {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else if (state is NewsError)
-                  SliverFillRemaining(
-                    child: Center(child: Text(state.message)),
-                  )
+                  SliverFillRemaining(child: Center(child: Text(state.message)))
                 else if (state is NewsLoaded)
                   state.filteredNews.isEmpty
                       ? const SliverFillRemaining(
-                          child: Center(child: Text('Nenhuma notícia encontrada.')),
+                          child: Center(
+                            child: Text('Nenhuma notícia encontrada.'),
+                          ),
                         )
                       : SliverPadding(
                           padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
                           sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final news = state.filteredNews[index];
-                                return NewsCard(
-                                  news: news,
-                                  onTap: () {
-                                    context.push('${AppRoutes.news}/${AppRoutes.newsDetail}', extra: news);
-                                  },
-                                );
-                              },
-                              childCount: state.filteredNews.length,
-                            ),
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final news = state.filteredNews[index];
+                              return NewsCard(
+                                news: news,
+                                onTap: () {
+                                  context.push(
+                                    '${AppRoutes.news}/${AppRoutes.newsDetail}',
+                                    extra: news,
+                                  );
+                                },
+                              );
+                            }, childCount: state.filteredNews.length),
                           ),
                         ),
               ],
@@ -157,7 +164,10 @@ class NewsDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
@@ -187,10 +197,7 @@ class NewsDetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '•  ${news.date}',
-                        style: AppTextStyles.bodySmall,
-                      ),
+                      Text('•  ${news.date}', style: AppTextStyles.bodySmall),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -237,7 +244,8 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NewsCubit, NewsState>(
       builder: (context, state) {
-        final isSelected = state is NewsLoaded && state.selectedCategory == label;
+        final isSelected =
+            state is NewsLoaded && state.selectedCategory == label;
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: ChoiceChip(

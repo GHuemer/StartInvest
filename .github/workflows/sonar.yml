@@ -1,15 +1,16 @@
 name: SonarCloud Analysis
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main, develop]
-  pull_request:
-    branches: [main]
 
 jobs:
   sonar:
     name: Análise de Qualidade
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout código
@@ -17,17 +18,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Instalar Flutter
-        uses: subosito/flutter-action@v2
+      - name: Baixar cobertura do CI
+        uses: actions/download-artifact@v4
         with:
-          channel: 'stable'
-          cache: true
-
-      - name: Instalar dependências
-        run: flutter pub get
-
-      - name: Rodar testes com cobertura
-        run: flutter test --coverage || true
+          name: coverage-report
+          path: coverage/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Análise SonarCloud
         uses: SonarSource/sonarcloud-github-action@v3

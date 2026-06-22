@@ -13,9 +13,9 @@ class SocialAuthSection extends StatelessWidget {
         SocialSignInButton(
           label: 'Continuar com o Google',
           icon: Icons.g_mobiledata,
-          onPressed: () => context
-              .read<AuthBloc>()
-              .add(const AuthSignInWithGoogleRequested()),
+          onPressed: () => context.read<AuthBloc>().add(
+            const AuthSignInWithGoogleRequested(),
+          ),
         ),
         const SizedBox(height: 12),
         SocialSignInButton(

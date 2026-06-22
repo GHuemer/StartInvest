@@ -15,7 +15,9 @@ class ProfilePage extends StatelessWidget {
   void _showEditNameDialog(BuildContext context, String currentName) {
     // Capturamos o Cubit antes de abrir o dialog para garantir o contexto correto
     final profileCubit = context.read<ProfileCubit>();
-    final TextEditingController controller = TextEditingController(text: currentName);
+    final TextEditingController controller = TextEditingController(
+      text: currentName,
+    );
 
     showDialog(
       context: context,
@@ -52,14 +54,19 @@ class ProfilePage extends StatelessWidget {
                     autofocus: true,
                     decoration: InputDecoration(
                       hintText: 'Seu nome',
-                      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
+                      hintStyle: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                       filled: true,
                       fillColor: AppColors.backgroundDark,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
-                      prefixIcon: const Icon(Icons.person_outline, color: AppColors.primary),
+                      prefixIcon: const Icon(
+                        Icons.person_outline,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -77,9 +84,14 @@ class ProfilePage extends StatelessWidget {
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text('Salvar Alteração', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Salvar Alteração',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
@@ -102,6 +114,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  // ignore: unused_element
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -129,9 +142,17 @@ class ProfilePage extends StatelessWidget {
                   onPressed: () => Navigator.pop(dialogContext),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Cancelar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -139,15 +160,22 @@ class ProfilePage extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(dialogContext); // Fecha o modal
-                    context.read<AuthBloc>().add(const AuthSignOutRequested()); // Faz o log out
+                    context.read<AuthBloc>().add(
+                      const AuthSignOutRequested(),
+                    ); // Faz o log out
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.textNegative,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Sair',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -256,7 +284,8 @@ class ProfilePage extends StatelessWidget {
                                 bottom: 0,
                                 right: 0,
                                 child: GestureDetector(
-                                  onTap: () => _showEditNameDialog(context, name),
+                                  onTap: () =>
+                                      _showEditNameDialog(context, name),
                                   child: Container(
                                     padding: const EdgeInsets.all(6),
                                     decoration: const BoxDecoration(
@@ -280,11 +309,15 @@ class ProfilePage extends StatelessWidget {
                             children: [
                               Text(
                                 name,
-                                style: AppTextStyles.headlineLarge.copyWith(fontWeight: FontWeight.bold),
+                                style: AppTextStyles.headlineLarge.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               Text(
                                 '@$username',
-                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -354,7 +387,10 @@ class ProfilePage extends StatelessWidget {
                           width: double.infinity,
                           child: TextButton.icon(
                             onPressed: () => _showLogoutConfirmation(context),
-                            icon: const Icon(Icons.logout_rounded, color: AppColors.textNegative),
+                            icon: const Icon(
+                              Icons.logout_rounded,
+                              color: AppColors.textNegative,
+                            ),
                             label: const Text(
                               'Sair da conta',
                               style: TextStyle(
@@ -368,7 +404,8 @@ class ProfilePage extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              backgroundColor: AppColors.textNegative.withOpacity(0.2),
+                              backgroundColor: AppColors.textNegative
+                                  .withOpacity(0.2),
                             ),
                           ),
                         ),
@@ -391,8 +428,13 @@ class _InfoMiniCard extends StatelessWidget {
   final String value;
   final Color? valueColor;
 
-  const _InfoMiniCard({required this.label, required this.value, this.valueColor});
+  const _InfoMiniCard({
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
 
+  // ignore: unused_element
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -420,9 +462,17 @@ class _InfoMiniCard extends StatelessWidget {
                   onPressed: () => Navigator.pop(dialogContext),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Cancelar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -430,15 +480,22 @@ class _InfoMiniCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(dialogContext); // Fecha o modal
-                    context.read<AuthBloc>().add(const AuthSignOutRequested()); // Faz o log out
+                    context.read<AuthBloc>().add(
+                      const AuthSignOutRequested(),
+                    ); // Faz o log out
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.textNegative,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Sair',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -459,10 +516,7 @@ class _InfoMiniCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
-          ),
+          Text(label, style: AppTextStyles.bodySmall.copyWith(fontSize: 10)),
           const SizedBox(height: 4),
           Text(
             value,
@@ -488,6 +542,7 @@ class _StatCard extends StatelessWidget {
     required this.label,
   });
 
+  // ignore: unused_element
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -515,9 +570,17 @@ class _StatCard extends StatelessWidget {
                   onPressed: () => Navigator.pop(dialogContext),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Cancelar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -525,15 +588,22 @@ class _StatCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(dialogContext); // Fecha o modal
-                    context.read<AuthBloc>().add(const AuthSignOutRequested()); // Faz o log out
+                    context.read<AuthBloc>().add(
+                      const AuthSignOutRequested(),
+                    ); // Faz o log out
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.textNegative,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Sair',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],

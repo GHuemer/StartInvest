@@ -24,7 +24,10 @@ class ProjectionResultPage extends StatelessWidget {
         title: Text(
           'Projeção em ${result.periodLabel}',
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
       ),
       body: ListView(
@@ -55,32 +58,42 @@ class ProjectionResultPage extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Investido hoje',
-                            style: TextStyle(
-                                color: Colors.white54, fontSize: 11)),
+                        const Text(
+                          'Investido hoje',
+                          style: TextStyle(color: Colors.white54, fontSize: 11),
+                        ),
                         Text(
                           fmt.format(result.totalInvested),
                           style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white70,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    const Icon(Icons.arrow_forward,
-                        color: Colors.white38, size: 20),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white38,
+                      size: 20,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Em ${result.periodLabel}',
-                            style: const TextStyle(
-                                color: Colors.white54, fontSize: 11)),
+                        Text(
+                          'Em ${result.periodLabel}',
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 11,
+                          ),
+                        ),
                         Text(
                           fmt.format(result.totalProjected),
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -91,10 +104,11 @@ class ProjectionResultPage extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: (isPositive
-                            ? AppColors.textPositive
-                            : AppColors.textNegative)
-                        .withValues(alpha: 0.15),
+                    color:
+                        (isPositive
+                                ? AppColors.textPositive
+                                : AppColors.textNegative)
+                            .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -124,7 +138,10 @@ class ProjectionResultPage extends StatelessWidget {
           const Text(
             'Evolução projetada',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -142,7 +159,10 @@ class ProjectionResultPage extends StatelessWidget {
           const Text(
             'Detalhes por ativo',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
           ),
           const SizedBox(height: 12),
           ...result.assets.asMap().entries.map((entry) {
@@ -236,10 +256,12 @@ class _ProjectionChart extends StatelessWidget {
         minY: minY - range * 0.05,
         maxY: maxY + range * 0.05,
         titlesData: FlTitlesData(
-          topTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -250,8 +272,7 @@ class _ProjectionChart extends StatelessWidget {
                 }
                 return Text(
                   'R\$${fmt.format(value)}',
-                  style: const TextStyle(
-                      color: Colors.white38, fontSize: 10),
+                  style: const TextStyle(color: Colors.white38, fontSize: 10),
                 );
               },
             ),
@@ -259,14 +280,14 @@ class _ProjectionChart extends StatelessWidget {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: stepCount > 10
-                  ? (stepCount / 4).roundToDouble()
-                  : 1,
+              interval: stepCount > 10 ? (stepCount / 4).roundToDouble() : 1,
               getTitlesWidget: (value, meta) {
                 final i = value.toInt();
                 if (i == 0) {
-                  return const Text('hoje',
-                      style: TextStyle(color: Colors.white38, fontSize: 9));
+                  return const Text(
+                    'hoje',
+                    style: TextStyle(color: Colors.white38, fontSize: 9),
+                  );
                 }
                 return Text(
                   '$i $xLabel',
@@ -287,14 +308,17 @@ class _ProjectionChart extends StatelessWidget {
           touchTooltipData: LineTouchTooltipData(
             getTooltipColor: (_) => AppColors.backgroundCard,
             getTooltipItems: (touchedSpots) => touchedSpots.map((s) {
-              final val = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$')
-                  .format(s.y);
+              final val = NumberFormat.currency(
+                locale: 'pt_BR',
+                symbol: 'R\$',
+              ).format(s.y);
               return LineTooltipItem(
                 val,
                 const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
               );
             }).toList(),
           ),
@@ -345,9 +369,10 @@ class _AssetResultCard extends StatelessWidget {
                 child: Text(
                   projection.ticker.substring(0, 2),
                   style: TextStyle(
-                      color: accentColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11),
+                    color: accentColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -358,14 +383,17 @@ class _AssetResultCard extends StatelessWidget {
                     Text(
                       projection.ticker,
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       '$_typeLabel · ${(projection.annualRate * 100).toStringAsFixed(1)}% a.a. histórico',
                       style: const TextStyle(
-                          color: Colors.white54, fontSize: 11),
+                        color: Colors.white54,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                 ),
@@ -376,9 +404,10 @@ class _AssetResultCard extends StatelessWidget {
                   Text(
                     fmt.format(projection.projectedValue),
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                   Text(
                     '${isPositive ? '+' : ''}${projection.gainPercent.toStringAsFixed(1)}%',

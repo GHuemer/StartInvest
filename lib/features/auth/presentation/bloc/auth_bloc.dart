@@ -32,13 +32,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required SignUp signUp,
     required SendPasswordResetEmail sendPasswordResetEmail,
     required AuthRepository authRepository,
-  })  : _signInWithGoogle = signInWithGoogle,
-        _signInWithEmail = signInWithEmail,
-        _signOut = signOut,
-        _signUp = signUp,
-        _sendPasswordResetEmail = sendPasswordResetEmail,
-        _authRepository = authRepository,
-        super(const AuthInitial()) {
+  }) : _signInWithGoogle = signInWithGoogle,
+       _signInWithEmail = signInWithEmail,
+       _signOut = signOut,
+       _signUp = signUp,
+       _sendPasswordResetEmail = sendPasswordResetEmail,
+       _authRepository = authRepository,
+       super(const AuthInitial()) {
     on<AuthStarted>(_onStarted);
     on<AuthRefreshRequested>(_onRefresh);
     on<AuthSignInWithGoogleRequested>(_onSignInWithGoogle);
@@ -62,7 +62,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onRefresh(AuthRefreshRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onRefresh(
+    AuthRefreshRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     final user = await _authRepository.getFullCurrentUser();
     if (user != null) {
       // Força a emissão do estado atualizado, o stream de authStateChanges também ajudará
@@ -71,7 +74,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
-    if (_isAuthenticating) return; // Ignora o stream se estivermos criando conta/logando manualmente
+    if (_isAuthenticating)
+      return; // Ignora o stream se estivermos criando conta/logando manualmente
 
     if (event.user != null) {
       emit(AuthAuthenticated(event.user!));

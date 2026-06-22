@@ -5,17 +5,10 @@ class CoursePlayerPage extends StatelessWidget {
   final String title;
   final String? videoUrl;
 
-  const CoursePlayerPage({
-    super.key,
-    required this.title,
-    this.videoUrl,
-  });
+  const CoursePlayerPage({super.key, required this.title, this.videoUrl});
 
   @override
   Widget build(BuildContext context) {
-    return CoursePlayerView(
-      title: title,
-      videoUrl: videoUrl,
-    );
+    return CoursePlayerView(title: title, videoUrl: videoUrl);
   }
 }

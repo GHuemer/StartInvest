@@ -36,7 +36,7 @@ class NewsCubit extends Cubit<NewsState> {
   void _applyFilters(String query, String category) {
     if (state is NewsLoaded) {
       final currentState = state as NewsLoaded;
-      
+
       var filtered = currentState.allNews;
 
       // Filter by category
@@ -55,15 +55,17 @@ class NewsCubit extends Cubit<NewsState> {
       if (query.isNotEmpty) {
         filtered = filtered.where((n) {
           return n.title.toLowerCase().contains(query.toLowerCase()) ||
-                 n.tag.toLowerCase().contains(query.toLowerCase());
+              n.tag.toLowerCase().contains(query.toLowerCase());
         }).toList();
       }
 
-      emit(currentState.copyWith(
-        filteredNews: filtered,
-        searchQuery: query,
-        selectedCategory: category,
-      ));
+      emit(
+        currentState.copyWith(
+          filteredNews: filtered,
+          searchQuery: query,
+          selectedCategory: category,
+        ),
+      );
     }
   }
 }

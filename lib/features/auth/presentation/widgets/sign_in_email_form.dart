@@ -31,11 +31,11 @@ class _SignInEmailFormState extends State<SignInEmailForm> {
   void _onContinue() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
-            AuthSignInWithEmailRequested(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        AuthSignInWithEmailRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -78,7 +78,8 @@ class _SignInEmailFormState extends State<SignInEmailForm> {
               ),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) return 'A senha é obrigatória';
+              if (value == null || value.isEmpty)
+                return 'A senha é obrigatória';
               return null;
             },
           ),
@@ -93,7 +94,10 @@ class _SignInEmailFormState extends State<SignInEmailForm> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            color: AppColors.white, strokeWidth: 2))
+                          color: AppColors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : const Text('Entrar'),
               );
             },

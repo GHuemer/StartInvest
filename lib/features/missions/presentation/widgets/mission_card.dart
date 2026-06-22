@@ -11,8 +11,9 @@ class MissionCard extends StatelessWidget {
   String _getRequirementText() {
     List<String> reqs = [];
     if (mission.requiredLevel > 0) reqs.add('Nível ${mission.requiredLevel}');
-    if (mission.requiredCourses > 0) reqs.add('${mission.requiredCourses} cursos');
-    
+    if (mission.requiredCourses > 0)
+      reqs.add('${mission.requiredCourses} cursos');
+
     if (reqs.isEmpty) return 'Bloqueado';
     return 'Requisito: ${reqs.join(' + ')}';
   }
@@ -28,14 +29,18 @@ class MissionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.backgroundCard,
         borderRadius: BorderRadius.circular(16),
-        border: isLocked ? Border.all(color: AppColors.divider.withValues(alpha: 0.5)) : null,
+        border: isLocked
+            ? Border.all(color: AppColors.divider.withValues(alpha: 0.5))
+            : null,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             isLocked ? Icons.lock_outline : mission.icon,
-            color: isLocked ? AppColors.textMuted.withValues(alpha: 0.5) : AppColors.accent,
+            color: isLocked
+                ? AppColors.textMuted.withValues(alpha: 0.5)
+                : AppColors.accent,
             size: 32,
           ),
           const SizedBox(height: 8),
@@ -54,7 +59,9 @@ class MissionCard extends StatelessWidget {
             isLocked ? _getRequirementText() : mission.description,
             style: AppTextStyles.bodySmall.copyWith(
               fontSize: 10,
-              color: isLocked ? AppColors.primary.withValues(alpha: 0.7) : AppColors.textMuted,
+              color: isLocked
+                  ? AppColors.primary.withValues(alpha: 0.7)
+                  : AppColors.textMuted,
               fontWeight: isLocked ? FontWeight.bold : FontWeight.normal,
             ),
             textAlign: TextAlign.center,
@@ -103,10 +110,12 @@ class MissionCard extends StatelessWidget {
                   value: mission.progress,
                   minHeight: 6,
                   backgroundColor: AppColors.divider,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.accent,
+                  ),
                 ),
               ),
-            ]
+            ],
           ],
         ],
       ),

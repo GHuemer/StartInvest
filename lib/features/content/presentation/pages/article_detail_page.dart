@@ -5,10 +5,7 @@ import '../widgets/article_detail_view.dart';
 class ArticleDetailPage extends StatelessWidget {
   final Article article;
 
-  const ArticleDetailPage({
-    super.key,
-    required this.article,
-  });
+  const ArticleDetailPage({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {

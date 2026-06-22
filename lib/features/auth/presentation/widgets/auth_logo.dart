@@ -24,20 +24,29 @@ class AuthLogo extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('START',
-                    style: TextStyle(
-                        color: AppColors.backgroundDark,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        letterSpacing: 2)),
-                Icon(Icons.show_chart,
-                    color: AppColors.backgroundDark, size: 32),
-                Text('INVEST',
-                    style: TextStyle(
-                        color: AppColors.backgroundDark,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        letterSpacing: 2)),
+                Text(
+                  'START',
+                  style: TextStyle(
+                    color: AppColors.backgroundDark,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                    letterSpacing: 2,
+                  ),
+                ),
+                Icon(
+                  Icons.show_chart,
+                  color: AppColors.backgroundDark,
+                  size: 32,
+                ),
+                Text(
+                  'INVEST',
+                  style: TextStyle(
+                    color: AppColors.backgroundDark,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                    letterSpacing: 2,
+                  ),
+                ),
               ],
             ),
           ),
@@ -47,17 +56,21 @@ class AuthLogo extends StatelessWidget {
           text: const TextSpan(
             children: [
               TextSpan(
-                  text: 'START',
-                  style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.white)),
+                text: 'START',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.white,
+                ),
+              ),
               TextSpan(
-                  text: ' INVEST',
-                  style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.white)),
+                text: ' INVEST',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.white,
+                ),
+              ),
             ],
           ),
         ),

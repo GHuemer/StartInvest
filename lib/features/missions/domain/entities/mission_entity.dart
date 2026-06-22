@@ -33,10 +33,7 @@ class MissionEntity extends Equatable {
   bool get isLocked => status == MissionStatus.locked;
   bool get isCompleted => status == MissionStatus.completed;
 
-  MissionEntity copyWith({
-    MissionStatus? status,
-    double? progress,
-  }) {
+  MissionEntity copyWith({MissionStatus? status, double? progress}) {
     return MissionEntity(
       id: id,
       title: title,
@@ -52,5 +49,16 @@ class MissionEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, title, description, icon, category, status, requiredLevel, requiredCourses, progress, rewardPoints];
+  List<Object?> get props => [
+    id,
+    title,
+    description,
+    icon,
+    category,
+    status,
+    requiredLevel,
+    requiredCourses,
+    progress,
+    rewardPoints,
+  ];
 }

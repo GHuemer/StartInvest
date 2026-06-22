@@ -20,8 +20,7 @@ class WalletModel extends Wallet {
       startingBalance: (data['startingBalance'] as num?)?.toDouble() ?? 0.0,
       availableBalance: (data['availableBalance'] as num?)?.toDouble() ?? 0.0,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      lastPortfolioValue:
-          (data['lastPortfolioValue'] as num?)?.toDouble(),
+      lastPortfolioValue: (data['lastPortfolioValue'] as num?)?.toDouble(),
     );
   }
 

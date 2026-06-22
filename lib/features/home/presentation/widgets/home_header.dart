@@ -70,13 +70,18 @@ class HomeHeader extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: Icon(
-                        hasNotifications ? Icons.notifications_active : Icons.notifications_none,
+                        hasNotifications
+                            ? Icons.notifications_active
+                            : Icons.notifications_none,
                         color: Colors.white,
                         size: 28,
                       ),
                       onPressed: () {
                         if (hasNotifications) {
-                          _showFriendRequestsModal(context, state as FriendRequestsLoaded);
+                          _showFriendRequestsModal(
+                            context,
+                            state as FriendRequestsLoaded,
+                          );
                         }
                       },
                     ),
@@ -118,7 +123,10 @@ class HomeHeader extends StatelessWidget {
                 child: ClipOval(
                   child: user?.photoUrl != null
                       ? Image.network(user!.photoUrl!)
-                      : const Icon(Icons.person_outline, color: AppColors.primary),
+                      : const Icon(
+                          Icons.person_outline,
+                          color: AppColors.primary,
+                        ),
                 ),
               ),
             ),
@@ -128,7 +136,10 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  void _showFriendRequestsModal(BuildContext context, FriendRequestsLoaded state) {
+  void _showFriendRequestsModal(
+    BuildContext context,
+    FriendRequestsLoaded state,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.backgroundDark,
@@ -165,7 +176,8 @@ class HomeHeader extends StatelessWidget {
                       itemCount: state.requests.length,
                       itemBuilder: (context, index) {
                         final request = state.requests[index];
-                        final fromUser = request['fromUser'] as Map<String, dynamic>?;
+                        final fromUser =
+                            request['fromUser'] as Map<String, dynamic>?;
                         final fromName = fromUser?['name'] ?? 'Usuário';
                         final fromUsername = fromUser?['username'] ?? '';
 
@@ -173,7 +185,10 @@ class HomeHeader extends StatelessWidget {
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
                             backgroundColor: AppColors.backgroundCard,
-                            child: const Icon(Icons.person, color: AppColors.primary),
+                            child: const Icon(
+                              Icons.person,
+                              color: AppColors.primary,
+                            ),
                           ),
                           title: Text(
                             fromName,
@@ -187,16 +202,26 @@ class HomeHeader extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.check, color: Colors.green),
+                                icon: const Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                ),
                                 onPressed: () {
-                                  context.read<FriendRequestsCubit>().acceptRequest(request['id']);
+                                  context
+                                      .read<FriendRequestsCubit>()
+                                      .acceptRequest(request['id']);
                                   Navigator.pop(context);
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(Icons.close, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () {
-                                  context.read<FriendRequestsCubit>().declineRequest(request['id']);
+                                  context
+                                      .read<FriendRequestsCubit>()
+                                      .declineRequest(request['id']);
                                   Navigator.pop(context);
                                 },
                               ),
