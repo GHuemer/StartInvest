@@ -27,14 +27,22 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
     final userDoc = _firestore.collection('users').doc(user.uid);
     
     final doc = await userDoc.get();
-    final completedIds = List<String>.from(doc.data()?['completedMissionsIds'] ?? []);
+    final data = doc.data() ?? {};
+    final completedIds = List<String>.from(data['completedMissionsIds'] ?? []);
 
     if (completedIds.contains(missionId)) {
       return false;
     }
 
+    // Calcula o novo XP garantindo que nunca fique negativo
+    int currentXp = (data['xp'] ?? 0) as int;
+    int newXp = currentXp + points;
+    if (newXp < 0) {
+      newXp = 0;
+    }
+
     await userDoc.update({
-      'xp': FieldValue.increment(points),
+      'xp': newXp,
       'completedMissionsIds': FieldValue.arrayUnion([missionId]),
     });
 

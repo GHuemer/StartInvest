@@ -115,35 +115,116 @@ class _QuizListItem extends StatelessWidget {
   final Quiz quiz;
   const _QuizListItem({required this.quiz});
 
+  IconData _getIconForTitle(String title) {
+    final t = title.toLowerCase();
+    if (t.contains('cripto')) return Icons.currency_bitcoin;
+    if (t.contains('ação') || t.contains('ações')) return Icons.trending_up;
+    if (t.contains('fii') || t.contains('imobiliário')) return Icons.apartment;
+    if (t.contains('tesouro') || t.contains('renda fixa')) return Icons.account_balance;
+    if (t.contains('etf') || t.contains('índice')) return Icons.pie_chart;
+    if (t.contains('fundo')) return Icons.donut_large;
+    return Icons.videogame_asset;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: () {
-          // Aqui está a mágica que abre a página do quiz!
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => QuizPage(quiz: quiz)),
           );
         },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.grey[800],
-            borderRadius: BorderRadius.circular(20),
+            color: AppColors.backgroundCard,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.cardBorder.withOpacity(0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  quiz.title,
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  _getIconForTitle(quiz.title),
+                  color: AppColors.primary,
+                  size: 28,
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.white),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      quiz.title,
+                      style: const TextStyle(
+                        color: Colors.white, 
+                        fontSize: 16, 
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        // Tag de Tipo do Jogo (Quiz)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+                          ),
+                          child: const Text(
+                            'QUIZ',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Informação Extra (Qtd de perguntas)
+                        Icon(Icons.help_outline, size: 14, color: AppColors.textMuted),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${quiz.questions.length} perguntas',
+                          style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_ios, 
+                  color: Colors.white70,
+                  size: 14,
+                ),
+              ),
             ],
           ),
         ),

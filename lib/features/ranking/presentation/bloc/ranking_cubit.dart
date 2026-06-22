@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../profile/domain/repositories/profile_repository.dart';
-import '../../../profile/domain/entities/user_profile.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 import 'ranking_state.dart';
 
@@ -37,8 +36,8 @@ class RankingCubit extends Cubit<RankingState> {
         _profileRepository.getFriendsRanking(idsToFetch.toList()),
       ]);
 
-      final globalRanking = results[0].fold((l) => throw l, (r) => r as List<UserProfile>);
-      final friendsRanking = results[1].fold((l) => throw l, (r) => r as List<UserProfile>);
+      final globalRanking = results[0].fold((l) => throw l, (r) => r);
+      final friendsRanking = results[1].fold((l) => throw l, (r) => r);
 
       emit(RankingLoaded(
         globalRanking: globalRanking,

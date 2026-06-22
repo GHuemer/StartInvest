@@ -102,6 +102,61 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.backgroundCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.logout, color: AppColors.textNegative),
+            SizedBox(width: 8),
+            Text('Sair da conta', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: const Text(
+          'Tem certeza que deseja sair do seu perfil? Você precisará fazer login novamente para voltar.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+        actionsPadding: const EdgeInsets.all(24),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext); // Fecha o modal
+                    context.read<AuthBloc>().add(const AuthSignOutRequested()); // Faz o log out
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.textNegative,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -298,9 +353,7 @@ class ProfilePage extends StatelessWidget {
                         SizedBox(
                           width: double.infinity,
                           child: TextButton.icon(
-                            onPressed: () {
-                              context.read<AuthBloc>().add(AuthSignOutRequested());
-                            },
+                            onPressed: () => _showLogoutConfirmation(context),
                             icon: const Icon(Icons.logout_rounded, color: AppColors.textNegative),
                             label: const Text(
                               'Sair da conta',
@@ -315,7 +368,7 @@ class ProfilePage extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              backgroundColor: AppColors.textNegative.withOpacity(0.1),
+                              backgroundColor: AppColors.textNegative.withOpacity(0.2),
                             ),
                           ),
                         ),
@@ -339,6 +392,61 @@ class _InfoMiniCard extends StatelessWidget {
   final Color? valueColor;
 
   const _InfoMiniCard({required this.label, required this.value, this.valueColor});
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.backgroundCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.logout, color: AppColors.textNegative),
+            SizedBox(width: 8),
+            Text('Sair da conta', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: const Text(
+          'Tem certeza que deseja sair do seu perfil? Você precisará fazer login novamente para voltar.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+        actionsPadding: const EdgeInsets.all(24),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext); // Fecha o modal
+                    context.read<AuthBloc>().add(const AuthSignOutRequested()); // Faz o log out
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.textNegative,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -379,6 +487,61 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.label,
   });
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.backgroundCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.logout, color: AppColors.textNegative),
+            SizedBox(width: 8),
+            Text('Sair da conta', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: const Text(
+          'Tem certeza que deseja sair do seu perfil? Você precisará fazer login novamente para voltar.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+        actionsPadding: const EdgeInsets.all(24),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext); // Fecha o modal
+                    context.read<AuthBloc>().add(const AuthSignOutRequested()); // Faz o log out
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.textNegative,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

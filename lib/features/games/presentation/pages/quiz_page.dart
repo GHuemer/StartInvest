@@ -5,7 +5,6 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../profile/presentation/profile_cubit.dart';
 import '../../domain/entities/quiz_question.dart';
-import '../../data/models/quiz_data.dart';
 import '../../../../core/di/injection.dart';
 import 'package:flutter/services.dart';
 import '../../../missions/data/datasources/missions_remote_datasource.dart';
@@ -352,13 +351,13 @@ class _QuizPageState extends State<QuizPage> {
         content: const Text('Seu progresso neste quiz será perdido.', style: TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context), // Fecha o dialog
             child: const Text('Ficar', style: TextStyle(color: AppColors.primary)),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(context); // Fecha o dialog
+              Navigator.pop(this.context); // Fecha a tela do quiz usando o contexto correto do StatefulWidget
             },
             child: const Text('Sair', style: TextStyle(color: AppColors.textNegative)),
           ),
