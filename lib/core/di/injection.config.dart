@@ -40,6 +40,8 @@ import '../../features/games/domain/usecases/portfolio/calculate_portfolio_xp_us
     as _i1064;
 import '../../features/games/domain/usecases/portfolio/create_wallet_usecase.dart'
     as _i651;
+import '../../features/games/domain/usecases/portfolio/delete_wallet_usecase.dart'
+    as _i809;
 import '../../features/games/domain/usecases/portfolio/get_asset_price_usecase.dart'
     as _i104;
 import '../../features/games/domain/usecases/portfolio/get_positions_usecase.dart'
@@ -139,6 +141,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i651.CreateWalletUseCase>(
       () => _i651.CreateWalletUseCase(gh<_i989.PortfolioRepository>()),
     );
+    gh.factory<_i809.DeleteWalletUseCase>(
+      () => _i809.DeleteWalletUseCase(gh<_i989.PortfolioRepository>()),
+    );
     gh.factory<_i104.GetAssetPriceUseCase>(
       () => _i104.GetAssetPriceUseCase(gh<_i989.PortfolioRepository>()),
     );
@@ -158,6 +163,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i985.SellAssetUseCase(
         gh<_i989.PortfolioRepository>(),
         gh<_i1064.CalculatePortfolioXpUseCase>(),
+      ),
+    );
+    gh.factory<_i381.PortfolioBloc>(
+      () => _i381.PortfolioBloc(
+        gh<_i974.GetWalletsUseCase>(),
+        gh<_i651.CreateWalletUseCase>(),
+        gh<_i916.GetPositionsUseCase>(),
+        gh<_i504.BuyAssetUseCase>(),
+        gh<_i985.SellAssetUseCase>(),
+        gh<_i866.GetTradesUseCase>(),
+        gh<_i809.DeleteWalletUseCase>(),
+        gh<_i989.PortfolioRepository>(),
       ),
     );
     gh.factory<_i531.FriendRequestsCubit>(
@@ -189,17 +206,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i568.SignOut>(() => _i568.SignOut(gh<_i787.AuthRepository>()));
     gh.factory<_i190.SignUp>(() => _i190.SignUp(gh<_i787.AuthRepository>()));
-    gh.factory<_i381.PortfolioBloc>(
-      () => _i381.PortfolioBloc(
-        gh<_i974.GetWalletsUseCase>(),
-        gh<_i651.CreateWalletUseCase>(),
-        gh<_i916.GetPositionsUseCase>(),
-        gh<_i504.BuyAssetUseCase>(),
-        gh<_i985.SellAssetUseCase>(),
-        gh<_i866.GetTradesUseCase>(),
-        gh<_i989.PortfolioRepository>(),
-      ),
-    );
     gh.factory<_i797.AuthBloc>(
       () => _i797.AuthBloc(
         signInWithGoogle: gh<_i770.SignInWithGoogle>(),

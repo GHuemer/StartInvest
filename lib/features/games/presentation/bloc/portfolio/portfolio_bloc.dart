@@ -8,6 +8,7 @@ import '../../../domain/usecases/portfolio/get_positions_usecase.dart';
 import '../../../domain/usecases/portfolio/buy_asset_usecase.dart';
 import '../../../domain/usecases/portfolio/sell_asset_usecase.dart';
 import '../../../domain/usecases/portfolio/get_trades_usecase.dart';
+import '../../../domain/usecases/portfolio/delete_wallet_usecase.dart';
 import '../../../domain/repositories/portfolio_repository.dart';
 import '../../../../../core/error/failures.dart';
 import 'portfolio_event.dart';
@@ -21,6 +22,7 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
   final BuyAssetUseCase _buyAsset;
   final SellAssetUseCase _sellAsset;
   final GetTradesUseCase _getTrades;
+  final DeleteWalletUseCase _deleteWallet;
   final PortfolioRepository _repository;
 
   PortfolioBloc(
@@ -30,6 +32,7 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     this._buyAsset,
     this._sellAsset,
     this._getTrades,
+    this._deleteWallet,
     this._repository,
   ) : super(const PortfolioInitial()) {
     on<LoadWallets>(_onLoadWallets);
@@ -39,6 +42,7 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     on<BuyAsset>(_onBuyAsset);
     on<SellAsset>(_onSellAsset);
     on<UpdatePrices>(_onUpdatePrices);
+    on<DeleteWallet>(_onDeleteWallet);
   }
 
   Future<void> _onLoadWallets(
@@ -164,6 +168,18 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
         ),
       );
     });
+  }
+
+  Future<void> _onDeleteWallet(
+    DeleteWallet event,
+    Emitter<PortfolioState> emit,
+  ) async {
+    emit(const PortfolioLoading());
+    final result = await _deleteWallet(event.walletId);
+    result.fold(
+      (Failure f) => emit(PortfolioError(f.message)),
+      (_) => emit(const WalletDeleted()),
+    );
   }
 
   // Taxa CDI diária (~13,75% a.a. / 252 dias úteis)

@@ -71,6 +71,10 @@ class WalletCreated extends PortfolioState {
   List<Object?> get props => [wallet];
 }
 
+class WalletDeleted extends PortfolioState {
+  const WalletDeleted();
+}
+
 class PortfolioError extends PortfolioState {
   final String message;
   const PortfolioError(this.message);

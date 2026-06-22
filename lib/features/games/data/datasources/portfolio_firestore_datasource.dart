@@ -11,6 +11,7 @@ abstract class PortfolioFirestoreDataSource {
   Future<WalletModel> createWallet(String name, double startingBalance);
   Future<List<PositionModel>> getPositions(String walletId);
   Future<List<TradeModel>> getTrades(String walletId);
+  Future<void> deleteWallet(String walletId);
   Future<TradeModel> buyAsset({
     required String walletId,
     required String ticker,
@@ -214,6 +215,22 @@ class PortfolioFirestoreDataSourceImpl implements PortfolioFirestoreDataSource {
       tradeSnap.id,
       tradeSnap.data() as Map<String, dynamic>,
     );
+  }
+
+  @override
+  Future<void> deleteWallet(String walletId) async {
+    final walletRef = _wallets.doc(walletId);
+
+    // Firestore não apaga subcoleções automaticamente — delete manual
+    final positions = await walletRef.collection('positions').get();
+    for (final doc in positions.docs) {
+      await doc.reference.delete();
+    }
+    final trades = await walletRef.collection('trades').get();
+    for (final doc in trades.docs) {
+      await doc.reference.delete();
+    }
+    await walletRef.delete();
   }
 
   Future<void> _updateUserBalance(String walletId) async {

@@ -36,4 +36,5 @@ abstract class PortfolioRepository {
     String query,
     AssetType type,
   );
+  Future<Either<Failure, void>> deleteWallet(String walletId);
 }

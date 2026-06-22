@@ -140,4 +140,14 @@ class PortfolioRepositoryImpl implements PortfolioRepository {
       return Left(NetworkFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteWallet(String walletId) async {
+    try {
+      await _firestore.deleteWallet(walletId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

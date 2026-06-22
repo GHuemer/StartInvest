@@ -65,6 +65,8 @@ class _WalletDetailPageState extends State<WalletDetailPage> {
               ),
             );
             _bloc.add(LoadPositions(widget.walletId));
+          } else if (state is WalletDeleted) {
+            Navigator.pop(context);
           } else if (state is PortfolioError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -99,6 +101,10 @@ class _WalletDetailPageState extends State<WalletDetailPage> {
                           TradeHistoryPage(walletId: widget.walletId),
                     ),
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.white38),
+                  onPressed: () => _confirmDelete(context),
                 ),
               ],
             ),
@@ -279,6 +285,45 @@ class _WalletDetailPageState extends State<WalletDetailPage> {
           availableBalance: available,
           onTradeComplete: () => _bloc.add(LoadPositions(widget.walletId)),
         ),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.backgroundCard,
+        title: const Text(
+          'Excluir carteira?',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'A carteira "${widget.walletName}" e todo seu histórico de operações serão excluídos permanentemente.',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white54),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _bloc.add(DeleteWallet(widget.walletId));
+            },
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: AppColors.textNegative,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

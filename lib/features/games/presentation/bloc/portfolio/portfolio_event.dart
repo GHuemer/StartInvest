@@ -79,3 +79,10 @@ class UpdatePrices extends PortfolioEvent {
   @override
   List<Object?> get props => [walletId];
 }
+
+class DeleteWallet extends PortfolioEvent {
+  final String walletId;
+  const DeleteWallet(this.walletId);
+  @override
+  List<Object?> get props => [walletId];
+}
