@@ -104,16 +104,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
       return cached.$1;
     }
 
-    try {
-      final asset = await _fetchBrapi([ticker], type);
-      if (asset.isNotEmpty) {
-        _cache[ticker] = (asset.first, DateTime.now());
-        return asset.first;
-      }
-    } catch (e) {
-      debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
-    }
-    return _fallbackAsset(ticker, type);
+    return _fetchWithRetry(ticker, type);
   }
 
   @override
@@ -139,16 +130,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
             DateTime.now().difference(cached.$2) < _cacheDuration) {
           return cached.$1;
         }
-        try {
-          final fetched = await _fetchBrapi([ticker], type);
-          if (fetched.isNotEmpty) {
-            _cache[ticker] = (fetched.first, DateTime.now());
-            return fetched.first;
-          }
-        } catch (e) {
-          debugPrint('[MarketAPI] Erro ao buscar $ticker: $e');
-        }
-        return _fallbackAsset(ticker, type);
+        return _fetchWithRetry(ticker, type);
       }),
     );
 
@@ -163,6 +145,33 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     return all
         .where((a) => a.ticker.contains(q) || a.name.toUpperCase().contains(q))
         .toList();
+  }
+
+  Future<MarketAsset> _fetchWithRetry(
+    String ticker,
+    AssetType type, {
+    int attempts = 2,
+  }) async {
+    for (var i = 0; i < attempts; i++) {
+      try {
+        final fetched = await _fetchBrapi([ticker], type);
+        if (fetched.isNotEmpty) {
+          _cache[ticker] = (fetched.first, DateTime.now());
+          return fetched.first;
+        }
+      } catch (e) {
+        final isLastAttempt = i == attempts - 1;
+        if (isLastAttempt) {
+          debugPrint(
+            '[MarketAPI] Erro ao buscar $ticker após $attempts tentativas: $e',
+          );
+        } else {
+          debugPrint('[MarketAPI] Timeout em $ticker, tentando novamente...');
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+      }
+    }
+    return _fallbackAsset(ticker, type);
   }
 
   Future<List<MarketAsset>> _fetchBrapi(
