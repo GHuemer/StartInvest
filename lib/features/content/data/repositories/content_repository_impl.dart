@@ -184,20 +184,17 @@ Datas Importantes:
       const CourseModel(
         id: 'c1',
         title: 'Bolsa de Valores para Iniciantes',
-        videoUrl: 'https://www.youtube.com/watch?v=sV8H99P2U7w',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=2070&auto=format&fit=crop',
+        videoUrl: null,
       ),
       const CourseModel(
         id: 'c2',
         title: 'Planejamento Financeiro 101',
-        videoUrl: '',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2022&auto=format&fit=crop',
+        videoUrl: 'null',
       ),
       const CourseModel(
         id: 'c3',
         title: 'Criptoativos: O Guia Básico',
-        videoUrl: 'https://www.youtube.com/watch?v=mZ7P75K7fWw',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=2069&auto=format&fit=crop',
+        videoUrl: 'null',
       ),
     ];
   }
