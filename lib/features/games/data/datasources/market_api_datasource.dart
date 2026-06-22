@@ -92,6 +92,7 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   // Com token free: 1 ticker/req mas desbloqueia FIIs
   // Sem token: até 3 tickers/req, FIIs indisponíveis
   // Usamos sempre 1 ticker/req quando há token (funciona em qualquer plano)
+  // ignore: unused_element
   int get _batchSize => _hasToken ? 1 : 3;
 
   @override

@@ -24,8 +24,6 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _answered = false;
-  bool? _lastAnswer;
-  bool? _isCorrect;
 
   @override
   void initState() {

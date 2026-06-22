@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:startinvest/core/error/failures.dart';
-import 'package:startinvest/features/games/domain/entities/game_result.dart';
 import 'package:startinvest/features/games/domain/entities/game_session.dart';
 import 'package:startinvest/features/games/domain/entities/market_question.dart';
 import 'package:startinvest/features/games/domain/repositories/games_repository.dart';
@@ -25,17 +24,6 @@ GameSession _makeSession({List<MarketQuestion>? questions}) => GameSession(
       difficulty: 'easy',
       questions: questions ?? [_makeQuestion()],
       startedAt: DateTime(2024),
-    );
-
-GameResult _makeResult() => GameResult(
-      sessionId: 'session-1',
-      difficulty: 'easy',
-      totalPoints: 5,
-      correctAnswers: 1,
-      totalQuestions: 1,
-      accuracy: 1.0,
-      completedAt: DateTime(2024),
-      bestStreak: 1,
     );
 
 void main() {

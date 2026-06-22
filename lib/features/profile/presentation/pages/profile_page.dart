@@ -114,6 +114,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  // ignore: unused_element
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -433,6 +434,7 @@ class _InfoMiniCard extends StatelessWidget {
     this.valueColor,
   });
 
+  // ignore: unused_element
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -540,6 +542,7 @@ class _StatCard extends StatelessWidget {
     required this.label,
   });
 
+  // ignore: unused_element
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,

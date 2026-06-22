@@ -80,6 +80,8 @@ class DueloInvestimentosPage extends StatelessWidget {
 }
 
 // Simple swords icon if not available
+// ignore: unused_element
 extension on Icons {
+  // ignore: unused_field
   static const IconData swords = Icons.compare_arrows; // Fallback
 }

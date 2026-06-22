@@ -7,7 +7,6 @@ import '../../domain/entities/game_session.dart';
 import '../../domain/entities/market_question.dart';
 import '../../domain/repositories/games_repository.dart';
 import '../datasources/market_questions_datasource.dart';
-import '../models/market_question_model.dart';
 
 @LazySingleton(as: GamesRepository)
 class GamesRepositoryImpl implements GamesRepository {

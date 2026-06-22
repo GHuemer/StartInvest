@@ -24,7 +24,6 @@ class MissionsCubit extends Cubit<MissionsState> {
           progressData['level'] ??
           3; // Fallback para mock se o campo não existir
       final userCoursesCount = progressData['completedCoursesCount'] ?? 0;
-      final userBalance = (progressData['balance'] ?? 0.0).toDouble();
       final userAssetTypes = progressData['assetTypesCount'] ?? 0;
       final userLoginStreak = progressData['loginStreak'] ?? 0;
 
