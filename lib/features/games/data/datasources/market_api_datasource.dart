@@ -21,22 +21,26 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
   MarketApiDataSourceImpl(this._dio);
 
   static const List<Map<String, String>> _stocks = [
-    {'ticker': 'PETR4', 'name': 'Petrobras PN'},
-    {'ticker': 'VALE3', 'name': 'Vale ON'},
-    {'ticker': 'ITUB4', 'name': 'Itaú Unibanco PN'},
-    {'ticker': 'BBAS3', 'name': 'Banco do Brasil ON'},
-    {'ticker': 'ABEV3', 'name': 'Ambev ON'},
-    {'ticker': 'WEGE3', 'name': 'WEG ON'},
-    {'ticker': 'RENT3', 'name': 'Localiza ON'},
-    {'ticker': 'MGLU3', 'name': 'Magazine Luiza ON'},
+    {'ticker': 'PETR4', 'name': 'Petrobras PN', 'price': '36.50'},
+    {'ticker': 'VALE3', 'name': 'Vale ON', 'price': '58.20'},
+    {'ticker': 'ITUB4', 'name': 'Itaú Unibanco PN', 'price': '28.80'},
+    {'ticker': 'BBAS3', 'name': 'Banco do Brasil ON', 'price': '25.40'},
+    {'ticker': 'ABEV3', 'name': 'Ambev ON', 'price': '11.90'},
+    {'ticker': 'WEGE3', 'name': 'WEG ON', 'price': '42.60'},
+    {'ticker': 'RENT3', 'name': 'Localiza ON', 'price': '51.30'},
+    {'ticker': 'MGLU3', 'name': 'Magazine Luiza ON', 'price': '8.70'},
   ];
 
   static const List<Map<String, String>> _fiis = [
-    {'ticker': 'MXRF11', 'name': 'Maxi Renda FII'},
-    {'ticker': 'HGLG11', 'name': 'CSHG Logística FII'},
-    {'ticker': 'XPML11', 'name': 'XP Malls FII'},
-    {'ticker': 'KNRI11', 'name': 'Kinea Renda Imob. FII'},
-    {'ticker': 'VISC11', 'name': 'Vinci Shopping Centers FII'},
+    {'ticker': 'MXRF11', 'name': 'Maxi Renda FII', 'price': '9.85'},
+    {'ticker': 'HGLG11', 'name': 'CSHG Logística FII', 'price': '160.40'},
+    {'ticker': 'XPML11', 'name': 'XP Malls FII', 'price': '87.20'},
+    {'ticker': 'KNRI11', 'name': 'Kinea Renda Imob. FII', 'price': '152.10'},
+    {
+      'ticker': 'VISC11',
+      'name': 'Vinci Shopping Centers FII',
+      'price': '94.60',
+    },
   ];
 
   static const List<Map<String, String>> _fixedIncome = [
@@ -146,23 +150,15 @@ class MarketApiDataSourceImpl implements MarketApiDataSource {
     final catalog = type == AssetType.stock ? _stocks : _fiis;
     final info = catalog.firstWhere(
       (e) => e['ticker'] == ticker,
-      orElse: () => {'ticker': ticker, 'name': ticker},
+      orElse: () => {'ticker': ticker, 'name': ticker, 'price': '0'},
     );
     return MarketAsset(
       ticker: ticker,
       name: info['name']!,
       type: type,
-      currentPrice: 0.0,
+      currentPrice: double.tryParse(info['price'] ?? '0') ?? 0.0,
       changePercent: 0.0,
       fetchedAt: DateTime.now(),
     );
-  }
-
-  double calculateFixedIncomeCurrentPrice(
-    double buyPrice,
-    DateTime purchaseDate,
-  ) {
-    final days = DateTime.now().difference(purchaseDate).inDays;
-    return buyPrice * (1 + _cdiDailyRate) * days;
   }
 }

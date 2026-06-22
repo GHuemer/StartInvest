@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../domain/entities/position.dart';
@@ -95,6 +96,8 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
           startingBalance: starting,
         ),
       );
+      // Atualiza preços imediatamente ao carregar, sem esperar o timer de 60s
+      add(UpdatePrices(event.walletId));
     });
   }
 
@@ -163,6 +166,9 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     });
   }
 
+  // Taxa CDI diária (~13,75% a.a. / 252 dias úteis)
+  static const double _cdiDailyRate = 0.1375 / 252;
+
   Future<void> _onUpdatePrices(
     UpdatePrices event,
     Emitter<PortfolioState> emit,
@@ -172,11 +178,29 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     final updated = <Position>[];
 
     for (final pos in current.positions) {
-      final result = await _repository.getAssetPrice(pos.ticker, pos.assetType);
-      result.fold(
-        (_) => updated.add(pos),
-        (asset) => updated.add(pos.copyWith(currentPrice: asset.currentPrice)),
-      );
+      if (pos.assetType == AssetType.fixedIncome) {
+        // Renda Fixa: juros compostos CDI desde a data de compra
+        final days = DateTime.now().difference(pos.purchaseDate).inDays;
+        final accumulatedPrice =
+            pos.avgBuyPrice * pow(1 + _cdiDailyRate, days > 0 ? days : 1);
+        updated.add(pos.copyWith(currentPrice: accumulatedPrice.toDouble()));
+      } else {
+        final result = await _repository.getAssetPrice(
+          pos.ticker,
+          pos.assetType,
+        );
+        result.fold(
+          // API falhou: mantém o último preço conhecido (não zera)
+          (_) => updated.add(pos),
+          (asset) {
+            // Se API retornar 0 (fallback zerado), mantém preço anterior
+            final newPrice = asset.currentPrice > 0
+                ? asset.currentPrice
+                : pos.currentPrice;
+            updated.add(pos.copyWith(currentPrice: newPrice));
+          },
+        );
+      }
     }
 
     emit(

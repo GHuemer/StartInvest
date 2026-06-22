@@ -44,6 +44,7 @@ class Position extends Equatable {
   final double quantity;
   final double avgBuyPrice;
   final double currentPrice;
+  final DateTime purchaseDate;
 
   const Position({
     required this.ticker,
@@ -52,6 +53,7 @@ class Position extends Equatable {
     required this.quantity,
     required this.avgBuyPrice,
     required this.currentPrice,
+    required this.purchaseDate,
   });
 
   double get totalCost => quantity * avgBuyPrice;
@@ -72,6 +74,7 @@ class Position extends Equatable {
       quantity: quantity ?? this.quantity,
       avgBuyPrice: avgBuyPrice ?? this.avgBuyPrice,
       currentPrice: currentPrice ?? this.currentPrice,
+      purchaseDate: purchaseDate,
     );
   }
 
@@ -83,5 +86,6 @@ class Position extends Equatable {
     quantity,
     avgBuyPrice,
     currentPrice,
+    purchaseDate,
   ];
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../domain/entities/position.dart';
 
 class PositionModel extends Position {
@@ -8,6 +9,7 @@ class PositionModel extends Position {
     required super.quantity,
     required super.avgBuyPrice,
     required super.currentPrice,
+    required super.purchaseDate,
   });
 
   factory PositionModel.fromFirestore(
@@ -15,6 +17,7 @@ class PositionModel extends Position {
     Map<String, dynamic> data,
     String walletId,
   ) {
+    final avgBuyPrice = (data['avgBuyPrice'] as num?)?.toDouble() ?? 0.0;
     return PositionModel(
       ticker: ticker,
       walletId: walletId,
@@ -22,8 +25,10 @@ class PositionModel extends Position {
         data['assetType'] as String? ?? 'stock',
       ),
       quantity: (data['quantity'] as num?)?.toDouble() ?? 0.0,
-      avgBuyPrice: (data['avgBuyPrice'] as num?)?.toDouble() ?? 0.0,
-      currentPrice: (data['avgBuyPrice'] as num?)?.toDouble() ?? 0.0,
+      avgBuyPrice: avgBuyPrice,
+      currentPrice: avgBuyPrice,
+      purchaseDate:
+          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

@@ -126,6 +126,7 @@ class PortfolioFirestoreDataSourceImpl implements PortfolioFirestoreDataSource {
           'assetType': assetType.value,
           'quantity': quantity,
           'avgBuyPrice': price,
+          'createdAt': Timestamp.now(),
         });
       }
 
