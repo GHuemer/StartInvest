@@ -45,7 +45,6 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
 
     setState(() {
       _answered = true;
-      _lastAnswer = answer;
     });
 
     context.read<GamesBloc>().add(AnswerQuestionEvent(answer));
@@ -65,8 +64,6 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
       } else {
         setState(() {
           _answered = false;
-          _lastAnswer = null;
-          _isCorrect = null;
         });
         _animationController.reset();
         context.read<GamesBloc>().add(const NextQuestionEvent());
@@ -89,12 +86,10 @@ class _MarketPredictorGameState extends State<MarketPredictorGame>
 
         if (state is GameStarted) {
           session = state.session;
-          _isCorrect = null;
         } else if (state is QuestionAnswered) {
           session = state.session;
           isCorrect = state.isCorrect;
           pointsEarned = state.pointsEarned;
-          _isCorrect = isCorrect;
         }
 
         if (session == null) {
