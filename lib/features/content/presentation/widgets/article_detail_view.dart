@@ -8,10 +8,7 @@ import '../../domain/entities/article.dart';
 class ArticleDetailView extends StatelessWidget {
   final Article article;
 
-  const ArticleDetailView({
-    super.key,
-    required this.article,
-  });
+  const ArticleDetailView({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +23,7 @@ class ArticleDetailView extends StatelessWidget {
             leading: const AppBackButton(color: AppColors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: article.imageUrl != null
-                  ? Image.network(
-                      article.imageUrl!,
-                      fit: BoxFit.cover,
-                    )
+                  ? Image.network(article.imageUrl!, fit: BoxFit.cover)
                   : null,
             ),
           ),
@@ -39,28 +33,25 @@ class ArticleDetailView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    article.title,
-                    style: AppTextStyles.displayMedium,
-                  ),
+                  Text(article.title, style: AppTextStyles.displayMedium),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Icon(Icons.person_outline,
-                          size: 16, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
-                      Text(
-                        article.author,
-                        style: AppTextStyles.bodySmall,
+                      const Icon(
+                        Icons.person_outline,
+                        size: 16,
+                        color: AppColors.textSecondary,
                       ),
+                      const SizedBox(width: 4),
+                      Text(article.author, style: AppTextStyles.bodySmall),
                       const SizedBox(width: 16),
-                      const Icon(Icons.access_time,
-                          size: 16, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
-                      Text(
-                        article.readingTime,
-                        style: AppTextStyles.bodySmall,
+                      const Icon(
+                        Icons.access_time,
+                        size: 16,
+                        color: AppColors.textSecondary,
                       ),
+                      const SizedBox(width: 4),
+                      Text(article.readingTime, style: AppTextStyles.bodySmall),
                       const SizedBox(width: 16),
                       Text(
                         DateFormat('dd/MM/yyyy').format(article.publishedAt),

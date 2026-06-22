@@ -34,7 +34,10 @@ class _ProjectionHistoryPageState extends State<ProjectionHistoryPage> {
         title: const Text(
           'Histórico de Simulações',
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
       ),
       body: BlocBuilder<ProjectionBloc, ProjectionState>(
@@ -110,7 +113,9 @@ class _HistoryCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.backgroundCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: AppColors.cardBorder.withValues(alpha: 0.3),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,15 +125,19 @@ class _HistoryCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.show_chart,
-                        color: Colors.blueAccent, size: 16),
+                    const Icon(
+                      Icons.show_chart,
+                      color: Colors.blueAccent,
+                      size: 16,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       result.periodLabel,
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -152,14 +161,18 @@ class _HistoryCard extends StatelessWidget {
                   fmt.format(result.totalInvested),
                   style: const TextStyle(color: Colors.white54, fontSize: 12),
                 ),
-                const Icon(Icons.arrow_forward,
-                    color: Colors.white38, size: 14),
+                const Icon(
+                  Icons.arrow_forward,
+                  color: Colors.white38,
+                  size: 14,
+                ),
                 Text(
                   fmt.format(result.totalProjected),
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -167,19 +180,25 @@ class _HistoryCard extends StatelessWidget {
             Wrap(
               spacing: 6,
               children: result.assets
-                  .map((a) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.backgroundDark,
-                          borderRadius: BorderRadius.circular(6),
+                  .map(
+                    (a) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.backgroundDark,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        a.ticker,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
                         ),
-                        child: Text(
-                          a.ticker,
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 11),
-                        ),
-                      ))
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
             if (result.createdAt != null) ...[

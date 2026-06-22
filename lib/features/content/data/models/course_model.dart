@@ -18,10 +18,6 @@ class CourseModel extends Course {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'videoUrl': videoUrl,
-      'thumbnailUrl': thumbnailUrl,
-    };
+    return {'title': title, 'videoUrl': videoUrl, 'thumbnailUrl': thumbnailUrl};
   }
 }

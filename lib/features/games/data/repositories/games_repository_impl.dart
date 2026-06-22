@@ -17,8 +17,8 @@ class GamesRepositoryImpl implements GamesRepository {
   GamesRepositoryImpl({
     required MarketQuestionsDatasource datasource,
     FirebaseFirestore? firestore,
-  })  : _datasource = datasource,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  }) : _datasource = datasource,
+       _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Future<Either<Failure, List<MarketQuestion>>> getQuestionsByDifficulty(
@@ -77,8 +77,8 @@ class GamesRepositoryImpl implements GamesRepository {
         }
       }
 
-      final accuracy =
-          (correctAnswers / session.questions.length * 100).toStringAsFixed(2);
+      final accuracy = (correctAnswers / session.questions.length * 100)
+          .toStringAsFixed(2);
 
       int bestStreak = 0;
       int currentStreak = 0;
@@ -120,10 +120,9 @@ class GamesRepositoryImpl implements GamesRepository {
             .doc(userId)
             .collection('game_results')
             .add(result.toMap()),
-        _firestore
-            .collection('users')
-            .doc(userId)
-            .update({'xp': FieldValue.increment(result.totalPoints)}),
+        _firestore.collection('users').doc(userId).update({
+          'xp': FieldValue.increment(result.totalPoints),
+        }),
       ]);
       return const Right(null);
     } catch (e) {

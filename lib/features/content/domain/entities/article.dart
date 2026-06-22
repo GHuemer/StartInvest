@@ -21,12 +21,12 @@ class Article extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        content,
-        imageUrl,
-        author,
-        readingTime,
-        publishedAt,
-      ];
+    id,
+    title,
+    content,
+    imageUrl,
+    author,
+    readingTime,
+    publishedAt,
+  ];
 }

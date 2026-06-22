@@ -15,7 +15,10 @@ class MissionModel extends MissionEntity {
     super.rewardPoints,
   });
 
-  factory MissionModel.fromFirestore(Map<String, dynamic> json, String documentId) {
+  factory MissionModel.fromFirestore(
+    Map<String, dynamic> json,
+    String documentId,
+  ) {
     return MissionModel(
       id: documentId,
       title: json['title'] ?? '',
@@ -41,17 +44,28 @@ class MissionModel extends MissionEntity {
 
   static IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'play': return Icons.play_circle_outline;
-      case 'book': return Icons.menu_book;
-      case 'trending': return Icons.trending_up;
-      case 'pie': return Icons.pie_chart;
-      case 'bank': return Icons.account_balance;
-      case 'savings': return Icons.savings;
-      case 'calendar': return Icons.calendar_today;
-      case 'analytics': return Icons.analytics;
-      case 'waves': return Icons.waves;
-      case 'school': return Icons.school;
-      default: return Icons.emoji_events;
+      case 'play':
+        return Icons.play_circle_outline;
+      case 'book':
+        return Icons.menu_book;
+      case 'trending':
+        return Icons.trending_up;
+      case 'pie':
+        return Icons.pie_chart;
+      case 'bank':
+        return Icons.account_balance;
+      case 'savings':
+        return Icons.savings;
+      case 'calendar':
+        return Icons.calendar_today;
+      case 'analytics':
+        return Icons.analytics;
+      case 'waves':
+        return Icons.waves;
+      case 'school':
+        return Icons.school;
+      default:
+        return Icons.emoji_events;
     }
   }
 }

@@ -48,7 +48,7 @@ class _HomeView extends StatelessWidget {
               HomeHeader(
                 user: user,
                 firstName: firstName,
-                subtitle: user?.league != null 
+                subtitle: user?.league != null
                     ? 'Liga ${user!.league[0].toUpperCase()}${user.league.substring(1)}'
                     : 'Investidor Iniciante',
               ),

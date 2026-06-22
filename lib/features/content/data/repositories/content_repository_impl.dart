@@ -51,7 +51,8 @@ Diversificar não é apenas ter muitos ativos, mas sim ter ativos que não andam
         author: 'Bruno Rocha',
         readingTime: '7 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 5)),
-        imageUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=2070&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=2070&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '3',
@@ -72,7 +73,8 @@ Lembre-se: O objetivo da reserva não é ficar rico, mas sim ter paz de espírit
         author: 'Carlos Mendes',
         readingTime: '4 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 1)),
-        imageUrl: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?q=80&w=2000&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?q=80&w=2000&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '4',
@@ -92,7 +94,8 @@ Não tente ficar rico da noite para o dia. A bolsa de valores premia a paciênci
         author: 'Daniela Souza',
         readingTime: '8 min',
         publishedAt: DateTime.now().subtract(const Duration(hours: 12)),
-        imageUrl: 'https://images.unsplash.com/photo-1611974714851-eb6053e6c3e1?q=80&w=2070&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1611974714851-eb6053e6c3e1?q=80&w=2070&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '5',
@@ -110,7 +113,8 @@ Procure por "Vacas Leiteiras": empresas estáveis em setores perenes como energi
         author: 'Ana Silva',
         readingTime: '6 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 3)),
-        imageUrl: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '6',
@@ -129,7 +133,8 @@ Investir não é apenas para ganhar mais, é para não ficar mais pobre com o te
         author: 'Bruno Rocha',
         readingTime: '5 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 10)),
-        imageUrl: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop',
       ),
     ];
   }

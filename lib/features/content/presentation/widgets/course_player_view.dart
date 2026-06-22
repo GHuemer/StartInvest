@@ -7,11 +7,7 @@ class CoursePlayerView extends StatelessWidget {
   final String title;
   final String? videoUrl;
 
-  const CoursePlayerView({
-    super.key,
-    required this.title,
-    this.videoUrl,
-  });
+  const CoursePlayerView({super.key, required this.title, this.videoUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -30,18 +26,18 @@ class CoursePlayerView extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.play_circle_fill,
-                      size: 80, color: AppColors.primary),
+                  const Icon(
+                    Icons.play_circle_fill,
+                    size: 80,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     'Player de Vídeo: $title',
                     style: AppTextStyles.headlineMedium,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'URL: $videoUrl',
-                    style: AppTextStyles.bodyMedium,
-                  ),
+                  Text('URL: $videoUrl', style: AppTextStyles.bodyMedium),
                 ],
               )
             : Padding(
@@ -49,8 +45,11 @@ class CoursePlayerView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.info_outline,
-                        size: 64, color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 64,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(height: 24),
                     Text(
                       'Ops, parece que ainda não tem conteúdo nessa aba!',

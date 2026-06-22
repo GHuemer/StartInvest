@@ -3,11 +3,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 class CourseCard extends StatelessWidget {
-  const CourseCard({
-    super.key,
-    required this.title,
-    required this.onTap,
-  });
+  const CourseCard({super.key, required this.title, required this.onTap});
 
   final String title;
   final VoidCallback onTap;
@@ -30,8 +26,9 @@ class CourseCard extends StatelessWidget {
               height: 100,
               decoration: BoxDecoration(
                 color: AppColors.backgroundCardLight,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
               ),
               child: const Center(
                 child: Icon(

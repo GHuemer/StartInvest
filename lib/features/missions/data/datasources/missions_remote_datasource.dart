@@ -16,8 +16,8 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
   MissionsRemoteDataSourceImpl({
     FirebaseFirestore? firestore,
     FirebaseAuth? auth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _auth = auth ?? FirebaseAuth.instance;
 
   @override
   Future<bool> completeMission(String missionId, int points) async {
@@ -25,7 +25,7 @@ class MissionsRemoteDataSourceImpl implements MissionsRemoteDataSource {
     if (user == null) return false;
 
     final userDoc = _firestore.collection('users').doc(user.uid);
-    
+
     final doc = await userDoc.get();
     final data = doc.data() ?? {};
     final completedIds = List<String>.from(data['completedMissionsIds'] ?? []);

@@ -191,7 +191,8 @@ class PortfolioRepositoryImpl implements PortfolioRepository {
 
   @override
   Future<Either<Failure, void>> saveProjectionHistory(
-      SimulationResult result) async {
+    SimulationResult result,
+  ) async {
     try {
       await _firestore.saveProjectionHistory(result);
       return const Right(null);

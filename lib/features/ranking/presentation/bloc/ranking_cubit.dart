@@ -10,7 +10,8 @@ class RankingCubit extends Cubit<RankingState> {
   final ProfileRepository _profileRepository;
   final AuthRepository _authRepository;
 
-  RankingCubit(this._profileRepository, this._authRepository) : super(const RankingInitial());
+  RankingCubit(this._profileRepository, this._authRepository)
+    : super(const RankingInitial());
 
   Future<void> loadRankings() async {
     emit(const RankingLoading());
@@ -25,7 +26,7 @@ class RankingCubit extends Cubit<RankingState> {
       // 1. Buscar Perfil Atualizado do Usuário
       final userResult = await _profileRepository.getUserProfile(user.id);
       final profile = userResult.fold((l) => throw l, (r) => r);
-      
+
       // Garante que o ID do usuário atual está na lista para o ranking de amigos
       final Set<String> idsToFetch = Set.from(profile.friendIds);
       idsToFetch.add(profile.id);
@@ -39,16 +40,20 @@ class RankingCubit extends Cubit<RankingState> {
       final globalRanking = results[0].fold((l) => throw l, (r) => r);
       final friendsRanking = results[1].fold((l) => throw l, (r) => r);
 
-      emit(RankingLoaded(
-        globalRanking: globalRanking,
-        friendsRanking: friendsRanking,
-      ));
+      emit(
+        RankingLoaded(
+          globalRanking: globalRanking,
+          friendsRanking: friendsRanking,
+        ),
+      );
     } catch (e) {
       emit(RankingError(e.toString()));
     }
   }
 
-  Future<Either<String, void>> sendFriendRequestByUsername(String username) async {
+  Future<Either<String, void>> sendFriendRequestByUsername(
+    String username,
+  ) async {
     try {
       final user = _authRepository.currentUser;
       if (user == null) return const Left('Usuário não autenticado');
@@ -65,13 +70,16 @@ class RankingCubit extends Cubit<RankingState> {
       // 2. Verificar se já são amigos
       final userResult = await _profileRepository.getUserProfile(user.id);
       final currentUserProfile = userResult.fold((l) => throw l, (r) => r);
-      
+
       if (currentUserProfile.friendIds.contains(friendProfile.id)) {
         return const Left('Este usuário já é seu amigo');
       }
 
       // 3. Enviar solicitação
-      final requestResult = await _profileRepository.sendFriendRequest(user.id, friendProfile.id);
+      final requestResult = await _profileRepository.sendFriendRequest(
+        user.id,
+        friendProfile.id,
+      );
       return requestResult.leftMap((f) => f.toString());
     } catch (e) {
       return Left(e.toString());

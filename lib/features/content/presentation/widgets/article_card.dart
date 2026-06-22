@@ -7,11 +7,7 @@ class ArticleCard extends StatelessWidget {
   final Article article;
   final VoidCallback onTap;
 
-  const ArticleCard({
-    super.key,
-    required this.article,
-    required this.onTap,
-  });
+  const ArticleCard({super.key, required this.article, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +49,19 @@ class ArticleCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.access_time, size: 14, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
-                      Text(
-                        article.readingTime,
-                        style: AppTextStyles.bodySmall,
+                      const Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: AppColors.textSecondary,
                       ),
+                      const SizedBox(width: 4),
+                      Text(article.readingTime, style: AppTextStyles.bodySmall),
                       const SizedBox(width: 12),
-                      const Icon(Icons.person_outline, size: 14, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.person_outline,
+                        size: 14,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(

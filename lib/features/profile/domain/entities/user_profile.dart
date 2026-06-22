@@ -39,23 +39,23 @@ class UserProfile extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        username,
-        name,
-        email,
-        photoUrl,
-        xp,
-        level,
-        league,
-        subtitle,
-        completedCoursesCount,
-        balance,
-        assetTypesCount,
-        loginStreak,
-        completedMissionsIds,
-        friendIds,
-        memberSince,
-      ];
+    id,
+    username,
+    name,
+    email,
+    photoUrl,
+    xp,
+    level,
+    league,
+    subtitle,
+    completedCoursesCount,
+    balance,
+    assetTypesCount,
+    loginStreak,
+    completedMissionsIds,
+    friendIds,
+    memberSince,
+  ];
 
   UserProfile copyWith({
     String? username,
@@ -82,7 +82,8 @@ class UserProfile extends Equatable {
       level: level ?? this.level,
       league: league ?? this.league,
       subtitle: subtitle ?? this.subtitle,
-      completedCoursesCount: completedCoursesCount ?? this.completedCoursesCount,
+      completedCoursesCount:
+          completedCoursesCount ?? this.completedCoursesCount,
       balance: balance ?? this.balance,
       assetTypesCount: assetTypesCount ?? this.assetTypesCount,
       loginStreak: loginStreak ?? this.loginStreak,

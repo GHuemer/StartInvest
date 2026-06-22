@@ -6,10 +6,7 @@ import '../../domain/entities/challenge.dart';
 class ChallengeCard extends StatelessWidget {
   final Challenge challenge;
 
-  const ChallengeCard({
-    super.key,
-    required this.challenge,
-  });
+  const ChallengeCard({super.key, required this.challenge});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +24,10 @@ class ChallengeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.yellowHighlight,
                     borderRadius: BorderRadius.circular(20),

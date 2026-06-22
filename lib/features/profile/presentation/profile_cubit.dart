@@ -9,7 +9,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   final AuthRepository _authRepository;
   final ProfileRepository _profileRepository;
 
-  ProfileCubit(this._authRepository, this._profileRepository) : super(const ProfileInitial());
+  ProfileCubit(this._authRepository, this._profileRepository)
+    : super(const ProfileInitial());
 
   Future<void> logout() async {
     await _authRepository.signOut();
@@ -27,19 +28,21 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
 
     final result = await _profileRepository.getUserProfile(currentUser.id);
-    
+
     result.fold(
       (failure) => emit(ProfileError(failure.toString())),
-      (profile) => emit(ProfileLoaded(
-        name: profile.name,
-        username: profile.username,
-        memberSince: profile.memberSince,
-        friendsCount: profile.friendIds.length,
-        streak: profile.loginStreak,
-        xp: profile.xp,
-        league: profile.league,
-        podiums: 0,
-      )),
+      (profile) => emit(
+        ProfileLoaded(
+          name: profile.name,
+          username: profile.username,
+          memberSince: profile.memberSince,
+          friendsCount: profile.friendIds.length,
+          streak: profile.loginStreak,
+          xp: profile.xp,
+          league: profile.league,
+          podiums: 0,
+        ),
+      ),
     );
   }
 
@@ -51,20 +54,18 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       final currentUser = _authRepository.currentUser;
       if (currentUser != null) {
-        final profileResult = await _profileRepository.getUserProfile(currentUser.id);
-        profileResult.fold(
-          (failure) => emit(currentState),
-          (profile) async {
-            final updatedProfile = profile.copyWith(name: newName);
-            final result = await _profileRepository.updateUserProfile(updatedProfile);
-            result.fold(
-              (failure) {
-                emit(currentState.copyWith(name: previousName));
-              },
-              (_) => null,
-            );
-          },
+        final profileResult = await _profileRepository.getUserProfile(
+          currentUser.id,
         );
+        profileResult.fold((failure) => emit(currentState), (profile) async {
+          final updatedProfile = profile.copyWith(name: newName);
+          final result = await _profileRepository.updateUserProfile(
+            updatedProfile,
+          );
+          result.fold((failure) {
+            emit(currentState.copyWith(name: previousName));
+          }, (_) => null);
+        });
       }
     }
   }

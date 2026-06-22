@@ -3,7 +3,7 @@ import '../../domain/entities/news_entry.dart';
 
 abstract class NewsState extends Equatable {
   const NewsState();
-  
+
   @override
   List<Object?> get props => [];
 }
@@ -26,7 +26,12 @@ class NewsLoaded extends NewsState {
   });
 
   @override
-  List<Object?> get props => [allNews, filteredNews, searchQuery, selectedCategory];
+  List<Object?> get props => [
+    allNews,
+    filteredNews,
+    searchQuery,
+    selectedCategory,
+  ];
 
   NewsLoaded copyWith({
     List<NewsEntry>? allNews,

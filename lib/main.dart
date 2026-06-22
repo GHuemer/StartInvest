@@ -26,9 +26,7 @@ class StartInvestApp extends StatelessWidget {
         BlocProvider(
           create: (_) => getIt<AuthBloc>()..add(const AuthStarted()),
         ),
-        BlocProvider(
-          create: (_) => getIt<FriendRequestsCubit>(),
-        ),
+        BlocProvider(create: (_) => getIt<FriendRequestsCubit>()),
       ],
       child: MaterialApp.router(
         title: 'StartInvest',

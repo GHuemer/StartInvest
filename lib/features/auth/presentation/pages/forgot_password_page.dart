@@ -31,10 +31,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
-            AuthForgotPasswordRequested(
-              email: _emailController.text.trim(),
-            ),
-          );
+        AuthForgotPasswordRequested(email: _emailController.text.trim()),
+      );
     }
   }
 
@@ -95,7 +93,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     keyboardType: TextInputType.emailAddress,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: AppTextStyles.bodyLarge,
-                    decoration: const InputDecoration(hintText: 'email@dominio.com'),
+                    decoration: const InputDecoration(
+                      hintText: 'email@dominio.com',
+                    ),
                     validator: (value) {
                       final email = value?.trim() ?? '';
                       if (email.isEmpty) return 'O e-mail é obrigatório';

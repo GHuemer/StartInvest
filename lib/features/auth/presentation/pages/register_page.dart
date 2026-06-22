@@ -77,21 +77,34 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _validatePassword(String value) {
     final name = _nicknameController.text.trim().toLowerCase();
     final year = _selectedBirthDate?.year.toString() ?? '';
-    final specials = value.split('').where((c) => _specialChars.contains(c)).length;
+    final specials = value
+        .split('')
+        .where((c) => _specialChars.contains(c))
+        .length;
 
     if (value.length < 6 || value.length > 20) return 'Senha inválida.';
     if (specials < 1) return 'Senha inválida.';
     if (!RegExp(r'[0-9]').hasMatch(value)) return 'Senha inválida.';
     if (!RegExp(r'[a-zA-Z]').hasMatch(value)) return 'Senha inválida.';
-    if (name.isNotEmpty && value.toLowerCase().contains(name)) return 'Senha inválida.';
+    if (name.isNotEmpty && value.toLowerCase().contains(name))
+      return 'Senha inválida.';
     if (year.isNotEmpty && value.contains(year)) return 'Senha inválida.';
     return null;
   }
 
   _PasswordStrength _computeStrength(String value) {
-    final specials = value.split('').where((c) => _specialChars.contains(c)).length;
-    final numbers = value.split('').where((c) => RegExp(r'[0-9]').hasMatch(c)).length;
-    final uppers = value.split('').where((c) => RegExp(r'[A-Z]').hasMatch(c)).length;
+    final specials = value
+        .split('')
+        .where((c) => _specialChars.contains(c))
+        .length;
+    final numbers = value
+        .split('')
+        .where((c) => RegExp(r'[0-9]').hasMatch(c))
+        .length;
+    final uppers = value
+        .split('')
+        .where((c) => RegExp(r'[A-Z]').hasMatch(c))
+        .length;
     if (value.length > 12 && specials > 1 && numbers > 1 && uppers > 1) {
       return _PasswordStrength.forte;
     }
@@ -102,21 +115,23 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _onPasswordChanged(String value) {
-    final strength = _validatePassword(value) == null ? _computeStrength(value) : null;
+    final strength = _validatePassword(value) == null
+        ? _computeStrength(value)
+        : null;
     setState(() => _passwordStrength = strength);
   }
 
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
-            AuthSignUpRequested(
-              username: _usernameController.text.trim().toLowerCase(),
-              name: _nicknameController.text.trim(),
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-              birthDate: _selectedBirthDate!,
-            ),
-          );
+        AuthSignUpRequested(
+          username: _usernameController.text.trim().toLowerCase(),
+          name: _nicknameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          birthDate: _selectedBirthDate!,
+        ),
+      );
     }
   }
 
@@ -151,7 +166,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Criar conta', style: AppTextStyles.headlineLarge),
+                        const Text(
+                          'Criar conta',
+                          style: AppTextStyles.headlineLarge,
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           'Escolha seu nome de usuário e apelido',
@@ -170,7 +188,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     autocorrect: false,
                     textCapitalization: TextCapitalization.none,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z0-9._]'),
+                      ),
                     ],
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: AppTextStyles.bodyLarge,
@@ -229,7 +249,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           suffixIcon: Icon(Icons.calendar_today_outlined),
                         ),
                         validator: (_) {
-                          if (_selectedBirthDate == null) return 'Ano inválido.';
+                          if (_selectedBirthDate == null)
+                            return 'Ano inválido.';
                           return null;
                         },
                       ),
@@ -242,7 +263,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     keyboardType: TextInputType.emailAddress,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: AppTextStyles.bodyLarge,
-                    decoration: const InputDecoration(hintText: 'email@dominio.com'),
+                    decoration: const InputDecoration(
+                      hintText: 'email@dominio.com',
+                    ),
                     validator: (value) {
                       final email = value?.trim() ?? '';
                       if (email.isEmpty || !_emailRegex.hasMatch(email)) {
@@ -263,15 +286,19 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Senha',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           color: AppColors.textMuted,
                         ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'A senha é obrigatória';
+                      if (value == null || value.isEmpty)
+                        return 'A senha é obrigatória';
                       return _validatePassword(value);
                     },
                   ),
@@ -300,7 +327,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Confirmar senha',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                          _obscureConfirm
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           color: AppColors.textMuted,
                         ),
                         onPressed: () =>
@@ -398,7 +427,11 @@ class _PasswordStrengthIndicator extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           'Senha $label',
-          style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 12,
+            color: color,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );
@@ -418,22 +451,31 @@ class _PasswordRequirements extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final specials =
-        password.split('').where((c) => _kSpecialChars.contains(c)).length;
+    final specials = password
+        .split('')
+        .where((c) => _kSpecialChars.contains(c))
+        .length;
     final showNameRule = name.isNotEmpty || birthYear != null;
-    final nameOk = (name.isEmpty || !password.toLowerCase().contains(name)) &&
+    final nameOk =
+        (name.isEmpty || !password.toLowerCase().contains(name)) &&
         (birthYear == null || !password.contains(birthYear!));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _CheckItem('6 a 20 caracteres',
-            password.length >= 6 && password.length <= 20),
-        _CheckItem('Pelo menos 1 caractere especial (@, #, %, &, !, +)',
-            specials >= 1),
+        _CheckItem(
+          '6 a 20 caracteres',
+          password.length >= 6 && password.length <= 20,
+        ),
+        _CheckItem(
+          'Pelo menos 1 caractere especial (@, #, %, &, !, +)',
+          specials >= 1,
+        ),
         _CheckItem('Pelo menos 1 número', RegExp(r'[0-9]').hasMatch(password)),
         _CheckItem(
-            'Pelo menos 1 letra (a-z, A-Z)', RegExp(r'[a-zA-Z]').hasMatch(password)),
+          'Pelo menos 1 letra (a-z, A-Z)',
+          RegExp(r'[a-zA-Z]').hasMatch(password),
+        ),
         if (showNameRule)
           _CheckItem('Não contém seu nome ou ano de nascimento', nameOk),
       ],

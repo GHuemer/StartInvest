@@ -58,7 +58,7 @@ class _AppShellState extends State<AppShell> {
                 if (state is FriendRequestsLoaded) {
                   count = state.requests.length;
                 }
-                
+
                 if (count == 0) return const SizedBox();
 
                 return GestureDetector(
@@ -73,7 +73,10 @@ class _AppShellState extends State<AppShell> {
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColors.cardBorder),
                         ),
-                        child: const Icon(Icons.notifications_active, color: AppColors.primary),
+                        child: const Icon(
+                          Icons.notifications_active,
+                          color: AppColors.primary,
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.all(4),
@@ -87,7 +90,11 @@ class _AppShellState extends State<AppShell> {
                         ),
                         child: Text(
                           '$count',
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -182,15 +189,26 @@ class NotificationsModal extends StatelessWidget {
                           backgroundColor: AppColors.backgroundCardLight,
                           child: Icon(Icons.person, color: AppColors.primary),
                         ),
-                        title: const Text('Pedido de amizade', style: AppTextStyles.titleMedium),
-                        subtitle: Text('$name (@$username) quer ser seu amigo', style: AppTextStyles.bodySmall),
+                        title: const Text(
+                          'Pedido de amizade',
+                          style: AppTextStyles.titleMedium,
+                        ),
+                        subtitle: Text(
+                          '$name (@$username) quer ser seu amigo',
+                          style: AppTextStyles.bodySmall,
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.check_circle, color: AppColors.primary),
+                              icon: const Icon(
+                                Icons.check_circle,
+                                color: AppColors.primary,
+                              ),
                               onPressed: () async {
-                                await context.read<FriendRequestsCubit>().acceptRequest(req['id']);
+                                await context
+                                    .read<FriendRequestsCubit>()
+                                    .acceptRequest(req['id']);
                                 // Se estiver na RankingPage, forçamos o refresh
                                 if (context.mounted) {
                                   try {
@@ -202,8 +220,13 @@ class NotificationsModal extends StatelessWidget {
                               },
                             ),
                             IconButton(
-                              icon: const Icon(Icons.cancel, color: AppColors.textNegative),
-                              onPressed: () => context.read<FriendRequestsCubit>().declineRequest(req['id']),
+                              icon: const Icon(
+                                Icons.cancel,
+                                color: AppColors.textNegative,
+                              ),
+                              onPressed: () => context
+                                  .read<FriendRequestsCubit>()
+                                  .declineRequest(req['id']),
                             ),
                           ],
                         ),
@@ -214,7 +237,12 @@ class NotificationsModal extends StatelessWidget {
               }
               return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 40),
-                child: Center(child: Text('Nenhuma notificação no momento', style: AppTextStyles.bodyMedium)),
+                child: Center(
+                  child: Text(
+                    'Nenhuma notificação no momento',
+                    style: AppTextStyles.bodyMedium,
+                  ),
+                ),
               );
             },
           ),

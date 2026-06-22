@@ -46,22 +46,22 @@ class RunProjectionUseCase {
       );
 
       final points = _generatePoints(input.amount, cagr, periodMonths);
-      projections.add(AssetProjection(
-        ticker: input.ticker,
-        name: input.name,
-        assetType: input.assetType,
-        investedAmount: input.amount,
-        annualRate: cagr,
-        dataPoints: points,
-      ));
+      projections.add(
+        AssetProjection(
+          ticker: input.ticker,
+          name: input.name,
+          assetType: input.assetType,
+          investedAmount: input.amount,
+          annualRate: cagr,
+          dataPoints: points,
+        ),
+      );
     }
 
-    final maxLen =
-        projections.map((p) => p.dataPoints.length).reduce(max);
+    final maxLen = projections.map((p) => p.dataPoints.length).reduce(max);
     final consolidated = List.generate(maxLen, (i) {
       return projections.fold(0.0, (sum, p) {
-        final v =
-            i < p.dataPoints.length ? p.dataPoints[i] : p.projectedValue;
+        final v = i < p.dataPoints.length ? p.dataPoints[i] : p.projectedValue;
         return sum + v;
       });
     });
@@ -81,8 +81,7 @@ class RunProjectionUseCase {
     return Right(simulation);
   }
 
-  List<double> _generatePoints(
-      double amount, double cagr, int periodMonths) {
+  List<double> _generatePoints(double amount, double cagr, int periodMonths) {
     if (periodMonths <= 12) {
       final monthlyRate = pow(1 + cagr, 1 / 12).toDouble() - 1;
       return List.generate(

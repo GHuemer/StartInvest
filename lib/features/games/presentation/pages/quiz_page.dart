@@ -106,12 +106,18 @@ class _QuizPageState extends State<QuizPage> {
         final catalog = await missionsDataSource.getMissionsCatalog();
         final missionData = catalog.firstWhere(
           (m) => m['id'] == missionIdToComplete,
-          orElse: () => {'rewardPoints': 0}
+          orElse: () => {'rewardPoints': 0},
         );
         missionBonusXp = missionData['rewardPoints'] ?? 0;
 
-        final missionSuccess = await missionsDataSource.completeMission(missionIdToComplete, missionBonusXp);
-        final quizSuccess = await missionsDataSource.completeMission('quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}', xpGained);
+        final missionSuccess = await missionsDataSource.completeMission(
+          missionIdToComplete,
+          missionBonusXp,
+        );
+        final quizSuccess = await missionsDataSource.completeMission(
+          'quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}',
+          xpGained,
+        );
 
         success = missionSuccess || quizSuccess;
         _alreadyEarnedPoints = !quizSuccess && xpGained > 0;
@@ -121,9 +127,11 @@ class _QuizPageState extends State<QuizPage> {
         }
 
         _missionBonusXp = missionBonusXp;
-
       } else {
-        success = await missionsDataSource.completeMission('quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}', xpGained);
+        success = await missionsDataSource.completeMission(
+          'quiz_${widget.quiz.title.replaceAll(' ', '_').toLowerCase()}',
+          xpGained,
+        );
         _alreadyEarnedPoints = !success && xpGained > 0;
       }
 
@@ -346,7 +354,9 @@ class _QuizPageState extends State<QuizPage> {
               const SizedBox(height: 8),
               Text(
                 'Acertos: $_score/${widget.quiz.questions.length}',
-                style: AppTextStyles.titleLarge.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -357,7 +367,9 @@ class _QuizPageState extends State<QuizPage> {
                 decoration: BoxDecoration(
                   color: _alreadyEarnedPoints
                       ? Colors.orange.withOpacity(0.2)
-                      : (displayScore >= 0 ? AppColors.primary.withOpacity(0.2) : AppColors.textNegative.withOpacity(0.2)),
+                      : (displayScore >= 0
+                            ? AppColors.primary.withOpacity(0.2)
+                            : AppColors.textNegative.withOpacity(0.2)),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -365,18 +377,27 @@ class _QuizPageState extends State<QuizPage> {
                     Text(
                       _alreadyEarnedPoints
                           ? '0 pontos'
-                          : (displayScore >= 0 ? '+ $displayScore pontos' : '$displayScore pontos'),
+                          : (displayScore >= 0
+                                ? '+ $displayScore pontos'
+                                : '$displayScore pontos'),
                       style: AppTextStyles.headlineMedium.copyWith(
-                        color: _alreadyEarnedPoints ? Colors.orange : (displayScore >= 0 ? AppColors.primary : AppColors.textNegative),
+                        color: _alreadyEarnedPoints
+                            ? Colors.orange
+                            : (displayScore >= 0
+                                  ? AppColors.primary
+                                  : AppColors.textNegative),
                       ),
                     ),
                     if (!_alreadyEarnedPoints && isWin && _missionBonusXp > 0)
-                       Padding(
+                      Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
                           '(inclui +$_missionBonusXp da missão!)',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.primary.withValues(alpha: 0.8), fontSize: 12),
+                          style: TextStyle(
+                            color: AppColors.primary.withValues(alpha: 0.8),
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     if (_alreadyEarnedPoints)

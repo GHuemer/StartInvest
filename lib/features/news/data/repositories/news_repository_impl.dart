@@ -12,14 +12,18 @@ class NewsRepositoryImpl implements NewsRepository {
   @override
   Future<List<NewsEntry>> getNews() async {
     final newsMaps = await _remoteDataSource.getNews();
-    return newsMaps.map((map) => NewsEntry(
-      id: map['id'],
-      title: map['title'],
-      content: map['content'],
-      source: map['source'],
-      date: map['date'],
-      tag: map['tag'],
-      category: map['category'],
-    )).toList();
+    return newsMaps
+        .map(
+          (map) => NewsEntry(
+            id: map['id'],
+            title: map['title'],
+            content: map['content'],
+            source: map['source'],
+            date: map['date'],
+            tag: map['tag'],
+            category: map['category'],
+          ),
+        )
+        .toList();
   }
 }

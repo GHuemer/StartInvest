@@ -3,14 +3,13 @@ import '../../domain/repositories/home_repository.dart';
 import '../models/challenge_model.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
-   //injetar o FirebaseFirestore aqui
+  //injetar o FirebaseFirestore aqui
   // final FirebaseFirestore _firestore;
   // HomeRepositoryImpl(this._firestore);
 
   @override
   Future<Challenge> getDailyChallenge() async {
     try {
-
       // Enquanto não tem back, retornamos um mock para a UI não quebrar
       await Future.delayed(const Duration(milliseconds: 500));
       return const ChallengeModel(
