@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 
@@ -15,19 +15,13 @@ abstract class RegisterModule {
   FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
 
   @lazySingleton
-  GoogleSignIn get googleSignIn => GoogleSignIn();
-
-  @lazySingleton
-  Dio get dio => Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 20),
-      receiveTimeout: const Duration(seconds: 20),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36',
-      },
-    ),
-  );
+  GoogleSignIn get googleSignIn {
+    // Avoid initializing GoogleSignIn on web without proper client ID config
+    if (kIsWeb) {
+      return GoogleSignIn(clientId: '');
+    }
+    return GoogleSignIn();
+  }
 
   @lazySingleton
   MarketQuestionsDatasource get marketQuestionsDatasource =>
