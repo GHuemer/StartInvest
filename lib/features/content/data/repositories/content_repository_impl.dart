@@ -88,7 +88,8 @@ O Comitê de Política Monetária (Copom) se reúne a cada 45 dias para definir 
         author: 'BTG Digital',
         readingTime: '5 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 2)),
-        imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2022&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2022&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '3',
@@ -110,7 +111,8 @@ A regra para a reserva é clara: segurança e liquidez. O dinheiro deve estar di
         author: 'Blog do Nu',
         readingTime: '4 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 3)),
-        imageUrl: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?q=80&w=2000&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?q=80&w=2000&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '4',
@@ -131,7 +133,8 @@ Existem diferentes tipos de fundos: Fundos de Tijolo (imóveis físicos), Fundos
         author: 'InfoMoney',
         readingTime: '8 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 5)),
-        imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=2073&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=2073&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '5',
@@ -151,7 +154,8 @@ A recomendação de especialistas é manter entre 10% a 30% do patrimônio em at
         author: 'Valor Investe',
         readingTime: '7 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 7)),
-        imageUrl: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop',
       ),
       ArticleModel(
         id: '6',
@@ -172,7 +176,8 @@ Datas Importantes:
         author: 'Portal B3',
         readingTime: '5 min',
         publishedAt: DateTime.now().subtract(const Duration(days: 10)),
-        imageUrl: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop',
       ),
     ];
   }

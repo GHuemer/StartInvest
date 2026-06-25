@@ -22,5 +22,13 @@ class Challenge extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, tag, title, description, points, iconType, isRealIcon];
+  List<Object?> get props => [
+    id,
+    tag,
+    title,
+    description,
+    points,
+    iconType,
+    isRealIcon,
+  ];
 }

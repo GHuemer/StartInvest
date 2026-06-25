@@ -7,11 +7,7 @@ class ChallengeCard extends StatelessWidget {
   final Challenge challenge;
   final VoidCallback? onTap;
 
-  const ChallengeCard({
-    super.key,
-    required this.challenge,
-    this.onTap,
-  });
+  const ChallengeCard({super.key, required this.challenge, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +27,10 @@ class ChallengeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.yellowHighlight,
                       borderRadius: BorderRadius.circular(20),
@@ -76,7 +75,9 @@ class ChallengeCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                challenge.isRealIcon ? challenge.actualIcon : _getIcon(challenge.iconType),
+                challenge.isRealIcon
+                    ? challenge.actualIcon
+                    : _getIcon(challenge.iconType),
                 color: challenge.points > 0 ? Colors.amber : Colors.grey,
                 size: 40,
               ),

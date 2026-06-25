@@ -69,20 +69,23 @@ class _HomeView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // Widget de Desafio conectado as missoes reais
               BlocBuilder<MissionsCubit, MissionsState>(
                 builder: (context, state) {
                   // Procura a primeira missao disponivel que ainda nao foi completada
-                  final availableMission = state.allMissions.where((m) => m.status == MissionStatus.available).firstOrNull;
+                  final availableMission = state.allMissions
+                      .where((m) => m.status == MissionStatus.available)
+                      .firstOrNull;
 
                   if (availableMission == null) {
-                     return const ChallengeCard(
+                    return const ChallengeCard(
                       challenge: Challenge(
                         id: 'done',
                         tag: 'Concluído',
                         title: 'Tudo Limpo!',
-                        description: 'Você completou os desafios diários. Volte amanhã!',
+                        description:
+                            'Você completou os desafios diários. Volte amanhã!',
                         points: 0,
                         iconType: 'emoji_events',
                       ),
@@ -96,7 +99,8 @@ class _HomeView extends StatelessWidget {
                       title: availableMission.title,
                       description: availableMission.description,
                       points: availableMission.rewardPoints,
-                      iconType: availableMission.icon.codePoint.toString(), // Truque para passar icone
+                      iconType: availableMission.icon.codePoint
+                          .toString(), // Truque para passar icone
                       isRealIcon: true,
                       actualIcon: availableMission.icon,
                     ),
