@@ -26,6 +26,7 @@ class _FakeFirebaseUser {
   _FakeFirebaseUser(this.uid, this.displayName, this.email, this.photoURL);
 }
 
+// ignore: subtype_of_sealed_class
 class MockDocumentSnapshot extends Mock implements DocumentSnapshot {}
 
 void main() {

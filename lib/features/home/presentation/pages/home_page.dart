@@ -34,16 +34,6 @@ class _HomeView extends StatelessWidget {
     final user = (context.watch<AuthBloc>().state as AuthAuthenticated?)?.user;
     final firstName = user?.name.split(' ').first ?? 'Gabriel';
 
-    // Mock de desafio que viria do Firebase/Back
-    const dailyChallenge = Challenge(
-      id: '1',
-      tag: 'Novo Desafio',
-      title: 'Conquiste 500pts',
-      description: 'Complete o módulo de Tesouro Direto.',
-      points: 500,
-      iconType: 'emoji_events',
-    );
-
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       body: SafeArea(
