@@ -34,16 +34,6 @@ class _HomeView extends StatelessWidget {
     final user = (context.watch<AuthBloc>().state as AuthAuthenticated?)?.user;
     final firstName = user?.name.split(' ').first ?? 'Gabriel';
 
-    // Mock de desafio que viria do Firebase/Back
-    const dailyChallenge = Challenge(
-      id: '1',
-      tag: 'Novo Desafio',
-      title: 'Conquiste 500pts',
-      description: 'Complete o módulo de Tesouro Direto.',
-      points: 500,
-      iconType: 'emoji_events',
-    );
-
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       body: SafeArea(
@@ -69,20 +59,23 @@ class _HomeView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // Widget de Desafio conectado as missoes reais
               BlocBuilder<MissionsCubit, MissionsState>(
                 builder: (context, state) {
                   // Procura a primeira missao disponivel que ainda nao foi completada
-                  final availableMission = state.allMissions.where((m) => m.status == MissionStatus.available).firstOrNull;
+                  final availableMission = state.allMissions
+                      .where((m) => m.status == MissionStatus.available)
+                      .firstOrNull;
 
                   if (availableMission == null) {
-                     return const ChallengeCard(
+                    return const ChallengeCard(
                       challenge: Challenge(
                         id: 'done',
                         tag: 'Concluído',
                         title: 'Tudo Limpo!',
-                        description: 'Você completou os desafios diários. Volte amanhã!',
+                        description:
+                            'Você completou os desafios diários. Volte amanhã!',
                         points: 0,
                         iconType: 'emoji_events',
                       ),
@@ -96,7 +89,8 @@ class _HomeView extends StatelessWidget {
                       title: availableMission.title,
                       description: availableMission.description,
                       points: availableMission.rewardPoints,
-                      iconType: availableMission.icon.codePoint.toString(), // Truque para passar icone
+                      iconType: availableMission.icon.codePoint
+                          .toString(), // Truque para passar icone
                       isRealIcon: true,
                       actualIcon: availableMission.icon,
                     ),
